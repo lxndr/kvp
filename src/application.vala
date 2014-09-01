@@ -62,8 +62,55 @@ public class Application : Gtk.Application
 	}
 
 
+	private void exec_sql (string sql, Sqlite.Callback? callback = null) {
+		string errmsg;
+		stdout.printf ("%s\n", sql);
+		if (db.exec (sql, callback, out errmsg) != Sqlite.OK)
+			stdout.printf ("Sqlite error: %s\n", errmsg);
+	}
+
+
 	public Account add_account () {
-		db.exec("INSERT INTO lodging VALUES(NULL, )");
+		var account = new Account ();
+		exec_sql ("INSERT INTO account VALUES (NULL, '000', '000')");
+		account.id = db.last_insert_rowid ();
+		stdout.printf ("New ID: %lld\n", account.id);
+		return account;
+	}
+
+
+	public Gee.List<Account> get_account_list () {
+		var list = new Gee.ArrayList<Account> ();
+
+		exec_sql ("SELECT * FROM account", (n_columns, values, column_names) => {
+			var account = new Account ();
+			account.number = values[1];
+			account.apartment = values[2];
+			list.add (account);
+			return 0;
+		});
+
+		return list;
+	}
+
+
+	public void update_account (Account account) {
+		exec_sql ("UPDATE account SET number='" + account.number + "', apartment='" + account.apartment + "'");
+	}
+
+
+	public Gee.List<Person> get_people_list () {
+		var list = new Gee.ArrayList<Person> ();
+
+		exec_sql ("SELECT * FROM people", (n_columns, values, column_names) => {
+			var person = new Person ();
+			person.name = values[1];
+			person.birthday = values[2];
+			list.add (person);
+			return 0;
+		});
+
+		return list;
 	}
 }
 

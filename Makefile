@@ -3,7 +3,9 @@ RESOURCES=ui/main-window.ui \
 
 SOURCES=src/application.vala \
 	src/main-window.vala \
-	src/utils.vala
+	src/utils.vala \
+	src/account.vala \
+	src/person.vala
 
 
 all: kvartplata
