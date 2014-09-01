@@ -1,0 +1,98 @@
+{
+	type_node_any_new_W-malloc
+	Memcheck:Leak
+	fun:malloc
+	...
+	fun:type_node_any_new_W
+}
+{
+	type_node_any_new_W-calloc
+	Memcheck:Leak
+	fun:calloc
+	...
+	fun:type_node_any_new_W
+}
+{
+	type_node_any_new_W-realloc
+	Memcheck:Leak
+	fun:realloc
+	...
+	fun:type_node_any_new_W
+}
+
+{
+	type_add_flags_W-malloc
+	Memcheck:Leak
+	fun:malloc
+	...
+	fun:type_add_flags_W
+}
+{
+	type_add_flags_W-calloc
+	Memcheck:Leak
+	fun:calloc
+	...
+	fun:type_add_flags_W
+}
+
+{
+	type_data_make_W-calloc
+	Memcheck:Leak
+	fun:calloc
+	...
+	fun:type_data_make_W
+}
+
+{
+	type_iface_vtable_base_init_Wm
+	Memcheck:Leak
+	fun:malloc
+	...
+	fun:type_iface_vtable_base_init_Wm
+}
+
+{
+	g_quark_from_static_string
+	Memcheck:Leak
+	fun:malloc
+	fun:g_malloc
+	fun:g_quark_from_static_string
+}
+
+{
+	Leak/g_type_add_interface_static
+	Memcheck:Leak
+	fun:malloc
+	...
+	fun:g_type_add_interface_static
+}
+
+{
+	FcFontRenderPrepare/malloc
+	Memcheck:Leak
+	fun:malloc
+	...
+	fun:FcFontRenderPrepare
+}
+{
+	FcFontRenderPrepare/realloc
+	Memcheck:Leak
+	fun:realloc
+	...
+	fun:FcFontRenderPrepare
+}
+
+{
+	FcDefaultSubstitute/malloc
+	Memcheck:Leak
+	fun:malloc
+	...
+	fun:FcDefaultSubstitute
+}
+{
+	FcDefaultSubstitute/realloc
+	Memcheck:Leak
+	fun:realloc
+	...
+	fun:FcDefaultSubstitute
+}
