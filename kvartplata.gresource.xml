@@ -3,5 +3,7 @@
 <gresources>
 	<gresource prefix="/">
 		<file preprocess="xml-stripblanks" compressed="true">ui/main-window.ui</file>
+
+		<file compressed="true">data/init.sql</file>
 	</gresource>
 </gresources>
