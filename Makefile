@@ -5,7 +5,10 @@ SOURCES=src/application.vala \
 	src/main-window.vala \
 	src/utils.vala \
 	src/account.vala \
-	src/person.vala
+	src/person.vala \
+	src/table-view.vala \
+	src/people-table.vala \
+	src/entity.vala
 
 
 all: kvartplata

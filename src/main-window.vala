@@ -7,6 +7,9 @@ class MainWindow : Gtk.ApplicationWindow {
 	private Gtk.ToolButton current_period;
 
 	[GtkChild]
+	private Gtk.Paned paned2;
+
+	[GtkChild]
 	private Gtk.ListStore account_store;
 	[GtkChild]
 	private Gtk.TreeView account_list;
@@ -20,19 +23,17 @@ class MainWindow : Gtk.ApplicationWindow {
 	[GtkChild]
 	private Gtk.MenuItem account_menu_remove;
 
-	[GtkChild]
-	private Gtk.ListStore people_store;
-	[GtkChild]
-	private Gtk.TreeView people_list;
-	[GtkChild]
-	private Gtk.CellRendererText people_list_name;
-	[GtkChild]
-	private Gtk.CellRendererText people_list_birthday;
 
+
+	private PeopleTable people_table;
 
 
 	public MainWindow (Application app) {
 		Object (application: app);
+
+		people_table = new PeopleTable ();
+		paned2.add2 (people_table.get_root_widget ());
+
 /*
 		var columns = account_list.get_columns ();
 		columns.foreach ((column) => {
@@ -96,7 +97,7 @@ class MainWindow : Gtk.ApplicationWindow {
 
 	[GtkCallback]
 	private void account_selection_changed () {
-		update_people_list ();
+//		update_people_list ();
 //		update_tax_list ();
 	}
 
@@ -127,7 +128,7 @@ class MainWindow : Gtk.ApplicationWindow {
 		msg.response.connect ((response_id) => {
 			if (response_id == Gtk.ResponseType.YES) {
 				update_account_list ();
-				update_people_list ();
+//				update_people_list ();
 //				update_tax_list ();
 			}
 		});
@@ -143,20 +144,6 @@ class MainWindow : Gtk.ApplicationWindow {
 		foreach (var account in list) {
 			account_store.append (out iter);
 			account_store.set (iter, 0, account, 1, account.number, 2, account.apartment);
-		}
-	}
-
-	/*
-	 * People list
-	 */
-	private void update_people_list () {
-		Gtk.TreeIter iter;
-		people_store.clear ();
-
-		var list = (application as Application).get_people_list ();
-		foreach (var person in list) {
-			people_store.append (out iter);
-			people_store.set (iter, 0, person, 1, person.name, 2, person.birthday);
 		}
 	}
 }

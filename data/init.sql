@@ -1,3 +1,10 @@
+CREATE TABLE IF NOT EXISTS `building` (
+	`id`         INTEGER  PRIMARY KEY AUTOINCREMENT  NOT NULL,
+	`location`   TEXT                                NOT NULL,
+	`street`     TEXT                                NOT NULL,
+	`building`   TEXT                                NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS `account` (
 	`id`         INTEGER  PRIMARY KEY AUTOINCREMENT  NOT NULL,
 	`number`     TEXT                                NOT NULL,
