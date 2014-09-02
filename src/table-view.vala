@@ -2,18 +2,20 @@ namespace Kv {
 
 
 public abstract class TableView {
+	protected Database db;
 	private Type object_type;
+
 	private Gtk.ScrolledWindow root_widget;
 	protected Gtk.TreeView list_view;
 	protected Gtk.ListStore list_store;
 	protected Gtk.Menu popup_menu;
 	private Gtk.MenuItem remove_menu_item;
 
+	protected abstract Gee.List<Entity> get_entity_list ();
 
-	protected abstract void create_list_store ();
 
-
-	public TableView (Type type) {
+	public TableView (Database dbase, Type type) {
+		db = dbase;
 		object_type = type;
 
 		Gtk.MenuItem menu_item;
@@ -35,14 +37,22 @@ public abstract class TableView {
 		popup_menu.show_all ();
 
 		/* list store */
-		create_list_store ();
+		Type[] types = {};
+		types += typeof (Object);
+
+		var tmp = Object.new (object_type) as Entity;
+		var props = tmp.get_view_properties ();
+		foreach (var prop_name in props)
+			types += typeof (string);
+
+		list_store = new Gtk.ListStore.newv (types);
 
 		/* list view */
 		root_widget = new Gtk.ScrolledWindow (null, null);
 		root_widget.shadow_type = Gtk.ShadowType.IN;
 
 		list_view = new Gtk.TreeView.with_model (list_store);
-		create_list_columns ();
+		create_list_columns (props);
 		list_view.button_release_event.connect (button_released);
 		root_widget.add (list_view);
 
@@ -55,30 +65,25 @@ public abstract class TableView {
 	}
 
 
-	private void create_list_columns () {
+	private void create_list_columns (string[] props) {
 		Gtk.CellRendererText cell;
 		Gtk.TreeViewColumn column;
 
-		var obj_class = (ObjectClass) object_type.class_ref ();
-		var properties = obj_class.list_properties ();
-		for (var i = 0; i < properties.length; i++) {
-			var prop = properties[i];
+		for (var i = 0; i < props.length; i++) {
+			var prop = props[i];
 
 			cell = new Gtk.CellRendererText ();
-			cell.set_data<string> ("property_name", prop.name);
+			cell.set_data<string> ("property_name", prop);
 			cell.set_data<int> ("property_column", i + 1);
 			cell.editable = true;
 			cell.edited.connect (row_edited);
 
 			column = new Gtk.TreeViewColumn.with_attributes (
-					prop.name, cell,
+					prop, cell,
 					"text", i + 1);
 			list_view.insert_column (column, -1);
 		}
 	}
-
-
-	public abstract void update_view ();
 
 
 	private bool button_released (Gdk.EventButton event) {
@@ -94,8 +99,8 @@ public abstract class TableView {
 	private void row_edited (Gtk.CellRendererText cell, string _path, string new_text) {
 		Entity entity;
 		Gtk.TreeIter iter;
-		var path = new Gtk.TreePath.from_string (_path);
 
+		var path = new Gtk.TreePath.from_string (_path);
 		list_store.get_iter (out iter, path);
 		list_store.get (iter, 0, out entity);
 
@@ -107,17 +112,13 @@ public abstract class TableView {
 
 		entity.set_property (property_name, val);
 		list_store.set_value (iter, property_column, val);
-	}
 
-
-	private void selection_changed (Gtk.TreeSelection selection) {
+//		entity.persist ();
 	}
 
 
 	public void add_item_clicked () {
 		var entity = Object.new (object_type) as Entity;
-		stdout.printf ("+- %s\n", (entity as Person).name);
-
 
 		Gtk.TreeIter iter;
 		list_store.append (out iter);
@@ -127,12 +128,12 @@ public abstract class TableView {
 		var properties = obj_class.list_properties ();
 		for (var i = 0; i < properties.length; i++) {
 			var prop = properties[i];
-stdout.printf ("-- %s\n", prop.name);
 			var val = Value (typeof (string));
 			entity.get_property (prop.name, ref val);
-stdout.printf ("+- %s\n", (entity as Person).name);
 			list_store.set_value (iter, i + 1, val);
 		}
+
+		/* TODO persists object */
 	}
 
 
@@ -156,6 +157,28 @@ stdout.printf ("+- %s\n", (entity as Person).name);
 			}
 		});
 		msg.show ();
+
+		/* TODO persist object */
+	}
+
+
+	public void update_view () {
+		list_store.clear ();
+		var list = get_entity_list ();
+
+		foreach (var entity in list) {
+			var properties = entity.get_view_properties ();
+
+			Gtk.TreeIter iter;
+			list_store.append (out iter);
+
+			for (var i = 0; i < properties.length; i++) {
+				var property_name = properties[i];
+				var val = Value (typeof (string));
+				entity.get_property (property_name, ref val);
+				list_store.set_value (iter, i + 1, val);
+			}
+		}
 	}
 }
 

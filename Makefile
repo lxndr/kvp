@@ -6,9 +6,13 @@ SOURCES=src/application.vala \
 	src/utils.vala \
 	src/account.vala \
 	src/person.vala \
+	src/tax.vala \
 	src/table-view.vala \
+	src/account-table.vala \
 	src/people-table.vala \
-	src/entity.vala
+	src/tax-table.vala \
+	src/entity.vala \
+	src/database.vala
 
 
 all: kvartplata

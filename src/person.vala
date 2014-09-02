@@ -3,28 +3,30 @@ namespace Kv {
 
 public class Person : Entity
 {
+	public int64 id { get; set; }
 	public string name { get; set; }
 	public string birthday { get; set; }
 
-/*
-	public Person () {
-		base ();
-		name = "000";
-		birthday = "000";
-
-		stdout.printf ("%s %s\n", name, birthday);
-	}
-*/
 
 	construct {
+		id = 0;
 		name = "000";
 		birthday = "000";
-		
 	}
 
 
 	public override string get_display_name () {
 		return name;
+	}
+
+
+	public override string[] get_view_properties () {
+		string[] properties = {
+			"name",
+			"birthday"
+		};
+
+		return properties;
 	}
 }
 

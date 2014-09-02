@@ -1,13 +1,13 @@
 namespace Kv {
 
 
-public class PeopleTable : TableView {
+public class TaxTable : TableView {
 	private Period period;
 	private Account account;
 
 
-	public PeopleTable (Database dbase) {
-		base (dbase, typeof (Person));
+	public TaxTable (Database dbase) {
+		base (dbase, typeof (Tax));
 	}
 
 
@@ -20,7 +20,7 @@ public class PeopleTable : TableView {
 
 
 	protected override Gee.List<Entity> get_entity_list () {
-		return db.get_people_list (period, account);
+		return db.get_tax_list (period, account);
 	}
 }
 
