@@ -100,13 +100,13 @@ public abstract class TableView {
 				/* FIXME: could use Object.connect */
 				(cell as Gtk.CellRendererText).edited.connect (text_row_edited);
 			} else if (prop_type.is_a (typeof (Entity))) {
-				var combo_store = new Gtk.ListStore (2, typeof (string), typeof (int));
+				var combo_store = new Gtk.ListStore (2, typeof (string), typeof (Entity));
 				var service_list = db.get_service_list ();
 
 				foreach (var service in service_list) {
 					Gtk.TreeIter iter;
 					combo_store.append (out iter);
-					combo_store.set (iter, 0, service.name, 1, service.id);
+					combo_store.set (iter, 0, service.name, 1, service);
 				}
 
 				cell = new Gtk.CellRendererCombo ();
@@ -175,8 +175,26 @@ public abstract class TableView {
 	}
 
 
-	private void combo_row_changed (Gtk.CellRendererText cell, string p0, Gtk.TreeIter p1) {
-		
+	private void combo_row_changed (Gtk.CellRendererCombo cell, string _path, Gtk.TreeIter prop_iter) {
+		Entity entity;
+		Gtk.TreeIter iter;
+		var path = new Gtk.TreePath.from_string (_path);
+		list_store.get_iter (out iter, path);
+		list_store.get (iter, 0, out entity);
+
+		Entity prop_entity;
+		cell.model.get (prop_iter, 1, out prop_entity);
+
+		var property_name = cell.get_data<string> ("property_name");
+		var property_column = cell.get_data<int> ("property_column");
+
+		entity.set_property (property_name, prop_entity);
+
+		var val = Value (typeof (string));
+		val.set_string (entity.get_display_name ());
+		list_store.set_value (iter, property_column, val);
+
+		db.persist (entity);
 	}
 
 
