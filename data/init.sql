@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS `building` (
 CREATE TABLE IF NOT EXISTS `account` (
 	`id`         INTEGER  PRIMARY KEY AUTOINCREMENT  NOT NULL,
 	`number`     TEXT                                NOT NULL,
-	`apartment`  TEXT                                NOT NULL
+	`apartment`  TEXT                                NOT NULL,
+	`area`       REAL                                NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS `people` (

@@ -19,6 +19,18 @@ public class TaxTable : TableView {
 	}
 
 
+	protected override Entity new_entity () {
+		return new Tax (period, account);
+	}
+
+
+	protected override string[] view_properties () {
+		return {
+			"service_name"
+		};
+	}
+
+
 	protected override Gee.List<Entity> get_entity_list () {
 		return db.get_tax_list (period, account);
 	}

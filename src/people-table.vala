@@ -19,6 +19,14 @@ public class PeopleTable : TableView {
 	}
 
 
+	protected override string[] view_properties () {
+		return {
+			"name",
+			"birthday"
+		};
+	}
+
+
 	protected override Gee.List<Entity> get_entity_list () {
 		return db.get_people_list (period, account);
 	}

@@ -10,21 +10,32 @@ public class Tax : Entity
 	public string service_name {get; set; }
 
 
-	construct {
+	public Tax (Period period, Account account) {
+		this.month = period.month;
+		this.year = period.year;
+		this.account = account.id;
 	}
 
 
 	public override string get_display_name () {
-		return "";//name;
+		return "service_name";
 	}
 
 
-	public override string[] get_view_properties () {
-		string[] properties = {
-			"service_name"
+	public override string[] db_keys () {
+		return {
+			"month",
+			"year",
+			"account",
+			"service"
 		};
+	}
 
-		return properties;
+
+	public override string[] db_fields () {
+		return {
+			
+		};
 	}
 }
 

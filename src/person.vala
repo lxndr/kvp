@@ -20,13 +20,18 @@ public class Person : Entity
 	}
 
 
-	public override string[] get_view_properties () {
-		string[] properties = {
+	public override string[] db_keys () {
+		return {
+			"id"
+		};
+	}
+
+
+	public override string[] db_fields () {
+		return {
 			"name",
 			"birthday"
 		};
-
-		return properties;
 	}
 }
 

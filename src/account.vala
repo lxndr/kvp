@@ -6,9 +6,11 @@ public class Account : Entity
 	public int64 id { get; set; }
 	public string number { get; set; }
 	public string apartment { get; set; }
+	public float area { get; set; }
 
 
 	construct {
+		table_name = "account";
 		id = 0;
 		number = "000";
 		apartment = "000";
@@ -20,13 +22,19 @@ public class Account : Entity
 	}
 
 
-	public override string[] get_view_properties () {
-		string[] properties = {
-			"number",
-			"apartment"
+	public override string[] db_keys () {
+		return {
+			"id"
 		};
+	}
 
-		return properties;
+
+	public override string[] db_fields () {
+		return {
+			"number",
+			"apartment",
+			"area"
+		};
 	}
 }
 

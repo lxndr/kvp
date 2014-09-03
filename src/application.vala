@@ -16,6 +16,10 @@ public class Application : Gtk.Application
 	public Application() {
 		Object (application_id: "org.lxndr.kvartplata",
 			flags: ApplicationFlags.FLAGS_NONE);
+
+		Value.register_transform_func (typeof (string), typeof (int64), (src_value, dest_value) => {
+			dest_value.set_int64 (int64.parse (src_value.get_string ()));
+		});
 	}
 
 

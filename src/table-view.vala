@@ -11,7 +11,14 @@ public abstract class TableView {
 	protected Gtk.Menu popup_menu;
 	private Gtk.MenuItem remove_menu_item;
 
+
+	protected abstract string[] view_properties ();
 	protected abstract Gee.List<Entity> get_entity_list ();
+
+
+	protected virtual Entity new_entity () {
+		return Object.new (object_type) as Entity;
+	}
 
 
 	public TableView (Database dbase, Type type) {
@@ -28,7 +35,7 @@ public abstract class TableView {
 		popup_menu.add (menu_item);
 
 		remove_menu_item = new Gtk.MenuItem.with_label ("Remove");
-		menu_item.activate.connect (remove_item_clicked);
+		remove_menu_item.activate.connect (remove_item_clicked);
 		popup_menu.add (remove_menu_item);
 
 		menu_item = new Gtk.SeparatorMenuItem ();
@@ -40,8 +47,7 @@ public abstract class TableView {
 		Type[] types = {};
 		types += typeof (Object);
 
-		var tmp = Object.new (object_type) as Entity;
-		var props = tmp.get_view_properties ();
+		var props = view_properties ();
 		foreach (var prop_name in props)
 			types += typeof (string);
 
@@ -113,27 +119,18 @@ public abstract class TableView {
 		entity.set_property (property_name, val);
 		list_store.set_value (iter, property_column, val);
 
-//		entity.persist ();
+		db.persist (entity);
 	}
 
 
 	public void add_item_clicked () {
-		var entity = Object.new (object_type) as Entity;
+		var entity = new_entity ();
 
 		Gtk.TreeIter iter;
 		list_store.append (out iter);
-		list_store.set (iter, 0, entity);
+		update_row (iter, entity);
 
-		var obj_class = (ObjectClass) object_type.class_ref ();
-		var properties = obj_class.list_properties ();
-		for (var i = 0; i < properties.length; i++) {
-			var prop = properties[i];
-			var val = Value (typeof (string));
-			entity.get_property (prop.name, ref val);
-			list_store.set_value (iter, i + 1, val);
-		}
-
-		/* TODO persists object */
+		db.persist (entity);
 	}
 
 
@@ -158,7 +155,7 @@ public abstract class TableView {
 		});
 		msg.show ();
 
-		/* TODO persist object */
+//		db.persist (obj);
 	}
 
 
@@ -167,17 +164,25 @@ public abstract class TableView {
 		var list = get_entity_list ();
 
 		foreach (var entity in list) {
-			var properties = entity.get_view_properties ();
-
 			Gtk.TreeIter iter;
 			list_store.append (out iter);
+			update_row (iter, entity);
+		}
+	}
 
-			for (var i = 0; i < properties.length; i++) {
-				var property_name = properties[i];
-				var val = Value (typeof (string));
-				entity.get_property (property_name, ref val);
-				list_store.set_value (iter, i + 1, val);
-			}
+
+	private void update_row (Gtk.TreeIter iter, Entity entity) {
+		var obj_class = (ObjectClass) entity.get_type ().class_ref ();
+		var props = view_properties ();
+		list_store.set (iter, 0, entity);
+
+		for (var i = 0; i < props.length; i++) {
+			var prop_name = props[i];
+			var prop_spec = obj_class.find_property (prop_name);
+			var val = Value (prop_spec.value_type);
+
+			entity.get_property (prop_name, ref val);
+			list_store.set_value (iter, i + 1, val);
 		}
 	}
 }
