@@ -3,9 +3,21 @@ namespace Kv {
 namespace Utils {
 
 
+public void transform_string_to_int (Value src_value, ref Value dest_value) {
+	unowned string s = src_value.get_string ();
+	dest_value.set_int (int.parse (s));
+}
+
+
 public void transform_string_to_int64 (Value src_value, ref Value dest_value) {
 	unowned string s = src_value.get_string ();
 	dest_value.set_int64 (int64.parse (s));
+}
+
+
+public void transform_string_to_double (Value src_value, ref Value dest_value) {
+	unowned string s = src_value.get_string ();
+	dest_value.set_double (double.parse (s));
 }
 
 

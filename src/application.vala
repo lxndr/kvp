@@ -17,8 +17,12 @@ public class Application : Gtk.Application
 		Object (application_id: "org.lxndr.kvartplata",
 			flags: ApplicationFlags.FLAGS_NONE);
 
+		Value.register_transform_func (typeof (string), typeof (int),
+				(ValueTransform) Utils.transform_string_to_int);
 		Value.register_transform_func (typeof (string), typeof (int64),
 				(ValueTransform) Utils.transform_string_to_int64);
+		Value.register_transform_func (typeof (string), typeof (double),
+				(ValueTransform) Utils.transform_string_to_double);
 	}
 
 

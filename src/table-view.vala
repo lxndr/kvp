@@ -94,7 +94,7 @@ public abstract class TableView {
 
 			if (prop_type == typeof (string) ||
 					prop_type == typeof (int) ||
-					prop_type == typeof (float)) {
+					prop_type == typeof (double)) {
 				cell = new Gtk.CellRendererText ();
 				cell.set ("editable", true);
 				/* FIXME: could use Object.connect */

@@ -4,6 +4,7 @@ RESOURCES=ui/main-window.ui \
 SOURCES=src/application.vala \
 	src/main-window.vala \
 	src/utils.vala \
+	src/types.vala \
 	src/table-view.vala \
 	src/account-table.vala \
 	src/people-table.vala \

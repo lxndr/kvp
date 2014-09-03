@@ -6,7 +6,7 @@ public class Account : Entity
 	public int64 id { get; set; }
 	public string number { get; set; }
 	public string apartment { get; set; }
-	public float area { get; set; }
+	public double area { get; set; }
 
 
 	construct {
