@@ -3,6 +3,12 @@ namespace Kv {
 namespace Utils {
 
 
+public void transform_string_to_int64 (Value src_value, ref Value dest_value) {
+	unowned string s = src_value.get_string ();
+	dest_value.set_int64 (int64.parse (s));
+}
+
+
 public unowned string month_to_string (int month) {
 	switch (month) {
 	case  1: return "January";

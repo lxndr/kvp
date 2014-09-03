@@ -69,37 +69,26 @@ public class Database : Object {
 	private Gee.List<Entity> get_entity_list (string sql, Type type) throws DatabaseError {
 		var obj_class = (ObjectClass) type.class_ref ();
 		var list = new Gee.ArrayList<Entity> ();
-//		var str_val = Value (typeof (string));
+		var str_val = Value (typeof (string));
 
 		exec_sql (sql, (n_columns, values, column_names) => {
 			var entity = Object.new (type) as Entity;
 			for (var i = 0; i < n_columns; i++) {
-				var prop = obj_class.find_property (column_names[i]);
-				var dst_val = Value (prop.value_type);
+				unowned string prop_name = column_names[i];
+				var prop = obj_class.find_property (prop_name);
+				var prop_type = prop.value_type;
 
-/* FIXME: what's wrong with transformation
 				str_val.set_string (values[i]);
+				var dest_val = Value (prop_type);
 
-				var prop = obj_class.find_property (column_names[i]);
-				var dst_val = Value (prop.value_type);
-				if (str_val.transform (ref dst_val) == false)
-					stdout.printf ("Couldnt transform from '%s' to '%s'\n",
-							str_val.type ().name (),
-							dst_val.type ().name ());
-				entity.set_property (column_names[i], dst_val);
-*/
+				if (prop_type.is_a (typeof (Entity)))
+					dest_val.set_object (get_entity (prop_type, int64.parse (values[i])));
+				else if (str_val.transform (ref dest_val) == false)
+					stdout.printf ("Couldnt transform from '%s' to '%s' for property '%s' of '%s'\n",
+							str_val.type ().name (), dest_val.type ().name (),
+							prop_name, type.name ());
 
-				Type prop_type = prop.value_type;
-				if (prop_type == typeof (string))
-					dst_val.set_string (values[i]);
-				else if (prop_type == typeof (int))
-					dst_val.set_int (int.parse (values[i]));
-				else if (prop_type == typeof (int64))
-					dst_val.set_int64 (int64.parse (values[i]));
-				else if (prop_type.is_a (typeof (Entity)))
-					dst_val.set_object (get_entity (prop_type, int64.parse (values[i])));
-
-				entity.set_property (column_names[i], dst_val);
+				entity.set_property (column_names[i], dest_val);
 			}
 			list.add (entity);
 			return 0;
