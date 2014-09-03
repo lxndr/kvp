@@ -1,11 +1,11 @@
-CREATE TABLE IF NOT EXISTS `building` (
+CREATE TABLE IF NOT EXISTS `buildings` (
 	`id`         INTEGER  PRIMARY KEY AUTOINCREMENT  NOT NULL,
 	`location`   TEXT                                NOT NULL,
 	`street`     TEXT                                NOT NULL,
 	`building`   TEXT                                NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS `account` (
+CREATE TABLE IF NOT EXISTS `accounts` (
 	`id`         INTEGER  PRIMARY KEY AUTOINCREMENT  NOT NULL,
 	`number`     TEXT                                NOT NULL,
 	`apartment`  TEXT                                NOT NULL,
@@ -18,9 +18,18 @@ CREATE TABLE IF NOT EXISTS `people` (
 	`birthday`  TEXT                                 NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS `service` (
+CREATE TABLE IF NOT EXISTS `services` (
 	`id`        INTEGER   PRIMARY KEY AUTOINCREMENT  NOT NULL,
-	`name`      TEXT                                 NOT NULL
+	`name`      TEXT                                 NOT NULL,
+	`unit`      TEXT                                 NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS `tenants` (
+	`month`     INTEGER                              NOT NULL,
+	`year`      INTEGER                              NOT NULL,
+	`account`   INTEGER                              NOT NULL,
+	`person`    INTEGER                              NOT NULL,
+	PRIMARY KEY (`month`, `year`, `account`, `person`)
 );
 
 CREATE TABLE IF NOT EXISTS `taxes` (
