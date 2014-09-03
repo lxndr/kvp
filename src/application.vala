@@ -3,8 +3,8 @@ namespace Kv {
 
 [Compact]
 public struct Period {
-	uint16 year;
-	uint8 month;
+	int year;
+	int month;
 }
 
 

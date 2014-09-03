@@ -1,12 +1,12 @@
 namespace Kv {
 
 
-public class TaxTable : TableView {
+public class TenantTable : TableView {
 	private Period period;
 	private Account account;
 
 
-	public TaxTable (Database dbase) {
+	public TenantTable (Database dbase) {
 		base (dbase, typeof (Tax));
 	}
 
@@ -20,20 +20,20 @@ public class TaxTable : TableView {
 
 
 	protected override Entity new_entity () {
-		return new Tax (period, account);
+		return new Tenant (period, account);
 	}
 
 
 	protected override string[] view_properties () {
 		return {
-			"service",
-			"total"
+			"person_name",
+			"person_birthday"
 		};
 	}
 
 
 	protected override Gee.List<Entity> get_entity_list () {
-		return db.get_tax_list (period, account);
+		return db.get_tenant_list (period, account);
 	}
 }
 

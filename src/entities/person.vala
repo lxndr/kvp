@@ -9,6 +9,7 @@ public class Person : Entity
 
 
 	construct {
+		table_name = "people";
 		id = 0;
 		name = "000";
 		birthday = "000";

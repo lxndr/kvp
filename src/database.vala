@@ -30,19 +30,39 @@ public class Database : Object {
 			throw new DatabaseError.EXEC_FAILED ("Error executing SQL statement: %s\n", errmsg);
 	}
 
-
-	public Gee.List<Entity> get_account_list () throws DatabaseError {
-		return get_entity_list ("SELECT * FROM account", typeof (Account));
+	public Entity get_entity (Type type, int64 id) throws DatabaseError {
+		/* FIXME: it has to be universal */
+		var list = get_entity_list ("SELECT * FROM services WHERE id=%lld".printf (id), type);
+		return list[0];
 	}
 
 
-	public Gee.List<Entity> get_people_list (Period period, Account account) throws DatabaseError {
-		return get_entity_list ("SELECT * FROM people", typeof (Person));
+	public Gee.List<Service> get_service_list () throws DatabaseError {
+		return get_entity_list ("SELECT * FROM services", typeof (Service)) as Gee.List<Service>;
 	}
 
 
-	public Gee.List<Entity> get_tax_list (Period period, Account account) throws DatabaseError {
-		return get_entity_list ("SELECT * FROM taxes", typeof (Tax));
+	public Gee.List<Account> get_account_list () throws DatabaseError {
+		return get_entity_list ("SELECT * FROM accounts", typeof (Account)) as Gee.List<Account>;
+	}
+
+
+	public Gee.List<Person> get_people_list (Period period, Account account) throws DatabaseError {
+		return get_entity_list ("SELECT * FROM people", typeof (Person)) as Gee.List<Person>;
+	}
+
+/*
+	public Gee.List<Tenant> get_tenant_list (Period period, Account account) throws DatabaseError {
+		return get_entity_list ("SELECT * FROM tenants", typeof (Person)) as Gee.List<Tenant>;
+	}
+*/
+
+	public Gee.List<Tax> get_tax_list (Period period, Account account) throws DatabaseError {
+		return get_entity_list ("""
+				SELECT taxes.*, services.name AS service_name
+					FROM taxes JOIN services ON taxes.service=services.id
+					WHERE month=%d and year=%d and account=%lld"""
+				.printf (period.month, period.year, account.id), typeof (Tax)) as Gee.List<Tax>;
 	}
 
 
@@ -57,7 +77,7 @@ public class Database : Object {
 				var prop = obj_class.find_property (column_names[i]);
 				var dst_val = Value (prop.value_type);
 
-/* FIXME: waht's wrong with transformation
+/* FIXME: what's wrong with transformation
 				str_val.set_string (values[i]);
 
 				var prop = obj_class.find_property (column_names[i]);
@@ -72,8 +92,13 @@ public class Database : Object {
 				Type prop_type = prop.value_type;
 				if (prop_type == typeof (string))
 					dst_val.set_string (values[i]);
+				else if (prop_type == typeof (int))
+					dst_val.set_int (int.parse (values[i]));
 				else if (prop_type == typeof (int64))
 					dst_val.set_int64 (int64.parse (values[i]));
+				else if (prop_type.is_a (typeof (Entity)))
+					dst_val.set_object (get_entity (prop_type, int64.parse (values[i])));
+
 				entity.set_property (column_names[i], dst_val);
 			}
 			list.add (entity);
@@ -84,7 +109,7 @@ public class Database : Object {
 	}
 
 
-	private void persist_auto_key (Entity entity, string[] fields, ObjectClass obj_class) {
+	private void persist_auto_key (Entity entity, string[] fields, ObjectClass obj_class) throws DatabaseError {
 		var id_val = Value (typeof (int64));
 		entity.get_property ("id", ref id_val);
 		var entity_id = id_val.get_int64 ();
@@ -126,11 +151,11 @@ public class Database : Object {
 	}
 
 
-	private void persist_composite_key (Entity entity, string[] keys, string[] fields, ObjectClass obj_class) {
+	private void persist_composite_key (Entity entity, string[] keys, string[] fields, ObjectClass obj_class) throws DatabaseError {
 	}
 
 
-	public void persist (Entity entity) throws Error {
+	public void persist (Entity entity) throws DatabaseError {
 		var keys = entity.db_keys ();
 		var fields = entity.db_fields ();
 

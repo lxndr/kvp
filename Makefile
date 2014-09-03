@@ -4,15 +4,16 @@ RESOURCES=ui/main-window.ui \
 SOURCES=src/application.vala \
 	src/main-window.vala \
 	src/utils.vala \
-	src/account.vala \
-	src/person.vala \
-	src/tax.vala \
 	src/table-view.vala \
 	src/account-table.vala \
 	src/people-table.vala \
 	src/tax-table.vala \
 	src/entity.vala \
-	src/database.vala
+	src/database.vala \
+	src/entities/tax.vala \
+	src/entities/person.vala \
+	src/entities/account.vala \
+	src/entities/service.vala
 
 
 all: kvartplata
@@ -40,4 +41,5 @@ resources: kvartplata.gresource.xml $(RESOURCES)
 
 clean:
 	rm -f src/*.c
+	rm -f src/entities/*.c
 	rm -f kvartplata kvartplata-x86_32.exe kvartplata-x86_64.exe

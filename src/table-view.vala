@@ -4,6 +4,7 @@ namespace Kv {
 public abstract class TableView {
 	protected Database db;
 	private Type object_type;
+	public Entity? selected_entity;
 
 	private Gtk.ScrolledWindow root_widget;
 	protected Gtk.TreeView list_view;
@@ -16,14 +17,23 @@ public abstract class TableView {
 	protected abstract Gee.List<Entity> get_entity_list ();
 
 
+	public signal void selection_changed ();
+
+
 	protected virtual Entity new_entity () {
 		return Object.new (object_type) as Entity;
+	}
+
+
+	public Entity? get_selected_entity () {
+		return selected_entity;
 	}
 
 
 	public TableView (Database dbase, Type type) {
 		db = dbase;
 		object_type = type;
+		selected_entity = null;
 
 		Gtk.MenuItem menu_item;
 
@@ -58,6 +68,7 @@ public abstract class TableView {
 		root_widget.shadow_type = Gtk.ShadowType.IN;
 
 		list_view = new Gtk.TreeView.with_model (list_store);
+		list_view.get_selection ().changed.connect (list_selection_changed);
 		create_list_columns (props);
 		list_view.button_release_event.connect (button_released);
 		root_widget.add (list_view);
@@ -72,20 +83,48 @@ public abstract class TableView {
 
 
 	private void create_list_columns (string[] props) {
-		Gtk.CellRendererText cell;
+		var obj_class = (ObjectClass) object_type.class_ref ();
 		Gtk.TreeViewColumn column;
 
 		for (var i = 0; i < props.length; i++) {
-			var prop = props[i];
+			Gtk.CellRenderer cell;
+			var prop_name = props[i];
+			var prop_spec = obj_class.find_property (prop_name);
+			var prop_type = prop_spec.value_type;
 
-			cell = new Gtk.CellRendererText ();
-			cell.set_data<string> ("property_name", prop);
+			if (prop_type == typeof (string) ||
+					prop_type == typeof (int) ||
+					prop_type == typeof (float)) {
+				cell = new Gtk.CellRendererText ();
+				cell.set ("editable", true);
+				/* FIXME: could use Object.connect */
+				(cell as Gtk.CellRendererText).edited.connect (text_row_edited);
+			} else if (prop_type.is_a (typeof (Entity))) {
+				var combo_store = new Gtk.ListStore (2, typeof (string), typeof (int));
+				var service_list = db.get_service_list ();
+
+				foreach (var service in service_list) {
+					Gtk.TreeIter iter;
+					combo_store.append (out iter);
+					combo_store.set (iter, 0, service.name, 1, service.id);
+				}
+
+				cell = new Gtk.CellRendererCombo ();
+				cell.set ("editable", true);
+				cell.set ("has-entry", false);
+				cell.set ("model", combo_store);
+				cell.set ("text-column", 0);
+				(cell as Gtk.CellRendererCombo).changed.connect (combo_row_changed);
+			} else {
+				error ("Unsupported property type '%s' for table column '%s'",
+						prop_spec.value_type.name (), prop_name);
+			}
+
+			cell.set_data<string> ("property_name", prop_name);
 			cell.set_data<int> ("property_column", i + 1);
-			cell.editable = true;
-			cell.edited.connect (row_edited);
 
 			column = new Gtk.TreeViewColumn.with_attributes (
-					prop, cell,
+					prop_name, cell,
 					"text", i + 1);
 			list_view.insert_column (column, -1);
 		}
@@ -102,9 +141,21 @@ public abstract class TableView {
 	}
 
 
-	private void row_edited (Gtk.CellRendererText cell, string _path, string new_text) {
+	private void list_selection_changed (Gtk.TreeSelection selection) {
+		Gtk.TreeIter iter;
+		if (selection.get_selected (null, out iter))
+			list_store.get (iter, 0, out selected_entity);
+		else
+			selected_entity = null;
+
+		selection_changed ();
+	}
+
+
+	private void text_row_edited (Gtk.CellRendererText cell, string _path, string new_text) {
 		Entity entity;
 		Gtk.TreeIter iter;
+		var obj_class = (ObjectClass) object_type.class_ref ();
 
 		var path = new Gtk.TreePath.from_string (_path);
 		list_store.get_iter (out iter, path);
@@ -112,6 +163,7 @@ public abstract class TableView {
 
 		var property_name = cell.get_data<string> ("property_name");
 		var property_column = cell.get_data<int> ("property_column");
+		var prop_spec = obj_class.find_property (property_name);
 
 		var val = Value (typeof (string));
 		val.set_string (new_text);
@@ -120,6 +172,11 @@ public abstract class TableView {
 		list_store.set_value (iter, property_column, val);
 
 		db.persist (entity);
+	}
+
+
+	private void combo_row_changed (Gtk.CellRendererText cell, string p0, Gtk.TreeIter p1) {
+		
 	}
 
 
@@ -180,9 +237,14 @@ public abstract class TableView {
 			var prop_name = props[i];
 			var prop_spec = obj_class.find_property (prop_name);
 			var val = Value (prop_spec.value_type);
-
 			entity.get_property (prop_name, ref val);
-			list_store.set_value (iter, i + 1, val);
+
+			if (val.type ().is_a (typeof (Entity))) {
+				var obj = val.get_object () as Entity;
+				if (obj != null)
+					list_store.set (iter, i + 1, obj.get_display_name ());
+			} else
+				list_store.set_value (iter, i + 1, val);
 		}
 	}
 }

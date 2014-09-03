@@ -3,7 +3,7 @@ namespace Kv {
 namespace Utils {
 
 
-public unowned string month_to_string (uint8 month) {
+public unowned string month_to_string (int month) {
 	switch (month) {
 	case  1: return "January";
 	case  2: return "February";

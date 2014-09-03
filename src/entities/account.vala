@@ -10,7 +10,7 @@ public class Account : Entity
 
 
 	construct {
-		table_name = "account";
+		table_name = "accounts";
 		id = 0;
 		number = "000";
 		apartment = "000";

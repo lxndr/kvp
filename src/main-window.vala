@@ -3,6 +3,9 @@ namespace Kv {
 
 [GtkTemplate (ui = "/ui/main-window.ui")]
 class MainWindow : Gtk.ApplicationWindow {
+	private Period current_period;
+
+
 	[GtkChild]
 	private Gtk.ToolButton current_period_button;
 	[GtkChild]
@@ -28,6 +31,7 @@ class MainWindow : Gtk.ApplicationWindow {
 		Object (application: app);
 
 		account_table = new AccountTable (app.db);
+		account_table.selection_changed.connect (account_changed);
 		paned2.add1 (account_table.get_root_widget ());
 		people_table = new PeopleTable (app.db);
 		paned2.add2 (people_table.get_root_widget ());
@@ -40,6 +44,9 @@ class MainWindow : Gtk.ApplicationWindow {
 		current_period_popover.closed.connect (current_period_popover_closed);
 		current_period_year.set_value (2014.0);
 
+		current_period.month = 1;
+		current_period.year = 2014;
+
 		account_table.update_view ();
 	}
 
@@ -49,6 +56,8 @@ class MainWindow : Gtk.ApplicationWindow {
 		current_period_button.label = "%s %d".printf (
 				Utils.month_to_string(period.month),
 				period.year);
+
+		current_period = period;
 	}
 
 
@@ -68,17 +77,10 @@ class MainWindow : Gtk.ApplicationWindow {
 	}
 
 
-/*
-	private void update_account_list () {
-		Gtk.TreeIter iter;
-		account_store.clear ();
-
-		var list = (application as Application).get_account_list ();
-		foreach (var account in list) {
-			account_store.append (out iter);
-			account_store.set (iter, 0, account, 1, account.number, 2, account.apartment);
-		}
-	}*/
+	private void account_changed () {
+		var account = account_table.get_selected_entity () as Account;
+		tax_table.setup_view (current_period, account);
+	}
 }
 
 
