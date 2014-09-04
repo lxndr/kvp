@@ -14,7 +14,7 @@ public abstract class TableView {
 
 
 	protected abstract string[] view_properties ();
-	protected abstract Gee.List<Entity> get_entity_list ();
+	protected abstract Gee.List<Entity> get_entity_list () throws DatabaseError;
 
 
 	public signal void selection_changed ();
@@ -155,7 +155,6 @@ public abstract class TableView {
 	private void text_row_edited (Gtk.CellRendererText cell, string _path, string new_text) {
 		Entity entity;
 		Gtk.TreeIter iter;
-		var obj_class = (ObjectClass) object_type.class_ref ();
 
 		var path = new Gtk.TreePath.from_string (_path);
 		list_store.get_iter (out iter, path);
@@ -163,7 +162,6 @@ public abstract class TableView {
 
 		var property_name = cell.get_data<string> ("property_name");
 		var property_column = cell.get_data<int> ("property_column");
-		var prop_spec = obj_class.find_property (property_name);
 
 		var val = Value (typeof (string));
 		val.set_string (new_text);

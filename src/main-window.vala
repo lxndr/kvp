@@ -58,6 +58,9 @@ class MainWindow : Gtk.ApplicationWindow {
 				period.year);
 
 		current_period = period;
+
+		var account = account_table.get_selected_entity () as Account;
+		tax_table.setup_view (current_period, account);
 	}
 
 

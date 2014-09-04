@@ -32,7 +32,7 @@ public class TaxTable : TableView {
 	}
 
 
-	protected override Gee.List<Entity> get_entity_list () {
+	protected override Gee.List<Entity> get_entity_list () throws DatabaseError {
 		return db.get_tax_list (period, account);
 	}
 }

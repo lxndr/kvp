@@ -27,7 +27,7 @@ public class PeopleTable : TableView {
 	}
 
 
-	protected override Gee.List<Entity> get_entity_list () {
+	protected override Gee.List<Entity> get_entity_list () throws DatabaseError {
 		return db.get_people_list (period, account);
 	}
 }
