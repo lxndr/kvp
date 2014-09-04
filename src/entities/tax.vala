@@ -3,6 +3,7 @@ namespace Kv {
 
 public class Tax : Entity
 {
+	public int64 id { get; set; }
 	public int month { get; set; }
 	public int year { get; set; }
 	public int64 account { get; set; }
@@ -17,7 +18,10 @@ public class Tax : Entity
 
 
 	public Tax (Period _period, Account _account) {
-		Object (month: _period.month, year: _period.year, account: _account.id);
+		Object (month: _period.month,
+			year: _period.year,
+			account: _account.id,
+			service: new Service ());
 	}
 
 
@@ -28,16 +32,17 @@ public class Tax : Entity
 
 	public override string[] db_keys () {
 		return {
-			"month",
-			"year",
-			"account",
-			"service"
+			"id"
 		};
 	}
 
 
 	public override string[] db_fields () {
 		return {
+			"month",
+			"year",
+			"account",
+			"service",
 			"total"
 		};
 	}
