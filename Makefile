@@ -14,7 +14,9 @@ SOURCES=src/application.vala \
 	src/entities/tax.vala \
 	src/entities/person.vala \
 	src/entities/account.vala \
-	src/entities/service.vala
+	src/entities/service.vala \
+	src/archive/archive.vala
+
 
 
 all: kvartplata
