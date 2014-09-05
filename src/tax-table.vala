@@ -20,7 +20,8 @@ public class TaxTable : TableView {
 
 
 	protected override Entity new_entity () {
-		return new Tax (period, account);
+		var service = db.get_entity (typeof (Service), 1) as Service;
+		return new Tax (period, account, service);
 	}
 
 

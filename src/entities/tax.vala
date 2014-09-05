@@ -17,11 +17,11 @@ public class Tax : Entity
 	}
 
 
-	public Tax (Period _period, Account _account) {
+	public Tax (Period _period, Account _account, Service _service) {
 		Object (month: _period.month,
 			year: _period.year,
 			account: _account.id,
-			service: new Service ());
+			service: _service);
 	}
 
 
