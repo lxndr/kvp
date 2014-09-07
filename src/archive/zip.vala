@@ -2,7 +2,59 @@ namespace Archive {
 
 
 public class Zip {
+	private struct CentralDirectory {
+		public uint16 version;
+		public uint16 version_needed;
+		public uint16 general_flags;
+		public uint16 compression_method;
+		public uint16 mod_time;
+		public uint16 mod_date;
+		public uint32 crc32;
+		public uint32 compressed_size;
+		public uint32 uncompressed_size;
+		public string file_name;
+		public string comment;
+		public Bytes extra_field;
+		public uint16 disk_number_start;
+		public uint16 internal_attrs;
+		public uint32 external_attrs;
+		public uint32 header_offset;
+	}
+
+
+	Gee.List<CentralDirectory?> cdir_list;
+	Gee.Map<string, GLib.File> file_list;		/* this is changed and new files */
+
+
 	public Zip () {
+		cdir_list = new Gee.ArrayList<CentralDirectory?> ();
+		file_list = new Gee.HashMap<string, GLib.File> ();
+	}
+
+
+	private GLib.File extract (string path) {
+		var file = file_list[path];
+		if (file != null)
+			return file;
+
+		if (file == null) {
+			FileIOStream ios;
+			file = GLib.Path.new_tmp (null, out ios);
+			file_list[path] = file;
+		}
+	}
+
+
+	public InputStream read_file (string path) {
+		var file = file_list[path];
+		if (file == null) {
+			FileIOStream ios;
+			file = GLib.Path.new_tmp (null, out ios);
+			file_list[path] = file;
+			return ios.input_stream;
+		} else {
+			return file.read ();
+		}
 	}
 
 
@@ -13,33 +65,39 @@ public class Zip {
 	}
 
 
-	public void read_cdir (DataInputStream stm) {
+	private CentralDirectory read_cdir (DataInputStream stm) throws IOError {
+		CentralDirectory cdir = {};
+
 		var sig = stm.read_uint32 ();
 		if (sig != 0x02014b50)
 			error ("Wrong signature of Central Directory");
 
-		stm.skip (12);
-		var crc32 = stm.read_uint32 ();
-		var compressed_size = stm.read_uint32 ();
-		var uncompressed_size = stm.read_uint32 ();
-
+		cdir.version = stm.read_uint16 ();
+		cdir.version_needed = stm.read_uint16 ();
+		cdir.general_flags = stm.read_uint16 ();
+		cdir.compression_method = stm.read_uint16 ();
+		cdir.mod_time = stm.read_uint16 ();
+		cdir.mod_date = stm.read_uint16 ();
+		cdir.crc32 = stm.read_uint32 ();
+		cdir.compressed_size = stm.read_uint32 ();
+		cdir.uncompressed_size = stm.read_uint32 ();
 		var fname_length = stm.read_uint16 ();
 		var efield_length = stm.read_uint16 ();
 		var comment_length = stm.read_uint16 ();
-		var dnum_start = stm.read_uint16 ();
-		var internal_attrs = stm.read_uint16 ();
-		var external_attrs = stm.read_uint32 ();
-		var header_offset = stm.read_uint32 ();
+		cdir.disk_number_start = stm.read_uint16 ();
+		cdir.internal_attrs = stm.read_uint16 ();
+		cdir.external_attrs = stm.read_uint32 ();
+		cdir.header_offset = stm.read_uint32 ();
 
-		var fname = read_string (stm, fname_length);
-		stm.skip (efield_length);
-		stm.skip (comment_length);
+		cdir.file_name = read_string (stm, fname_length);
+		cdir.extra_field = stm.read_bytes (efield_length);
+		cdir.comment = read_string (stm, comment_length);
 
-		stdout.printf ("FILE: %s\n", fname);
+		return cdir;
 	}
 
 
-	public void open (GLib.File f) {
+	public void open (GLib.File f) throws IOError {
 		var stm = new DataInputStream (f.read ());
 		stm.byte_order = DataStreamByteOrder.LITTLE_ENDIAN;
 
@@ -55,18 +113,15 @@ public class Zip {
 		stm.skip (2); /*  */
 
 		var cdir_count = stm.read_uint16 ();
-		stdout.printf ("cdir_count: %u\n", cdir_count);
 
 		stm.skip (2); /*  */
 
 		var cdir_size = stm.read_uint32 ();
-		stdout.printf ("cdir_size: %x\n", cdir_size);
 		var cdir_offset = stm.read_uint32 ();
-		stdout.printf ("cdir_offset: %x\n", cdir_offset);
 
 		stm.seek (cdir_offset, SeekType.SET);
 		for (var i = 0; i < cdir_count; i++)
-			read_cdir (stm);
+			cdir_list.add (read_cdir (stm));
 
 
 #if 0
