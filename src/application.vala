@@ -44,6 +44,15 @@ public class Application : Gtk.Application
 
 
 	public static int main (string[] args) {
+		try {
+			var zip = new Archive.Zip ();
+			zip.open (File.new_for_path ("templates/report1.xlsx"));
+		} catch (Error e) {
+			error (e.message);
+		}
+
+error ("DONE");
+
 		Application app = new Application ();
 		return app.run (args);
 	}

@@ -15,7 +15,7 @@ SOURCES=src/application.vala \
 	src/entities/person.vala \
 	src/entities/account.vala \
 	src/entities/service.vala \
-	src/archive/archive.vala
+	src/archive/zip.vala
 
 
 
@@ -24,7 +24,7 @@ all: kvartplata
 
 
 kvartplata: resources $(SOURCES)
-	valac $(SOURCES) src/resources.c --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --gresources=kvartplata.gresource.xml -o kvartplata
+	valac $(SOURCES) src/resources.c --Xcc="-w" --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --gresources=kvartplata.gresource.xml -o kvartplata
 
 
 debug: resources $(SOURCES)
