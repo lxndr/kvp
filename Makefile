@@ -44,5 +44,6 @@ resources: kvartplata.gresource.xml $(RESOURCES)
 
 clean:
 	rm -f src/*.c
+	rm -f src/archive/*.c
 	rm -f src/entities/*.c
 	rm -f kvartplata kvartplata-x86_32.exe kvartplata-x86_64.exe
