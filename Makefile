@@ -15,7 +15,11 @@ SOURCES=src/application.vala \
 	src/entities/person.vala \
 	src/entities/account.vala \
 	src/entities/service.vala \
-	src/archive/zip.vala
+	src/archive/zip.vala \
+	src/spreadsheet/ods.vala \
+	src/spreadsheet/sheet.vala \
+	src/spreadsheet/spreadsheet.vala \
+	src/spreadsheet/xlsx.vala
 
 
 

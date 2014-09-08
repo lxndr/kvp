@@ -48,11 +48,12 @@ public class Application : Gtk.Application
 			var zip = new Archive.Zip ();
 			zip.open (File.new_for_path ("templates/report-001.xlsx"));
 			zip.read_file ("xl/worksheets/sheet1.xml");
+			zip.write (GLib.File.new_for_path ("./test.xlsx"));
 		} catch (Error e) {
 			error (e.message);
 		}
 
-error ("DONE");
+return 1;
 
 		Application app = new Application ();
 		return app.run (args);
