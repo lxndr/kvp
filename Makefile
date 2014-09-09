@@ -16,7 +16,6 @@ SOURCES=src/application.vala \
 	src/entities/account.vala \
 	src/entities/service.vala \
 	src/archive/zip.vala \
-	src/spreadsheet/ods.vala \
 	src/spreadsheet/sheet.vala \
 	src/spreadsheet/spreadsheet.vala \
 	src/spreadsheet/xlsx.vala
@@ -28,18 +27,18 @@ all: kvartplata
 
 
 kvartplata: resources $(SOURCES)
-	valac $(SOURCES) src/resources.c --Xcc="-w" --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --gresources=kvartplata.gresource.xml -o kvartplata
+	valac $(SOURCES) src/resources.c --Xcc="-w" --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --gresources=kvartplata.gresource.xml -o kvartplata
 
 
 debug: resources $(SOURCES)
-	valac $(SOURCES) src/resources.c --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --gresources=kvartplata.gresource.xml -g --save-temps -D TES_SAVE_DEBUG -o kvartplata
+	valac $(SOURCES) src/resources.c --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --gresources=kvartplata.gresource.xml -g --save-temps -D TES_SAVE_DEBUG -o kvartplata
 
 
 win32: resources $(SOURCES)
-	valac --cc=i686-w64-mingw32-gcc --pkg-config=i686-w64-mingw32-pkg-config $(SOURCES) src/resources.c --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --gresources=kvartplata.gresource.xml -o kvartplata-x86_32.exe
+	valac --cc=i686-w64-mingw32-gcc --pkg-config=i686-w64-mingw32-pkg-config $(SOURCES) src/resources.c --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --gresources=kvartplata.gresource.xml -o kvartplata-x86_32.exe
 
 win64: resources $(SOURCES)
-	valac --cc=x86_64-w64-mingw32-gcc --pkg-config=x86_64-w64-mingw32-pkg-config $(SOURCES) src/resources.c --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --gresources=kvartplata.gresource.xml -o kvartplata-x86_64.exe
+	valac --cc=x86_64-w64-mingw32-gcc --pkg-config=x86_64-w64-mingw32-pkg-config $(SOURCES) src/resources.c --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --gresources=kvartplata.gresource.xml -o kvartplata-x86_64.exe
 
 
 resources: kvartplata.gresource.xml $(RESOURCES)

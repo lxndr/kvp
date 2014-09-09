@@ -1,9 +1,9 @@
 namespace Spreadsheet {
 
 
-public interface Spreadsheet {
-	public void open (File f);
-	public Sheet sheet (int index);
+public interface Spreadsheet : Object {
+	public abstract void open (File f) throws Error;
+	public abstract Sheet sheet (int index);
 }
 
 

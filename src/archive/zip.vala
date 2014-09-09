@@ -35,7 +35,7 @@ public class Zip {
 	}
 
 
-	private GLib.File extract (string path) throws Error {
+	public GLib.File extract (string path) throws Error {
 		var file = file_list[path];
 		if (file != null)
 			return file;
@@ -115,10 +115,12 @@ public class Zip {
 	}
 
 
-/*	public OutputStream replace_file (string path) throws Error {
-		var file = extract (path);
-		
-	}*/
+	public OutputStream add_from_stream (string path) {
+		FileIOStream io;
+		var tmp = GLib.File.new_tmp (null, out io);
+		changed_files[path] = tmp;
+		return io.output_stream;
+	}
 
 
 	private CentralDirectory? find_cdir (string path) {

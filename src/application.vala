@@ -45,10 +45,19 @@ public class Application : Gtk.Application
 
 	public static int main (string[] args) {
 		try {
-			var zip = new Archive.Zip ();
-			zip.open (File.new_for_path ("templates/report-001.xlsx"));
-			zip.read_file ("xl/worksheets/sheet1.xml");
-			zip.write (GLib.File.new_for_path ("./test.xlsx"));
+			var xlsx = new Spreadsheet.XLSX ();
+			xlsx.open (GLib.File.new_for_path ("./templates/report-001.xlsx"));
+
+			var sheet = xlsx.sheet(0);
+
+//			sheet.add_row_after (3);
+			sheet.put_text (0, 4, "201-202");
+			sheet.put_text (1, 4, "Name");
+			sheet.put_text (2, 4, "15.09.1965");
+//			sheet.put_number (3, 4, 2);
+			sheet.put_text (4, 4, "44,7");
+
+			xlsx.save_as (GLib.File.new_for_path ("./output/test1.xlsx"));
 		} catch (Error e) {
 			error (e.message);
 		}
