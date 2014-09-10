@@ -115,7 +115,7 @@ public class Zip {
 	}
 
 
-	public OutputStream add_from_stream (string path) {
+	public OutputStream add_from_stream (string path) throws GLib.Error {
 		FileIOStream io;
 		var tmp = GLib.File.new_tmp (null, out io);
 		changed_files[path] = tmp;

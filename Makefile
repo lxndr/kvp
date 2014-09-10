@@ -22,7 +22,10 @@ SOURCES=src/application.vala \
 	src/ooxml/cell-value.vala \
 	src/ooxml/shared-strings.vala \
 	src/ooxml/sheet.vala \
-	src/ooxml/error.vala
+	src/ooxml/spreadsheet.vala \
+	src/ooxml/error.vala \
+	src/report.vala \
+	src/reports/report-001.vala
 
 
 

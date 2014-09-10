@@ -24,47 +24,50 @@ public class Database : Object {
 	}
 
 
-	private void exec_sql (string sql, Sqlite.Callback? callback = null) throws DatabaseError {
+	private void exec_sql (string sql, Sqlite.Callback? callback = null) {
 		string errmsg;
 		stdout.printf ("%s\n", sql);
 		if (db.exec (sql, callback, out errmsg) != Sqlite.OK)
-			throw new DatabaseError.EXEC_FAILED ("Error executing SQL statement: %s\n", errmsg);
+			error ("Error executing SQL statement: %s\n", errmsg);
 	}
 
-	public Entity get_entity (Type type, int64 id) throws DatabaseError {
+
+	public Entity get_entity (Type type, int64 id) {
 		/* FIXME: it has to be universal */
-		var list = get_entity_list ("SELECT * FROM services WHERE id=%lld".printf (id), type);
+		var list = get_entity_list (type, "SELECT * FROM services WHERE id=%lld".printf (id));
 		return list[0];
 	}
 
 
-	public Gee.List<Service> get_service_list () throws DatabaseError {
-		return get_entity_list ("SELECT * FROM services", typeof (Service)) as Gee.List<Service>;
+	public Gee.List<Service> get_service_list () {
+		return get_entity_list (typeof (Service), "SELECT * FROM services") as Gee.List<Service>;
 	}
 
 
-	public Gee.List<Account> get_account_list () throws DatabaseError {
-		return get_entity_list ("SELECT * FROM accounts", typeof (Account)) as Gee.List<Account>;
+	public Gee.List<Account> get_account_list () {
+		return get_entity_list (typeof (Account), "SELECT * FROM accounts") as Gee.List<Account>;
 	}
 
 
-	public Gee.List<Person> get_people_list (Period period, Account account) throws DatabaseError {
-		return get_entity_list ("SELECT * FROM people", typeof (Person)) as Gee.List<Person>;
-	}
-
-/*
-	public Gee.List<Tenant> get_tenant_list (Period period, Account account) throws DatabaseError {
-		return get_entity_list ("SELECT * FROM tenants", typeof (Person)) as Gee.List<Tenant>;
-	}
-*/
-
-	public Gee.List<Tax> get_tax_list (Period period, Account account) throws DatabaseError {
-		return get_entity_list ("SELECT * FROM taxes WHERE month=%d and year=%d and account=%lld"
-				.printf (period.month, period.year, account.id), typeof (Tax)) as Gee.List<Tax>;
+	public Gee.List<Person> get_people_list (Period period, Account account) {
+		return get_entity_list (typeof (Person), "SELECT * FROM people") as Gee.List<Person>;
 	}
 
 
-	private Gee.List<Entity> get_entity_list (string sql, Type type) throws DatabaseError {
+	public Gee.List<Person> get_account_people (Account account) {
+		var query = "SELECT * FROM people WHERE account=%lld".printf (account.id);
+		return get_entity_list (typeof (Person), query) as Gee.List<Person>;
+	}
+
+
+	public Gee.List<Tax> get_tax_list (Period period, Account account) {
+		var query = "SELECT * FROM taxes WHERE month=%d and year=%d and account=%lld"
+				.printf (period.month, period.year, account.id);
+		return get_entity_list (typeof (Tax), query) as Gee.List<Tax>;
+	}
+
+
+	private Gee.List<Entity> get_entity_list (Type type, string sql) {
 		var obj_class = (ObjectClass) type.class_ref ();
 		var list = new Gee.ArrayList<Entity> ();
 		var str_val = Value (typeof (string));
@@ -158,7 +161,7 @@ public class Database : Object {
 	}
 
 
-	private void persist_auto_key (Entity entity, string[] fields, ObjectClass obj_class) throws DatabaseError {
+	private void persist_auto_key (Entity entity, string[] fields, ObjectClass obj_class) {
 		var id_val = Value (typeof (int64));
 		entity.get_property ("id", ref id_val);
 		var entity_id = id_val.get_int64 ();
@@ -176,7 +179,7 @@ public class Database : Object {
 	}
 
 
-	private void persist_composite_key (Entity entity, string[] keys, string[] fields, ObjectClass obj_class) throws DatabaseError {
+	private void persist_composite_key (Entity entity, string[] keys, string[] fields, ObjectClass obj_class) {
 		var values = "";
 
 		foreach (var prop_name in keys) {
@@ -232,7 +235,7 @@ public class Database : Object {
 	}
 
 
-	public void persist (Entity entity) throws DatabaseError {
+	public void persist (Entity entity) {
 		var keys = entity.db_keys ();
 		var fields = entity.db_fields ();
 

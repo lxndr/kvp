@@ -13,6 +13,17 @@ public class NumberValue : CellValue {
 public class StringValue : CellValue {
 	public Gee.List<StringValuePiece> pieces;
 
+	public StringValue () {
+		pieces = new Gee.ArrayList<StringValuePiece> ();
+	}
+
+
+	public StringValue.simple (string text) {
+		pieces = new Gee.ArrayList<StringValuePiece> ();
+		pieces.add (SimpleStringPiece (text));
+	}
+
+
 	public bool is_simple () {
 		return (pieces.size > 0) && (pieces[0] is SimpleStringPiece);
 	}
