@@ -12,7 +12,7 @@ public class Report001 : Object, Report {
 
 
 	public void make (Database db) throws Error {
-		book.load (GLib.File.new_for_path ("./reports/report-001.xlsx"));
+		book.load (GLib.File.new_for_path ("./templates/report-001.xlsx"));
 		var sheet = book.sheet (0);
 
 		var accounts = db.get_account_list ();
@@ -33,12 +33,12 @@ public class Report001 : Object, Report {
 			birthday_string = birthday_string[0:-1];
 
 			var row_number = 4 + i;
-			sheet.insert_row (row_number);
-			sheet.put_string (1, row_number, account.apartment);
-			sheet.put_string (2, row_number, people_string);
-			sheet.put_string (3, row_number, birthday_string);
-			sheet.put_string (4, row_number, people.size.to_string ());
-			sheet.put_string (5, row_number, account.area.to_string ());
+//			sheet.insert_row (row_number);
+//			sheet.put_string (1, row_number, account.apartment);
+//			sheet.put_string (2, row_number, people_string);
+//			sheet.put_string (3, row_number, birthday_string);
+//			sheet.put_string (4, row_number, people.size.to_string ());
+//			sheet.put_string (5, row_number, account.area.to_string ());
 		}
 	}
 

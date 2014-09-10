@@ -47,6 +47,13 @@ class MainWindow : Gtk.ApplicationWindow {
 		current_period.month = 1;
 		current_period.year = 2014;
 
+/* TEST */
+	var rep = new Report001 ();
+	rep.make (app.db);
+	rep.write (File.new_for_path ("./out/report001.xlsx"));
+	error ("DONE");
+
+
 		account_table.update_view ();
 	}
 

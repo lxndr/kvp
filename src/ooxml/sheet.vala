@@ -4,12 +4,28 @@ namespace OOXML {
 public class Cell : Object {
 	public Row row { get; construct; }
 
+	public int number { get; set; }
 	public string name { get; set; }
 	public uint style { get; set; default = 0; }
-	public CellValue val { get; set; }
+	public CellValue? val { get; set; default = null; }
+
 
 	public Cell (Row _row) {
 		Object (row: _row);
+	}
+
+
+	public Cell.with_name (Row _row) {
+		int x, y;
+		Utils.parse_cell_name (_name, out x, out y);
+
+		assert (y == _row.number);
+		Object (row: _row, name: _name, number: x);
+	}
+
+
+	public bool is_empty () {
+		return val == null;
 	}
 }
 
@@ -17,7 +33,7 @@ public class Cell : Object {
 public class Row : Object {
 	public Sheet sheet { get; construct; }
 
-	public uint number { get; set; }
+	public int number { get; set; }
 	public uint style { get; set; default = 0; }
 	public bool custom_format { get; set; default = false; }
 	public double height { get; set; }
@@ -36,99 +52,90 @@ public class Row : Object {
 	}
 
 
-	public Cell get_cell (int index) {
-		return cells[index];
+	private void grow_cells_if_needed (int needed_cell_number) {
+		while (cells.size < needed_cell_number) {
+			cells.add (new Cell (this));
+		}
+	}
+
+
+	public Cell get_cell (int number) {
+		grow_cells_if_needed (number);
+		return cells[number - 1];
+	}
+
+
+	public bool is_empty () {
+		foreach (var cell in cells)
+			if (cell.is_empty () == false)
+				return false;
+
+		return true;
 	}
 }
 
 
 public class Sheet : Object {
 	public Gee.List<Row> rows;
-	public Gee.List<Xml.Node*> extra_xml_nodes;
+	public Gee.HashMap<string, Xml.Node*> extra_xml_nodes;
 
 
 	public Sheet () {
 		rows = new Gee.ArrayList<Row> ();
-		extra_xml_nodes = new Gee.ArrayList<Xml.Node*> ();
+		extra_xml_nodes = new Gee.HashMap<string, Xml.Node*> ();
 	}
 
 
-	private uint pow_integer (uint n, uint p) {
-		if (p == 0)
-			return 1;
-
-		uint v = n;
-		for (var i = 0; i < p - 1; i++)
-			v *= v;
-		return v;
-	}
-
-
-	private void parse_cell_name (string name, out uint x, out uint y) {
-		try {
-			var re = new Regex ("([A-Z]+)([0-9]+)");
-			var tokens = re.split (name);
-
-			/* x coord */
-			unowned string s = tokens[1];
-			var s_len = s.length;
-			for (var i = 0; i < s_len; i++) {
-				var d = s[i]; /* one 'digit' */
-				var p = s_len - i - 1;
-				y += pow_integer (26, p) * d;
-			}
-
-			/* y coord */
-			y = (uint) uint64.parse (tokens[2]);
-		} catch (RegexError e) {
-			error ("Regex error: %s", e.message);
+	private void grow_rows_if_needed (int needed_row_number) {
+		while (rows.size < needed_row_number) {
+			var row = new Row (this);
+			rows.add (row);
+			row.number = rows.size;
 		}
 	}
 
 
 	private void add_row (Row row) {
-		var actual_number = row.number - 1;
-
-		if (actual_number >= rows.size) {
-			var last_number = rows.size - 1;
-			for (var i = last_number; i < actual_number; i++)
-				rows.add (new Row (this));
-		}
-
-		rows[(int) row.number - 1] = row;
+		grow_rows_if_needed (row.number);
+		rows[row.number - 1] = row;
 	}
 
 
-	public void insert_row (int index) {
-		rows.insert (index, new Row (this));
+	public void insert_row (int number) {
+		grow_rows_if_needed (number);
+		rows.insert (number - 1, new Row (this));
 	}
 
 
-	public Cell get_cell (uint x, int y) {
-		return rows[(int) x - 1].get_cell (y);
+	public Cell get_cell (int x, int y) {
+		return rows[y - 1].get_cell (x);
 	}
 
 
-	public void put_string (uint x, int y, string text) {
+	public void put_string (int x, int y, string text) {
 		get_cell (x, y).val = new StringValue.simple (text);
 	}
 
 
-	public void load_from_xml (Xml.Doc* xml_doc) throws Error {
-		for (var xml_node = xml_doc->children; xml_node != null; xml_node = xml_node->next) {
+	public void load_from_xml (Xml.Doc* xml_doc, Gee.List<StringValue> shared_strings) throws Error {
+		Xml.Node* xml_root = xml_doc->get_root_element ();
+		if (xml_root->name != "worksheet")
+			throw new Error.WORKSHEET ("Unknown xml node '%s' within a worksheet part", xml_root->name);
+
+		for (var xml_node = xml_root->children; xml_node != null; xml_node = xml_node->next) {
 			switch (xml_node->name) {
 			case "sheetData":
-				load_sheet_data (xml_node);
+				load_sheet_data (xml_node, shared_strings);
 				break;
 			default:
-				extra_xml_nodes.add (xml_node->copy (1));
+				extra_xml_nodes[xml_node->name] = xml_node->copy (1);
 				break;
 			}
 		}
 	}
 
 
-	private void load_sheet_data (Xml.Node* xml_node) throws Error {
+	private void load_sheet_data (Xml.Node* xml_node, Gee.List<StringValue> shared_strings) throws Error {
 		for (var row_node = xml_node->children; row_node != null; row_node = row_node->next) {
 			if (row_node->name != "row")
 				throw new Error.WORKSHEET ("Unknown xml node '%s' within sheetData", row_node->name);
@@ -140,8 +147,10 @@ public class Sheet : Object {
 
 				switch (attr->name) {
 				case "r":
+					row.number = (int) int64.parse (val);
 					break;
 				case "spans":
+				case "dyDescent":
 					break;
 				case "s":
 					row.style = (uint) uint64.parse (val);
@@ -183,29 +192,125 @@ public class Sheet : Object {
 					throw new Error.WORKSHEET ("Unknown xml node '%s' within sheetData/row", c_node->name);
 
 				var cell = new Cell (row);
+				string? val;
 
-				for (var attr = c_node->properties; attr != null; attr = attr->next) {
-					unowned string val = attr->children->content;
+				/* ref */
+				val = c_node->get_prop ("r");
+				if (val == null)
+					val = "A1"; /* FIXME no no no */
+				cell.name = val;
 
-					switch (attr->name) {
-					case "r":
+				/* style */
+				val = c_node->get_prop ("s");
+				if (val == null)
+					val = "0";
+				cell.style = (uint) uint64.parse (val);
+
+				/* type */
+				string? type = c_node->get_prop ("t");
+				if (type == null)
+					type = "n";
+
+				var v_node = c_node->children;
+				if (v_node != null) {
+					val = v_node->children->content;
+
+					switch (type) {
+					case "n":
+						cell.val = new NumberValue.from_string (val);
 						break;
 					case "s":
-						cell.style = (uint) uint64.parse (val);
+						cell.val = shared_strings[(int) int64.parse (val)];
 						break;
-					case "t":
-						
+					case "inlineStr":
+						cell.val = new StringValue.simple (val);
 						break;
 					default:
-						throw new Error.WORKSHEET ("Unknown xml attribute '%s' within sheetData/row/c", attr->name);
+						throw new Error.WORKSHEET ("Unknown value type '%s' for sheetData/row/cell", type);
 					}
 				}
 
 				row.cells.add (cell);
 			}
 
-			rows.add (row);
+			add_row (row);
 		}
+	}
+
+
+	public string to_xml () {
+		Xml.Doc* xml_doc = new Xml.Doc ("1.0");
+		Xml.Node* root_node = xml_doc->new_node (null, "worksheet");
+		root_node->set_prop ("xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+
+		xml_doc->set_root_element (root_node);
+
+		/* extra nodes */
+		string[] top_nodes = {
+			"dimension",
+			"sheetViews",
+			"cols"
+		};
+
+		foreach (var name in top_nodes) {
+			Xml.Node* xml_node = extra_xml_nodes[name];
+			root_node->add_child (xml_node);
+		}
+
+		/* sheetData */
+		root_node->add_child (sheet_data_to_xml ());
+
+		/* extra nodes */
+		string[] bottom_nodes = {
+			"pageMargins",
+			"pageSetup"
+		};
+
+		foreach (var name in bottom_nodes) {
+			Xml.Node* xml_node = extra_xml_nodes[name];
+			root_node->add_child (xml_node);
+		}
+
+		/* dump */
+		string xml;
+		xml_doc->dump_memory_enc_format (out xml);
+
+//stdout.printf (xml);
+//error ("DONE");
+		return xml;
+	}
+
+
+	private Xml.Node* sheet_data_to_xml () {
+		Xml.Node* root_node = new Xml.Node (null, "sheetData");
+
+		foreach (var row in rows) {
+			if (row.is_empty () == true)
+				continue;
+
+			Xml.Node* row_node = root_node->new_child (null, "row");
+			row_node->set_prop ("r", row.number.to_string ());
+			row_node->set_prop ("s", row.style.to_string ());
+			row_node->set_prop ("customFormat", row.custom_format.to_string ());
+			row_node->set_prop ("ht", row.height.to_string ());
+
+			foreach (var cell in row.cells) {
+				if (cell.is_empty () == true)
+					continue;
+
+				Xml.Node* cell_node = row_node->new_child (null, "c");
+				cell_node->set_prop ("r", cell.name);
+				cell_node->set_prop ("s", cell.style.to_string ());
+
+				if (cell.val is StringValue) {
+					var cell_val = cell.val as StringValue;
+					cell_node->set_prop ("t", "inlineStr");
+					Xml.Node* v_node = cell_node->new_text_child (null, "v", cell_val.to_string ());
+				}
+			}
+		}
+
+		return root_node;
 	}
 }
 

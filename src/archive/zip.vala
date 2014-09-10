@@ -115,11 +115,11 @@ public class Zip {
 	}
 
 
-	public OutputStream add_from_stream (string path) throws GLib.Error {
+	public FileIOStream add_from_stream (string path) throws GLib.Error {
 		FileIOStream io;
 		var tmp = GLib.File.new_tmp (null, out io);
 		changed_files[path] = tmp;
-		return io.output_stream;
+		return io;
 	}
 
 
@@ -131,41 +131,131 @@ public class Zip {
 	}
 
 
+	private Bytes compress (GLib.File file, uint16 method,
+			out uint32 crc32, out uint32 uncomp_size, out uint32 comp_size) throws IOError {
+		var istm = file.read ();
+		var ostm = new MemoryOutputStream.resizable ();
+
+		istm.seek (0, SeekType.END);
+		uncomp_size = (uint32) istm.tell ();
+		istm.seek (0, SeekType.SET);
+
+		if (method == 8) {
+			var conv = new ZlibCompressor (ZlibCompressorFormat.ZLIB);
+			var conv_stm = new ConverterOutputStream (ostm, conv);
+			conv_stm.splice (istm, 0);
+		}
+
+		Bytes data = ostm.steal_as_bytes ();
+		crc32 = ZLib.Utility.crc32 ();
+		crc32 = ZLib.Utility.crc32 (crc32, data.get_data ());
+		comp_size = data.length;
+		return data;
+	}
+
+
+	private void write_cdir (DataOutputStream stm, CentralDirectory cdir) throws IOError {
+		stm.put_uint32 (0x02014b50);
+		stm.put_uint16 (cdir.version);
+		stm.put_uint16 (cdir.version_needed);
+		stm.put_uint16 (cdir.flags);
+		stm.put_uint16 (cdir.compression_method);
+		stm.put_uint16 (cdir.mod_time);
+		stm.put_uint16 (cdir.mod_date);
+		stm.put_uint32 (cdir.crc32);
+		stm.put_uint32 (cdir.compressed_size);
+		stm.put_uint32 (cdir.uncompressed_size);
+		stm.put_uint16 ((uint16)cdir.fname.length);
+		stm.put_uint16 ((uint16)cdir.extra.length);
+		stm.put_uint16 ((uint16)cdir.comment.length);
+		stm.put_uint16 (cdir.disk_number_start);
+		stm.put_uint16 (cdir.internal_attrs);
+		stm.put_uint32 (cdir.external_attrs);
+		stm.put_uint32 (cdir.header_offset);
+
+		stm.put_string (cdir.fname);
+		stm.write_bytes (cdir.extra);
+		stm.put_string (cdir.comment);
+	}
+
+
 	public void write (File f) throws Error {
+		/* prepare new central directory headers */
+		var new_cdir_list = new Gee.ArrayList<CentralDirectory?> ();
+
+		foreach (var new_file in changed_files.entities) {
+			
+			var unc_data = 
+
+			var old_cdir = cdir_list[new_file.key];
+
+			CentralDirectory cdir;
+			cdir.version = old_cdir.version;
+			cdir.needed_version = old_cdir.needed_version;
+			cdir.flags = old_cdir.flags;
+			cdir.compression_method = old_cdir.compression_method;
+			cdir.mod_time = old_cdir.mod_time;
+			cdir.mod_date = old_cdir.mod_date;
+			cdir.crc32 = ;
+			cdir.compressed_size = ;
+			cdir.uncompressed_size = ;
+			cdir.fname = old_dir.fname;
+			cdir.extra = new Bytes.static ("");
+			cdir.comment = old_cdir.comment;
+			cdir.disk_number_start = old_dir.disk_number_start;
+			cdir.internal_attrs = old_dir.internal_attrs;
+			cdir.external_attrs = old_dir.external_attrs;
+			cdir.
+		}
+
 		FileIOStream io;
 		var tmp = GLib.File.new_tmp (null, out io);
 		var stm = new DataOutputStream (io.output_stream);
 		stm.byte_order = DataStreamByteOrder.LITTLE_ENDIAN;
 
 		foreach (var cdir in cdir_list) {
+			bool bit3 = (cdir.flags & (1 << 3)) > 0;
 			var offset = stm.tell ();
 
 			/* write local header */
 			stm.put_uint32 (0x04034b50);
-			stm.put_uint16 (cdir.version);
+			stm.put_uint16 (cdir.version_needed);
 			stm.put_uint16 (cdir.flags);
 			stm.put_uint16 (cdir.compression_method);
 			stm.put_uint16 (cdir.mod_time);
 			stm.put_uint16 (cdir.mod_date);
-			stm.put_uint32 (0);
-			stm.put_uint32 (0);
-			stm.put_uint32 (0);
+
+			if (bit3 == true) {
+				stm.put_uint32 (0);
+				stm.put_uint32 (0);
+				stm.put_uint32 (0);
+			} else {
+				stm.put_uint32 (cdir.crc32);
+				stm.put_uint32 (cdir.compressed_size);
+				stm.put_uint32 (cdir.uncompressed_size);
+			}
+
+			fstm.seek (cdir.header_offset + 0x1c, SeekType.SET);
+			var extra_length = fstm.read_uint16 ();
+			fstm.skip (cdir.fname.length);
+			var extra = fstm.read_bytes (extra_length);
+
 			stm.put_uint16 ((uint16) cdir.fname.length);
-			stm.put_uint16 ((uint16) cdir.extra.length);
+			stm.put_uint16 ((uint16) extra_length);
 			stm.put_string (cdir.fname);
-			stm.write_bytes (cdir.extra);
+			stm.write_bytes (extra);
 
 			/* copy data */
-			fstm.seek (cdir.header_offset, SeekType.SET);
-			fstm.skip (0x1e + cdir.fname.length + cdir.extra.length);
 			Bytes data = fstm.read_bytes (cdir.compressed_size);
 			stm.write_bytes (data);
 
 			/* write data descriptor */
-			stm.put_uint32 (0x08074b50);
-			stm.put_uint32 (cdir.crc32);
-			stm.put_uint32 (cdir.compressed_size);
-			stm.put_uint32 (cdir.uncompressed_size);
+			if (bit3 == true) {
+				stm.put_uint32 (0x08074b50);
+				stm.put_uint32 (cdir.crc32);
+				stm.put_uint32 (cdir.compressed_size);
+				stm.put_uint32 (cdir.uncompressed_size);
+			}
 
 			cdir.header_offset = (uint32) offset;
 		}
@@ -173,28 +263,10 @@ public class Zip {
 		var cdir_offset = stm.tell ();
 
 		foreach (var cdir in cdir_list) {
-			/* write central directory header */
-			stm.put_uint32 (0x02014b50);
-			stm.put_uint16 (cdir.version);
-			stm.put_uint16 (cdir.version_needed);
-			stm.put_uint16 (cdir.flags);
-			stm.put_uint16 (cdir.compression_method);
-			stm.put_uint16 (cdir.mod_time);
-			stm.put_uint16 (cdir.mod_date);
-			stm.put_uint32 (cdir.crc32);
-			stm.put_uint32 (cdir.compressed_size);
-			stm.put_uint32 (cdir.uncompressed_size);
-			stm.put_uint16 ((uint16)cdir.fname.length);
-			stm.put_uint16 ((uint16)cdir.extra.length);
-			stm.put_uint16 ((uint16)cdir.comment.length);
-			stm.put_uint16 (cdir.disk_number_start);
-			stm.put_uint16 (cdir.internal_attrs);
-			stm.put_uint32 (cdir.external_attrs);
-			stm.put_uint32 (cdir.header_offset);
-
-			stm.put_string (cdir.fname);
-			stm.write_bytes (cdir.extra);
-			stm.put_string (cdir.comment);
+			var new_cdir = new_cdir_list[cdir.fname];
+			if (new_cdir != null)
+				cdir = new_cdir;
+			write_cdir (stm, cdir);
 		}
 
 		var cdir_size = stm.tell () - cdir_offset;
@@ -209,6 +281,7 @@ public class Zip {
 		stm.put_uint32 ((uint32) cdir_offset);
 		stm.put_uint16 (0);
 
+		io.close ();
 		fstm.close ();
 		tmp.move (f, FileCopyFlags.OVERWRITE);
 	}

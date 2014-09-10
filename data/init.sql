@@ -14,23 +14,18 @@ CREATE TABLE IF NOT EXISTS `accounts` (
 
 CREATE TABLE IF NOT EXISTS `people` (
 	`id`            INTEGER  PRIMARY KEY AUTOINCREMENT  NOT NULL,
+	`month`         INTEGER                             NOT NULL,
+	`year`          INTEGER                             NOT NULL,
+	`account`       INTEGER                             NOT NULL,
 	`name`          TEXT                                NOT NULL,
-	`birthday`      TEXT                                NOT NULL
+	`birthday`      TEXT                                NOT NULL,
+	`relationship`  TEXT                                NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS `services` (
 	`id`            INTEGER  PRIMARY KEY AUTOINCREMENT  NOT NULL,
 	`name`          TEXT                                NOT NULL,
 	`unit`          TEXT                                NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS `tenants` (
-	`month`         INTEGER                             NOT NULL,
-	`year`          INTEGER                             NOT NULL,
-	`account`       INTEGER                             NOT NULL,
-	`person`        INTEGER                             NOT NULL,
-	`relationship`  TEXT                                NOT NULL,
-	PRIMARY KEY (`month`, `year`, `account`, `person`)
 );
 
 CREATE TABLE IF NOT EXISTS `taxes` (

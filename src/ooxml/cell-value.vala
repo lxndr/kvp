@@ -6,7 +6,11 @@ public abstract class CellValue : Object {
 
 
 public class NumberValue : CellValue {
-	public string val { get; set; }
+	public int64 val { get; set; default = 0; }
+
+	public NumberValue.from_string (string s) {
+		Object (val: int64.parse (s));
+	}
 }
 
 
