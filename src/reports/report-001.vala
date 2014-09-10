@@ -34,11 +34,11 @@ public class Report001 : Object, Report {
 
 			var row_number = 4 + i;
 			sheet.insert_row (row_number);
-			sheet.put_string ("A" + row_number, account.apartment);
-			sheet.put_string ("B" + row_number, people_string);
-			sheet.put_string ("C" + row_number, birthday_string);
-			sheet.put_string ("D" + row_number, people.size);
-			sheet.put_string ("E" + row_number, account.area);
+			sheet.put_string (1, row_number, account.apartment);
+			sheet.put_string (2, row_number, people_string);
+			sheet.put_string (3, row_number, birthday_string);
+			sheet.put_string (4, row_number, people.size.to_string ());
+			sheet.put_string (5, row_number, account.area.to_string ());
 		}
 	}
 

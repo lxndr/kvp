@@ -34,6 +34,11 @@ public class Row : Object {
 		Object (sheet: _sheet);
 		cells = new Gee.ArrayList<Cell> ();
 	}
+
+
+	public Cell get_cell (int index) {
+		return cells[index];
+	}
 }
 
 
@@ -48,14 +53,32 @@ public class Sheet : Object {
 	}
 
 
+	private uint pow_integer (uint n, uint p) {
+		if (p == 0)
+			return 1;
+
+		uint v = n;
+		for (var i = 0; i < p - 1; i++)
+			v *= v;
+		return v;
+	}
+
+
 	private void parse_cell_name (string name, out uint x, out uint y) {
 		try {
-			var re = Regex ("([A-Z]+)([0-9]+)");
+			var re = new Regex ("([A-Z]+)([0-9]+)");
 			var tokens = re.split (name);
 
-			
+			/* x coord */
+			unowned string s = tokens[1];
+			var s_len = s.length;
+			for (var i = 0; i < s_len; i++) {
+				var d = s[i]; /* one 'digit' */
+				var p = s_len - i - 1;
+				y += pow_integer (26, p) * d;
+			}
 
-			x = (uint) uint64.parse (tokens[1]);
+			/* y coord */
 			y = (uint) uint64.parse (tokens[2]);
 		} catch (RegexError e) {
 			error ("Regex error: %s", e.message);
@@ -69,25 +92,25 @@ public class Sheet : Object {
 		if (actual_number >= rows.size) {
 			var last_number = rows.size - 1;
 			for (var i = last_number; i < actual_number; i++)
-				rows.add (new Cell ());
+				rows.add (new Row (this));
 		}
 
-		rows[row.number - 1] = row;
+		rows[(int) row.number - 1] = row;
 	}
 
 
 	public void insert_row (int index) {
-		rows.insert (new Row ());
+		rows.insert (index, new Row (this));
 	}
 
 
-	public Cell get_cell (uint x, uint y) {
-		return rows[x - 1][y];
+	public Cell get_cell (uint x, int y) {
+		return rows[(int) x - 1].get_cell (y);
 	}
 
 
-	public void put_value (uint x, uint y, string text) {
-		get_cell (x, y).val = StringValue.simple (text);
+	public void put_string (uint x, int y, string text) {
+		get_cell (x, y).val = new StringValue.simple (text);
 	}
 
 

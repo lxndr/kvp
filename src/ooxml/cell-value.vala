@@ -20,7 +20,7 @@ public class StringValue : CellValue {
 
 	public StringValue.simple (string text) {
 		pieces = new Gee.ArrayList<StringValuePiece> ();
-		pieces.add (SimpleStringPiece (text));
+		pieces.add (new SimpleStringPiece (text));
 	}
 
 
