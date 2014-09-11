@@ -4,10 +4,18 @@ namespace OOXML {
 public class Cell : Object {
 	public Row row { get; construct; }
 
-	public int number { get; set; }
-	public string name { get; set; }
 	public uint style { get; set; default = 0; }
 	public CellValue? val { get; set; default = null; }
+
+
+	public string name {
+		get { return Utils.format_cell_name (row.number, number); }
+	}
+
+
+	public int number {
+		get { return row.cell_number (this); }
+	}
 
 
 	public Cell (Row _row) {
@@ -33,7 +41,6 @@ public class Cell : Object {
 public class Row : Object {
 	public Sheet sheet { get; construct; }
 
-	public int number { get; set; }
 	public uint style { get; set; default = 0; }
 	public bool custom_format { get; set; default = false; }
 	public double height { get; set; }
@@ -46,6 +53,12 @@ public class Row : Object {
 	public bool phonetic { get; set; default = false; }
 	public Gee.List<Cell> cells;
 
+
+	public int number {
+		get { return sheet.row_number (this); }
+	}
+
+
 	public Row (Sheet _sheet) {
 		Object (sheet: _sheet);
 		cells = new Gee.ArrayList<Cell> ();
@@ -53,15 +66,25 @@ public class Row : Object {
 
 
 	private void grow_cells_if_needed (int needed_cell_number) {
-		while (cells.size < needed_cell_number) {
+		while (cells.size < needed_cell_number)
 			cells.add (new Cell (this));
-		}
+	}
+
+
+	public int cell_number (Cell cell) {
+		return cells.index_of (cell);
 	}
 
 
 	public Cell get_cell (int number) {
 		grow_cells_if_needed (number);
 		return cells[number - 1];
+	}
+
+
+	public void set_cell (int number, Cell cell) {
+		grow_cells_if_needed (number);
+		cells[number - 1] = cell;
 	}
 
 
@@ -87,17 +110,26 @@ public class Sheet : Object {
 
 
 	private void grow_rows_if_needed (int needed_row_number) {
-		while (rows.size < needed_row_number) {
-			var row = new Row (this);
-			rows.add (row);
-			row.number = rows.size;
-		}
+		while (rows.size < needed_row_number)
+			rows.add (new Row (this));
+		stdout.printf ("GROW ROWS.SIZE %d FOR NUMBER %d\n", rows.size, needed_row_number);
 	}
 
 
-	private void add_row (Row row) {
-		grow_rows_if_needed (row.number);
-		rows[row.number - 1] = row;
+	public int row_number (Row row) {
+		return rows.index_of (row);
+	}
+
+
+	public Row get_row (int number) {
+		grow_rows_if_needed (number);
+		return rows[number - 1];
+	}
+
+
+	public void set_row (int number, Row row) {
+		grow_rows_if_needed (number);
+		rows[number - 1] = row;
 	}
 
 
@@ -107,13 +139,13 @@ public class Sheet : Object {
 	}
 
 
-	public Cell get_cell (int x, int y) {
-		return rows[y - 1].get_cell (x);
+	public Cell get_cell (int row_number, int cell_number) {
+		return get_row (row_number).get_cell (cell_number);
 	}
 
 
-	public void put_string (int x, int y, string text) {
-		get_cell (x, y).val = new StringValue.simple (text);
+	public void put_string (int row_number, int cell_number, string text) {
+		get_cell (row_number, cell_number).val = new StringValue.simple (text);
 	}
 
 
@@ -140,6 +172,7 @@ public class Sheet : Object {
 			if (row_node->name != "row")
 				throw new Error.WORKSHEET ("Unknown xml node '%s' within sheetData", row_node->name);
 
+			int row_number = 0;
 			var row = new Row (this);
 
 			for (var attr = row_node->properties; attr != null; attr = attr->next) {
@@ -147,7 +180,7 @@ public class Sheet : Object {
 
 				switch (attr->name) {
 				case "r":
-					row.number = (int) int64.parse (val);
+					row_number = (int) int64.parse (val);
 					break;
 				case "spans":
 				case "dyDescent":
@@ -191,14 +224,21 @@ public class Sheet : Object {
 				if (c_node->name != "c")
 					throw new Error.WORKSHEET ("Unknown xml node '%s' within sheetData/row", c_node->name);
 
+				int cell_number = 0;
 				var cell = new Cell (row);
 				string? val;
 
 				/* ref */
+
+
+
 				val = c_node->get_prop ("r");
 				if (val == null)
 					val = "A1"; /* FIXME no no no */
-				cell.name = val;
+stdout.printf ("CELL %s\n", val);
+				int y;
+				Utils.parse_cell_name (val, out cell_number, out y);
+				assert (y == row_number);
 
 				/* style */
 				val = c_node->get_prop ("s");
@@ -230,10 +270,10 @@ public class Sheet : Object {
 					}
 				}
 
-				row.cells.add (cell);
+				row.set_cell (cell_number, cell);
 			}
 
-			add_row (row);
+			set_row (row_number, row);
 		}
 	}
 

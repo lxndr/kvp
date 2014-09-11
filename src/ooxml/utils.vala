@@ -34,6 +34,12 @@ public void parse_cell_name (string name, out int x, out int y) {
 }
 
 
+public string format_cell_name (int row_number, int cell_number) {
+	
+	return "A" + row_number.to_string ();
+}
+
+
 }
 
 }
