@@ -2,7 +2,7 @@ namespace Archive {
 
 
 public class Zip {
-	private struct CentralDirectory {
+	private class CentralDirectory : Object {
 		public uint16 version;
 		public uint16 version_needed;
 		public uint16 flags;
@@ -23,13 +23,13 @@ public class Zip {
 
 
 	private DataInputStream fstm;
-	private Gee.List<CentralDirectory?> cdir_list;
+	private Gee.List<CentralDirectory> cdir_list;
 	private Gee.Map<string, GLib.File> file_list;
 	private Gee.Map<string, GLib.File> changed_files;	/* this is changed and new files */
 
 
 	public Zip () {
-		cdir_list = new Gee.ArrayList<CentralDirectory?> ();
+		cdir_list = new Gee.ArrayList<CentralDirectory> ();
 		file_list = new Gee.HashMap<string, GLib.File> ();
 		changed_files  = new Gee.HashMap<string, GLib.File> ();
 	}
@@ -124,15 +124,16 @@ public class Zip {
 
 
 	private CentralDirectory? find_cdir (string path) {
-		foreach (var cdir in cdir_list)
+		foreach (var cdir in cdir_list) {
 			if (cdir.fname == path)
 				return cdir;
+		}
 		return null;
 	}
 
 
 	private Bytes compress (GLib.File file, uint16 method,
-			out uint32 crc32, out uint32 uncomp_size, out uint32 comp_size) throws IOError {
+			out uint32 crc_sum, out uint32 comp_size, out uint32 uncomp_size) throws Error {
 		var istm = file.read ();
 		var ostm = new MemoryOutputStream.resizable ();
 
@@ -140,21 +141,26 @@ public class Zip {
 		uncomp_size = (uint32) istm.tell ();
 		istm.seek (0, SeekType.SET);
 
+		var uncomp_data = istm.read_bytes (uncomp_size);
+		var crc = ZLib.Utility.crc32 ();
+		crc = ZLib.Utility.crc32 (crc, uncomp_data.get_data ());
+		crc_sum = (uint32) crc;
+		istm.seek (0, SeekType.SET);
+
 		if (method == 8) {
-			var conv = new ZlibCompressor (ZlibCompressorFormat.ZLIB);
+			var conv = new ZlibCompressor (ZlibCompressorFormat.RAW);
 			var conv_stm = new ConverterOutputStream (ostm, conv);
 			conv_stm.splice (istm, 0);
 		}
 
+		ostm.close ();
 		Bytes data = ostm.steal_as_bytes ();
-		crc32 = ZLib.Utility.crc32 ();
-		crc32 = ZLib.Utility.crc32 (crc32, data.get_data ());
 		comp_size = data.length;
 		return data;
 	}
 
 
-	private void write_cdir (DataOutputStream stm, CentralDirectory cdir) throws IOError {
+	private void write_cdir (DataOutputStream stm, CentralDirectory cdir) throws Error {
 		stm.put_uint32 (0x02014b50);
 		stm.put_uint16 (cdir.version);
 		stm.put_uint16 (cdir.version_needed);
@@ -165,9 +171,9 @@ public class Zip {
 		stm.put_uint32 (cdir.crc32);
 		stm.put_uint32 (cdir.compressed_size);
 		stm.put_uint32 (cdir.uncompressed_size);
-		stm.put_uint16 ((uint16)cdir.fname.length);
-		stm.put_uint16 ((uint16)cdir.extra.length);
-		stm.put_uint16 ((uint16)cdir.comment.length);
+		stm.put_uint16 ((uint16) cdir.fname.length);
+		stm.put_uint16 ((uint16) cdir.extra.length);
+		stm.put_uint16 ((uint16) cdir.comment.length);
 		stm.put_uint16 (cdir.disk_number_start);
 		stm.put_uint16 (cdir.internal_attrs);
 		stm.put_uint32 (cdir.external_attrs);
@@ -179,95 +185,116 @@ public class Zip {
 	}
 
 
-	public void write (File f) throws Error {
-		/* prepare new central directory headers */
-		var new_cdir_list = new Gee.ArrayList<CentralDirectory?> ();
+	private void write_data_descriptor (CentralDirectory cdir,
+			DataOutputStream ostm) throws IOError {
+		ostm.put_uint32 (0x08074b50);
+		ostm.put_uint32 (cdir.crc32);
+		ostm.put_uint32 (cdir.compressed_size);
+		ostm.put_uint32 (cdir.uncompressed_size);
+	}
 
-		foreach (var new_file in changed_files.entities) {
-			
-			var unc_data = 
 
-			var old_cdir = cdir_list[new_file.key];
+	private void write_local_header (DataOutputStream ostm, CentralDirectory cdir,
+			Bytes? extra) throws Error {
+		bool bit3 = (cdir.flags & (1 << 3)) > 0;
 
-			CentralDirectory cdir;
-			cdir.version = old_cdir.version;
-			cdir.needed_version = old_cdir.needed_version;
-			cdir.flags = old_cdir.flags;
-			cdir.compression_method = old_cdir.compression_method;
-			cdir.mod_time = old_cdir.mod_time;
-			cdir.mod_date = old_cdir.mod_date;
-			cdir.crc32 = ;
-			cdir.compressed_size = ;
-			cdir.uncompressed_size = ;
-			cdir.fname = old_dir.fname;
-			cdir.extra = new Bytes.static ("");
-			cdir.comment = old_cdir.comment;
-			cdir.disk_number_start = old_dir.disk_number_start;
-			cdir.internal_attrs = old_dir.internal_attrs;
-			cdir.external_attrs = old_dir.external_attrs;
-			cdir.
+		uint32 crc32 = 0;
+		uint32 comp_sz = 0;
+		uint32 ucomp_sz = 0;
+
+		if (bit3 == false) {
+			crc32 = cdir.crc32;
+			comp_sz = cdir.compressed_size;
+			ucomp_sz = cdir.uncompressed_size;
 		}
 
+		var extra_length = 0;
+		if (extra != null)
+			extra_length = extra.length;
+
+		ostm.put_uint32 (0x04034b50);
+		ostm.put_uint16 (cdir.version_needed);
+		ostm.put_uint16 (cdir.flags);
+		ostm.put_uint16 (cdir.compression_method);
+		ostm.put_uint16 (cdir.mod_time);
+		ostm.put_uint16 (cdir.mod_date);
+		ostm.put_uint32 (crc32);
+		ostm.put_uint32 (comp_sz);
+		ostm.put_uint32 (ucomp_sz);
+		ostm.put_uint16 ((uint16) cdir.fname.length);
+		ostm.put_uint16 ((uint16) extra_length);
+		ostm.put_string (cdir.fname);
+
+		if (extra != null)
+			ostm.write_bytes (extra);
+	}
+
+
+	private void copy_entity (DataOutputStream ostm, CentralDirectory cdir,
+			DataInputStream istm) throws Error {
+		bool bit3 = (cdir.flags & (1 << 3)) > 0;
+		var offset = ostm.tell ();
+
+		/* copy extra field */
+		istm.seek (cdir.header_offset + 0x1c, SeekType.SET);
+		var extra_length = istm.read_uint16 ();
+		istm.skip (cdir.fname.length);
+		var extra = istm.read_bytes (extra_length);
+
+		write_local_header (ostm, cdir, extra);
+
+		/* copy data */
+		Bytes data = istm.read_bytes (cdir.compressed_size);
+		ostm.write_bytes (data);
+
+		/* write data descriptor */
+		if (bit3 == true)
+			write_data_descriptor (cdir, ostm);
+
+		cdir.header_offset = (uint32) offset;
+	}
+
+
+	private void write_entity (DataOutputStream ostm, CentralDirectory cdir, Bytes data) {
+		bool bit3 = (cdir.flags & (1 << 3)) > 0;
+
+		var offset = ostm.tell ();
+
+		write_local_header (ostm, cdir, null);
+		ostm.write_bytes (data);
+
+		if (bit3 == true)
+			write_data_descriptor (cdir, ostm);
+
+		cdir.header_offset = (uint32) offset;
+	}
+
+
+	public void write (File f) throws Error {
 		FileIOStream io;
 		var tmp = GLib.File.new_tmp (null, out io);
 		var stm = new DataOutputStream (io.output_stream);
 		stm.byte_order = DataStreamByteOrder.LITTLE_ENDIAN;
 
 		foreach (var cdir in cdir_list) {
-			bool bit3 = (cdir.flags & (1 << 3)) > 0;
-			var offset = stm.tell ();
+			unowned string fname = cdir.fname;
 
-			/* write local header */
-			stm.put_uint32 (0x04034b50);
-			stm.put_uint16 (cdir.version_needed);
-			stm.put_uint16 (cdir.flags);
-			stm.put_uint16 (cdir.compression_method);
-			stm.put_uint16 (cdir.mod_time);
-			stm.put_uint16 (cdir.mod_date);
-
-			if (bit3 == true) {
-				stm.put_uint32 (0);
-				stm.put_uint32 (0);
-				stm.put_uint32 (0);
+			if (changed_files.has_key (fname) == true) {
+stdout.printf ("NEW FILE: %s %lu\n", fname, cdir.compressed_size);
+				var file = changed_files[fname];
+				var data = compress (file, cdir.compression_method, out cdir.crc32,
+						out cdir.compressed_size, out cdir.uncompressed_size);
+stdout.printf ("NILE: %lu\n", cdir.compressed_size);
+				write_entity (stm, cdir, data);
 			} else {
-				stm.put_uint32 (cdir.crc32);
-				stm.put_uint32 (cdir.compressed_size);
-				stm.put_uint32 (cdir.uncompressed_size);
+				copy_entity (stm, cdir, fstm);
 			}
-
-			fstm.seek (cdir.header_offset + 0x1c, SeekType.SET);
-			var extra_length = fstm.read_uint16 ();
-			fstm.skip (cdir.fname.length);
-			var extra = fstm.read_bytes (extra_length);
-
-			stm.put_uint16 ((uint16) cdir.fname.length);
-			stm.put_uint16 ((uint16) extra_length);
-			stm.put_string (cdir.fname);
-			stm.write_bytes (extra);
-
-			/* copy data */
-			Bytes data = fstm.read_bytes (cdir.compressed_size);
-			stm.write_bytes (data);
-
-			/* write data descriptor */
-			if (bit3 == true) {
-				stm.put_uint32 (0x08074b50);
-				stm.put_uint32 (cdir.crc32);
-				stm.put_uint32 (cdir.compressed_size);
-				stm.put_uint32 (cdir.uncompressed_size);
-			}
-
-			cdir.header_offset = (uint32) offset;
 		}
 
 		var cdir_offset = stm.tell ();
 
-		foreach (var cdir in cdir_list) {
-			var new_cdir = new_cdir_list[cdir.fname];
-			if (new_cdir != null)
-				cdir = new_cdir;
+		foreach (var cdir in cdir_list)
 			write_cdir (stm, cdir);
-		}
 
 		var cdir_size = stm.tell () - cdir_offset;
 
@@ -295,13 +322,12 @@ public class Zip {
 
 
 	private void read_central_directory (int64 end_offset) throws Error {
-		CentralDirectory cdir = {};
-
 		while (fstm.tell () < end_offset) {
 			var sig = fstm.read_uint32 ();
 			if (sig != 0x02014b50)
 				error ("Wrong signature for Central Directory");
 
+			var cdir = new CentralDirectory ();
 			cdir.version             = fstm.read_uint16 ();
 			cdir.version_needed      = fstm.read_uint16 ();
 			cdir.flags               = fstm.read_uint16 ();
@@ -324,8 +350,6 @@ public class Zip {
 			cdir.comment             = read_string (fstm, comment_length);
 
 			cdir_list.add (cdir);
-			stdout.printf ("FILE: %s (%ld, %ld), Flags: 0x%04X\n", cdir.fname,
-					cdir.compressed_size, cdir.uncompressed_size, cdir.flags);
 		}
 	}
 

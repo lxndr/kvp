@@ -33,6 +33,7 @@ public class Report001 : Object, Report {
 			birthday_string = birthday_string[0:-1];
 
 			var row_number = 4 + i;
+			sheet.put_string (1, 2, "TEST");
 //			sheet.insert_row (row_number);
 //			sheet.put_string (1, row_number, account.apartment);
 //			sheet.put_string (2, row_number, people_string);

@@ -44,6 +44,34 @@ namespace SharedStrings {
 		return list;
 	}
 
+
+	public void store_to_xlsx (Gee.List<StringValue> list, Archive.Zip ar) {
+		Xml.Doc* xml_doc = store_to_xml (list);
+
+		string xml;
+		xml_doc->dump_memory_enc_format (out xml);
+stdout.printf (xml);
+		var io = ar.add_from_stream ("xl/sharedStrings.xml");
+		io.output_stream.write (xml.data);
+	}
+
+
+	public Xml.Doc* store_to_xml (Gee.List<StringValue> list) {
+		Xml.Doc* xml_doc = new Xml.Doc ("1.0");
+
+		Xml.Node* root_node = xml_doc->new_node (null, "sst");
+		root_node->set_prop ("xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+		root_node->set_prop ("count", list.size.to_string ());
+		root_node->set_prop ("uniqueCount", list.size.to_string ());
+		xml_doc->set_root_element (root_node);
+
+		foreach (var si in list) {
+			Xml.Node* si_node = root_node->new_child (null, "si");
+			si_node->new_text_child (null, "t", si.to_string ());
+		}
+
+		return xml_doc;
+	}
 }
 
 

@@ -238,7 +238,7 @@ public class Sheet : Object {
 	}
 
 
-	public string to_xml () {
+	public string to_xml (ref Gee.List<StringValue> shared_strings) {
 		Xml.Doc* xml_doc = new Xml.Doc ("1.0");
 		Xml.Node* root_node = xml_doc->new_node (null, "worksheet");
 		root_node->set_prop ("xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
@@ -258,7 +258,7 @@ public class Sheet : Object {
 		}
 
 		/* sheetData */
-		root_node->add_child (sheet_data_to_xml ());
+		root_node->add_child (sheet_data_to_xml (ref shared_strings));
 
 		/* extra nodes */
 		string[] bottom_nodes = {
@@ -275,13 +275,13 @@ public class Sheet : Object {
 		string xml;
 		xml_doc->dump_memory_enc_format (out xml);
 
-//stdout.printf (xml);
-//error ("DONE");
+stdout.printf (xml);
+
 		return xml;
 	}
 
 
-	private Xml.Node* sheet_data_to_xml () {
+	private Xml.Node* sheet_data_to_xml (ref Gee.List<StringValue> shared_strings) {
 		Xml.Node* root_node = new Xml.Node (null, "sheetData");
 
 		foreach (var row in rows) {
@@ -304,8 +304,15 @@ public class Sheet : Object {
 
 				if (cell.val is StringValue) {
 					var cell_val = cell.val as StringValue;
-					cell_node->set_prop ("t", "inlineStr");
-					Xml.Node* v_node = cell_node->new_text_child (null, "v", cell_val.to_string ());
+					cell_node->set_prop ("t", "s");
+
+					var string_number = shared_strings.index_of (cell_val);
+					if (string_number == -1) {
+						shared_strings.add (cell_val);
+						string_number = shared_strings.size - 1;
+					}
+
+					cell_node->new_text_child (null, "v", string_number.to_string ());
 				}
 			}
 		}

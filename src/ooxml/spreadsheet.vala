@@ -34,8 +34,14 @@ public class Spreadsheet : Object {
 
 	public void save_as (File file) throws GLib.Error {
 		var sheet = sheets[0];
-		string xml = sheet.to_xml ();
 
+		Gee.List<StringValue> shared_strings = new Gee.ArrayList<StringValue> ();
+		string xml = sheet.to_xml (ref shared_strings);
+
+		foreach (var i in shared_strings)
+			stdout.printf ("SI %s\n", i.to_string ());
+
+		SharedStrings.store_to_xlsx (shared_strings, archive);
 		var io = archive.add_from_stream ("xl/worksheets/sheet1.xml");
 		io.output_stream.write (xml.data);
 
