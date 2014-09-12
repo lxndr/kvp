@@ -11,7 +11,7 @@ public int pow_integer (int n, int p) {
 }
 
 
-public void parse_cell_name (string name, out int x, out int y) {
+public void parse_cell_name (string name, out int row_number, out int cell_number) {
 	try {
 		var re = new Regex ("([A-Z]+)([0-9]+)");
 		var tokens = re.split (name);
@@ -19,15 +19,15 @@ public void parse_cell_name (string name, out int x, out int y) {
 		/* x coord */
 		unowned string s = tokens[1];
 		var s_len = s.length;
-		x = 0;
+		cell_number = 0;
 		for (var i = 0; i < s_len; i++) {
 			var d = s[i] - 0x40; /* one 'digit' */
 			var p = s_len - i - 1;
-			x += pow_integer (26, p) * d;
+			cell_number += pow_integer (26, p) * d;
 		}
 
 		/* y coord */
-		y = (int) int64.parse (tokens[2]);
+		row_number = (int) int64.parse (tokens[2]);
 	} catch (RegexError e) {
 		error ("Regex error in 'parse_cell_name': %s", e.message);
 	}
@@ -35,8 +35,13 @@ public void parse_cell_name (string name, out int x, out int y) {
 
 
 public string format_cell_name (int row_number, int cell_number) {
-	
-	return "A" + row_number.to_string ();
+	/* TODO */
+	string cell = "";
+	if (cell_number > 26)
+		cell += "%c".printf ((uint8) (cell_number / 26) + 0x40);
+	cell += "%c".printf ((uint8) (cell_number % 26) + 0x40);
+
+	return cell + row_number.to_string ();
 }
 
 

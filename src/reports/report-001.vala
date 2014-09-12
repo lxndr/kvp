@@ -33,13 +33,12 @@ public class Report001 : Object, Report {
 			birthday_string = birthday_string[0:-1];
 
 			var row_number = 4 + i;
-			sheet.put_string (1, 2, "TEST");
 //			sheet.insert_row (row_number);
-//			sheet.put_string (1, row_number, account.apartment);
-//			sheet.put_string (2, row_number, people_string);
-//			sheet.put_string (3, row_number, birthday_string);
-//			sheet.put_string (4, row_number, people.size.to_string ());
-//			sheet.put_string (5, row_number, account.area.to_string ());
+			sheet.put_string (row_number, 1, account.apartment);
+			sheet.put_string (row_number, 2, people_string);
+			sheet.put_string (row_number, 3, birthday_string);
+			sheet.put_string (row_number, 4, people.size.to_string ());
+			sheet.put_string (row_number, 5, account.area.to_string ());
 		}
 	}
 

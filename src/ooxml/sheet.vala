@@ -8,8 +8,8 @@ public class Cell : Object {
 	public CellValue? val { get; set; default = null; }
 
 
-	public string name {
-		get { return Utils.format_cell_name (row.number, number); }
+	public string get_name () {
+		return Utils.format_cell_name (row.number, number);
 	}
 
 
@@ -20,15 +20,6 @@ public class Cell : Object {
 
 	public Cell (Row _row) {
 		Object (row: _row);
-	}
-
-
-	public Cell.with_name (Row _row) {
-		int x, y;
-		Utils.parse_cell_name (_name, out x, out y);
-
-		assert (y == _row.number);
-		Object (row: _row, name: _name, number: x);
 	}
 
 
@@ -72,7 +63,7 @@ public class Row : Object {
 
 
 	public int cell_number (Cell cell) {
-		return cells.index_of (cell);
+		return cells.index_of (cell) + 1;
 	}
 
 
@@ -117,7 +108,7 @@ public class Sheet : Object {
 
 
 	public int row_number (Row row) {
-		return rows.index_of (row);
+		return rows.index_of (row) + 1;
 	}
 
 
@@ -220,6 +211,8 @@ public class Sheet : Object {
 				}
 			}
 
+			set_row (row_number, row);
+
 			for (var c_node = row_node->children; c_node != null; c_node = c_node->next) {
 				if (c_node->name != "c")
 					throw new Error.WORKSHEET ("Unknown xml node '%s' within sheetData/row", c_node->name);
@@ -237,8 +230,13 @@ public class Sheet : Object {
 					val = "A1"; /* FIXME no no no */
 stdout.printf ("CELL %s\n", val);
 				int y;
-				Utils.parse_cell_name (val, out cell_number, out y);
+				Utils.parse_cell_name (val, out y, out cell_number);
+stdout.printf ("\t c%d r%d\n", cell_number, y);
 				assert (y == row_number);
+
+				row.set_cell (cell_number, cell);
+stdout.printf ("\t c%d r%d = %s\n", cell.number, cell.row.number, cell.get_name ());
+				assert (val == cell.get_name ());
 
 				/* style */
 				val = c_node->get_prop ("s");
@@ -269,11 +267,7 @@ stdout.printf ("CELL %s\n", val);
 						throw new Error.WORKSHEET ("Unknown value type '%s' for sheetData/row/cell", type);
 					}
 				}
-
-				row.set_cell (cell_number, cell);
 			}
-
-			set_row (row_number, row);
 		}
 	}
 
@@ -339,7 +333,7 @@ stdout.printf (xml);
 					continue;
 
 				Xml.Node* cell_node = row_node->new_child (null, "c");
-				cell_node->set_prop ("r", cell.name);
+				cell_node->set_prop ("r", cell.get_name ());
 				cell_node->set_prop ("s", cell.style.to_string ());
 
 				if (cell.val is StringValue) {
