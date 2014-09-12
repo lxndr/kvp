@@ -3,6 +3,8 @@ namespace Kv {
 
 public class Account : Entity
 {
+	public static string table_name = "accounts";
+
 	public int64 id { get; set; }
 	public string number { get; set; }
 	public string apartment { get; set; }

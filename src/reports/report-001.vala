@@ -10,7 +10,6 @@ public class Report001 : Object, Report {
 	}
 
 
-
 	public void make (Database db) throws Error {
 		book.load (GLib.File.new_for_path ("./templates/report-001.xlsx"));
 		var sheet = book.sheet (0);

@@ -33,6 +33,8 @@ public class Database : Object {
 
 
 	public Entity get_entity (Type type, int64 id) {
+		EntityClass entity_class = (EntityClass) type.class_ref ();
+
 		/* FIXME: it has to be universal */
 		var list = get_entity_list (type, "SELECT * FROM services WHERE id=%lld".printf (id));
 		return list[0];
@@ -77,6 +79,8 @@ public class Database : Object {
 			for (var i = 0; i < n_columns; i++) {
 				unowned string prop_name = column_names[i];
 				var prop = obj_class.find_property (prop_name);
+				if (prop == null)
+					error ("Could not find propery '%s' in '%s'", prop_name, type.name ());
 				var prop_type = prop.value_type;
 
 				str_val.set_string (values[i]);

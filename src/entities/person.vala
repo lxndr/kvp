@@ -3,6 +3,8 @@ namespace Kv {
 
 public class Person : Entity
 {
+	public static string table_name = "people";
+
 	public int64 id { get; set; }
 	public string name { get; set; }
 	public string birthday { get; set; }
