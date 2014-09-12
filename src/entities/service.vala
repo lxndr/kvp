@@ -27,7 +27,7 @@ public class Service : Entity
 		return table_name;
 	}
 
-
+/*
 	public override string[] db_keys () {
 		return {
 			"id"
@@ -41,7 +41,25 @@ public class Service : Entity
 			"unit",
 			"applied_to"
 		};
-	}
+	}*/
+}
+
+
+public int main () {
+	var e = new Service ();
+	unowned string str1 = e.table_name;
+	stdout.printf ("STR1 %s\n", str1);
+
+	var type = typeof (Service);
+	unowned TypeClass klass = type.class_peek ();
+
+	unowned string str2 = Entity.table_name;
+
+//	var entity_class = (Entity) klass;
+//	unowned string str2 = entity_class.table_name;
+//	stdout.printf ("STR2 %s\n", str2);
+
+	return 0;
 }
 
 

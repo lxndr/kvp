@@ -1,7 +1,8 @@
 RESOURCES=ui/main-window.ui \
 	data/init.sql
 
-SOURCES=src/application.vala \
+SOURCES=src/db/entity.vala \
+	src/application.vala \
 	src/main-window.vala \
 	src/utils.vala \
 	src/types.vala \
@@ -9,7 +10,6 @@ SOURCES=src/application.vala \
 	src/account-table.vala \
 	src/people-table.vala \
 	src/tax-table.vala \
-	src/entity.vala \
 	src/database.vala \
 	src/entities/tax.vala \
 	src/entities/person.vala \

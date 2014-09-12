@@ -33,10 +33,12 @@ public class Database : Object {
 
 
 	public Entity get_entity (Type type, int64 id) {
+		var query = "SELECT * FROM services WHERE id=%lld".printf (id);
+
 		EntityClass entity_class = (EntityClass) type.class_ref ();
 
 		/* FIXME: it has to be universal */
-		var list = get_entity_list (type, "SELECT * FROM services WHERE id=%lld".printf (id));
+		var list = get_entity_list (type, );
 		return list[0];
 	}
 
