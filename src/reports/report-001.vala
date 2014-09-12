@@ -10,7 +10,7 @@ public class Report001 : Object, Report {
 	}
 
 
-	public void make (Database db) throws Error {
+	public void make (Database db, Period period) throws Error {
 		book.load (GLib.File.new_for_path ("./templates/report-001.xlsx"));
 		var sheet = book.sheet (0);
 
@@ -22,7 +22,7 @@ public class Report001 : Object, Report {
 			string people_string = "";
 			string birthday_string = "";
 
-			var people = db.get_account_people (account);
+			var people = db.get_people_list (period, account);
 			foreach (var person in people) {
 				people_string += person.name + "\n";
 				birthday_string += person.birthday + "\n";

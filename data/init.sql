@@ -1,3 +1,8 @@
+CREATE TABLE IF NOT EXISTS `settings` (
+	`key`           TEXT     PRIMARY KEY,
+	`value`         TEXT
+);
+
 CREATE TABLE IF NOT EXISTS `buildings` (
 	`id`            INTEGER  PRIMARY KEY AUTOINCREMENT   NOT NULL,
 	`location`      TEXT                                 NOT NULL,
@@ -14,12 +19,12 @@ CREATE TABLE IF NOT EXISTS `accounts` (
 
 CREATE TABLE IF NOT EXISTS `people` (
 	`id`            INTEGER  PRIMARY KEY AUTOINCREMENT  NOT NULL,
-	`month`         INTEGER                             NOT NULL,
 	`year`          INTEGER                             NOT NULL,
+	`month`         INTEGER                             NOT NULL,
 	`account`       INTEGER                             NOT NULL,
 	`name`          TEXT                                NOT NULL,
 	`birthday`      TEXT                                NOT NULL,
-	`relationship`  TEXT                                NOT NULL
+	`relationship`  TEXT
 );
 
 CREATE TABLE IF NOT EXISTS `services` (

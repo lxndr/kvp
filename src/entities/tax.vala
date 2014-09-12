@@ -1,14 +1,11 @@
 namespace Kv {
 
 
-public class Tax : Entity
+public class Tax : SimpleEntity
 {
-	public static string table_name = "taxes";
-
-	public int64 id { get; set; }
-	public int month { get; set; }
-	public int year { get; set; }
 	public Account account { get; set; }
+	public int year { get; set; }
+	public int month { get; set; }
 	public Service service { get; set; }
 	public int total {get; set; }
 
@@ -24,19 +21,33 @@ public class Tax : Entity
 
 
 	construct {
-		table_name = "taxes";
-		id = 0;
 		year = 2000;
 		month = 1;
 		total = 0;
 	}
 
 
+	public override unowned string db_table_name () {
+		return "taxes";
+	}
+
+
+	public override string[] db_fields () {
+		return {
+			"month",
+			"year",
+			"account",
+			"service",
+			"total"
+		};
+	}
+
+
 	public Tax (Period _period, Account _account, Service _service) {
-		Object (month: _period.month,
-			year: _period.year,
-			account: _account,
-			service: _service);
+		Object (year: _period.year,
+				month: _period.month,
+				account: _account,
+				service: _service);
 	}
 
 
@@ -63,26 +74,8 @@ public class Tax : Entity
 	}
 
 
-	public int calc () {
-		return (int) (amount * price);
-	}
-
-
-	public override string[] db_keys () {
-		return {
-			"id"
-		};
-	}
-
-
-	public override string[] db_fields () {
-		return {
-			"month",
-			"year",
-			"account",
-			"service",
-			"total"
-		};
+	public void calc () {
+		total = (int) (amount * price);
 	}
 }
 

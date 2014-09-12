@@ -19,10 +19,16 @@ public class PeopleTable : TableView {
 	}
 
 
+	protected override Entity new_entity () {
+		return new Person (period, account, "New person");
+	}
+
+
 	protected override string[] view_properties () {
 		return {
 			"name",
-			"birthday"
+			"birthday",
+			"relationship"
 		};
 	}
 

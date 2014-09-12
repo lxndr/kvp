@@ -28,13 +28,18 @@ public class TaxTable : TableView {
 	protected override string[] view_properties () {
 		return {
 			"service",
+			"amount",
+			"price",
 			"total"
 		};
 	}
 
 
 	protected override Gee.List<Entity> get_entity_list () throws DatabaseError {
-		return db.get_tax_list (period, account);
+		Gee.List<Entity> list = db.get_tax_list (period, account);
+		foreach (var i in list)
+			(i as Tax).calc ();
+		return list;
 	}
 }
 

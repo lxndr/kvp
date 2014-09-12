@@ -2,28 +2,29 @@ RESOURCES=ui/main-window.ui \
 	data/init.sql
 
 SOURCES=src/db/entity.vala \
-	src/application.vala \
-	src/main-window.vala \
-	src/utils.vala \
-	src/types.vala \
-	src/table-view.vala \
-	src/account-table.vala \
-	src/people-table.vala \
-	src/tax-table.vala \
-	src/database.vala \
-	src/entities/tax.vala \
-	src/entities/person.vala \
-	src/entities/account.vala \
-	src/entities/service.vala \
-	src/archive/zip.vala \
-	src/ooxml/cell-value.vala \
-	src/ooxml/shared-strings.vala \
-	src/ooxml/sheet.vala \
-	src/ooxml/spreadsheet.vala \
-	src/ooxml/utils.vala \
-	src/ooxml/error.vala \
-	src/report.vala \
-	src/reports/report-001.vala
+		src/db/simple-entity.vala \
+		src/application.vala \
+		src/main-window.vala \
+		src/utils.vala \
+		src/types.vala \
+		src/table-view.vala \
+		src/account-table.vala \
+		src/people-table.vala \
+		src/tax-table.vala \
+		src/database.vala \
+		src/entities/tax.vala \
+		src/entities/person.vala \
+		src/entities/account.vala \
+		src/entities/service.vala \
+		src/archive/zip.vala \
+		src/ooxml/cell-value.vala \
+		src/ooxml/shared-strings.vala \
+		src/ooxml/sheet.vala \
+		src/ooxml/spreadsheet.vala \
+		src/ooxml/utils.vala \
+		src/ooxml/error.vala \
+		src/report.vala \
+		src/reports/report-001.vala
 
 
 
@@ -52,6 +53,7 @@ resources: kvartplata.gresource.xml $(RESOURCES)
 
 clean:
 	rm -f src/*.c
+	rm -f src/db/*.c
 	rm -f src/archive/*.c
 	rm -f src/entities/*.c
 	rm -f src/ooxml/*.c

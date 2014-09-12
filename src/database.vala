@@ -32,13 +32,30 @@ public class Database : Object {
 	}
 
 
+	public string? get_setting (string key) {
+		var query = "SELECT * FROM settings WHERE key='%s'".printf (key);
+		string? val = null;
+
+		exec_sql (query, (n_columns, values, column_names) => {
+			val = values[0];
+			return 0;
+		});
+
+		return val;
+	}
+
+
+	public void set_setting (string key, string val) {
+		var query = "REPLACE INTO settings VALUES ('%s', '%s')".printf (key, val);
+		exec_sql (query);
+	}
+
+
 	public Entity get_entity (Type type, int64 id) {
-		var query = "SELECT * FROM services WHERE id=%lld".printf (id);
+		var tmp = Object.new (type) as Entity;
+		var query = "SELECT * FROM `%s` WHERE id=%lld".printf (tmp.db_table_name (), id);
 
-		EntityClass entity_class = (EntityClass) type.class_ref ();
-
-		/* FIXME: it has to be universal */
-		var list = get_entity_list (type, );
+		var list = get_entity_list (type, query);
 		return list[0];
 	}
 
@@ -54,19 +71,15 @@ public class Database : Object {
 
 
 	public Gee.List<Person> get_people_list (Period period, Account account) {
-		return get_entity_list (typeof (Person), "SELECT * FROM people") as Gee.List<Person>;
-	}
-
-
-	public Gee.List<Person> get_account_people (Account account) {
-		var query = "SELECT * FROM people WHERE account=%lld".printf (account.id);
+		var query = "SELECT * FROM people WHERE year=%d AND month=%d AND account=%lld"
+				.printf (period.year, period.month, account.id);
 		return get_entity_list (typeof (Person), query) as Gee.List<Person>;
 	}
 
 
 	public Gee.List<Tax> get_tax_list (Period period, Account account) {
-		var query = "SELECT * FROM taxes WHERE month=%d and year=%d and account=%lld"
-				.printf (period.month, period.year, account.id);
+		var query = "SELECT * FROM taxes WHERE year=%d AND month=%d AND account=%lld"
+				.printf (period.year, period.month, account.id);
 		return get_entity_list (typeof (Tax), query) as Gee.List<Tax>;
 	}
 
@@ -97,6 +110,7 @@ public class Database : Object {
 
 				entity.set_property (column_names[i], dest_val);
 			}
+			entity.changed = false;
 			list.add (entity);
 			return 0;
 		});
@@ -173,12 +187,12 @@ public class Database : Object {
 		var entity_id = id_val.get_int64 ();
 
 		if (entity_id == 0) {
-			var query = "INSERT INTO `%s` VALUES (NULL%s)".printf (entity.table_name,
+			var query = "INSERT INTO `%s` VALUES (NULL%s)".printf (entity.db_table_name (),
 					prepare_insert_values (entity, fields, obj_class));
 			exec_sql (query);
 			entity.set_property ("id", db.last_insert_rowid ());
 		} else {
-			var query = "UPDATE `%s` SET %s WHERE `id`=%lld".printf (entity.table_name,
+			var query = "UPDATE `%s` SET %s WHERE `id`=%lld".printf (entity.db_table_name (),
 					prepare_update_values (entity, fields, obj_class), entity_id);
 			exec_sql (query);
 		}
@@ -236,7 +250,7 @@ public class Database : Object {
 
 		values = values[0:-2];
 
-		var query = "REPLACE INTO `%s` VALUES (%s)".printf (entity.table_name, values);
+		var query = "REPLACE INTO `%s` VALUES (%s)".printf (entity.db_table_name (), values);
 		exec_sql (query);
 	}
 

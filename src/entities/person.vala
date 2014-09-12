@@ -1,40 +1,49 @@
 namespace Kv {
 
 
-public class Person : Entity
+public class Person : SimpleEntity
 {
-	public static string table_name = "people";
-
-	public int64 id { get; set; }
+	public Account account { get; set; }
+	public int year { get; set; }
+	public int month { get; set; }
 	public string name { get; set; }
 	public string birthday { get; set; }
+	public string relationship { get; set; }
 
 
 	construct {
-		table_name = "people";
-		id = 0;
 		name = "000";
 		birthday = "000";
 	}
 
 
-	public override string get_display_name () {
-		return name;
-	}
-
-
-	public override string[] db_keys () {
-		return {
-			"id"
-		};
+	public override unowned string db_table_name () {
+		return "people";
 	}
 
 
 	public override string[] db_fields () {
 		return {
+			"year",
+			"month",
+			"account",
 			"name",
-			"birthday"
+			"birthday",
+			"relationship"
 		};
+	}
+
+
+	public Person (Period _period, Account _account, string _name) {
+		Object (year: _period.year,
+				month: _period.month,
+				account: _account,
+				name: _name);
+	}
+
+
+	public override string get_display_name () {
+		return name;
 	}
 }
 
