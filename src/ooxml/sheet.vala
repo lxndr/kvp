@@ -26,6 +26,18 @@ public class Cell : Object {
 	public bool is_empty () {
 		return val == null;
 	}
+
+
+	public unowned Cell empty () {
+		val = null;
+		return this;
+	}
+
+
+	public unowned Cell put_string (string text) {
+		val = new StringValue.simple (text);
+		return this;
+	}
 }
 
 
@@ -180,31 +192,31 @@ public class Sheet : Object {
 					row.style = (uint) uint64.parse (val);
 					break;
 				case "customFormat":
-					row.custom_format = bool.parse (val);
+					row.custom_format = Utils.parse_bool (val);
 					break;
 				case "ht":
 					row.height = double.parse (val);
 					break;
 				case "hidden":
-					row.hidden = bool.parse (val);
+					row.hidden = Utils.parse_bool (val);
 					break;
 				case "customHeight":
-					row.custom_height = bool.parse (val);
+					row.custom_height = Utils.parse_bool (val);
 					break;
 				case "outlineLevel":
 					row.outline_level = (uint8) uint64.parse (val);
 					break;
 				case "collapsed":
-					row.collapsed = bool.parse (val);
+					row.collapsed = Utils.parse_bool (val);
 					break;
 				case "thickTop":
-					row.thick_top = bool.parse (val);
+					row.thick_top = Utils.parse_bool (val);
 					break;
 				case "thickBot":
-					row.thick_bot = bool.parse (val);
+					row.thick_bot = Utils.parse_bool (val);
 					break;
 				case "ph":
-					row.phonetic = bool.parse (val);
+					row.phonetic = Utils.parse_bool (val);
 					break;
 				default:
 					throw new Error.WORKSHEET ("Unknown xml attribute '%s' within sheetData/row", attr->name);
@@ -283,6 +295,7 @@ stdout.printf ("\t c%d r%d = %s\n", cell.number, cell.row.number, cell.get_name 
 		string[] top_nodes = {
 			"dimension",
 			"sheetViews",
+			"sheetFormatPr",
 			"cols"
 		};
 
@@ -296,6 +309,8 @@ stdout.printf ("\t c%d r%d = %s\n", cell.number, cell.row.number, cell.get_name 
 
 		/* extra nodes */
 		string[] bottom_nodes = {
+			"mergeCells",
+			"printOptions",
 			"pageMargins",
 			"pageSetup"
 		};
@@ -327,6 +342,8 @@ stdout.printf (xml);
 			row_node->set_prop ("s", row.style.to_string ());
 			row_node->set_prop ("customFormat", row.custom_format.to_string ());
 			row_node->set_prop ("ht", row.height.to_string ());
+			row_node->set_prop ("customHeight", row.custom_height.to_string ());
+			row_node->set_prop ("tickTop", row.thick_top.to_string ());
 
 			foreach (var cell in row.cells) {
 				if (cell.is_empty () == true)

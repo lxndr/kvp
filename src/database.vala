@@ -51,6 +51,38 @@ public class Database : Object {
 	}
 
 
+	public bool is_empty_period (Period period) {
+		string query;
+		bool result = true;
+
+		/* check if we've got any people */
+		query = "SELECT COUNT(*) FROM people WHERE year=%d AND month=%d"
+				.printf (period.year, period.month);
+		exec_sql (query, (n_columns, values, column_names) => {
+			if (int64.parse (values[0]) > 0)
+				result = false;
+			return 0;
+		});
+
+		if (result == false)
+			return result;
+
+		/* check if we've got any taxes */
+		query = "SELECT COUNT(*) FROM taxes WHERE year=%d AND month=%d"
+				.printf (period.year, period.month);
+		exec_sql (query, (n_columns, values, column_names) => {
+			if (int64.parse (values[0]) > 0)
+				result = false;
+			return 0;
+		});
+
+		if (result == false)
+			return result;
+
+		return true;
+	}
+
+
 	public Entity get_entity (Type type, int64 id) {
 		var tmp = Object.new (type) as Entity;
 		var query = "SELECT * FROM `%s` WHERE id=%lld".printf (tmp.db_table_name (), id);

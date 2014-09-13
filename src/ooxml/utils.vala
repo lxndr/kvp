@@ -45,6 +45,11 @@ public string format_cell_name (int row_number, int cell_number) {
 }
 
 
+public bool parse_bool (string s) {
+	return s == "true" || s == "1";
+}
+
+
 }
 
 }

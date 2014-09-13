@@ -3,13 +3,14 @@ namespace Kv {
 
 [Compact]
 public struct Period {
-	int year;
-	int month;
+	public int year;
+	public int month;
 }
 
 
 public class Application : Gtk.Application
 {
+	public Gee.Map<string, Type> reports;
 	public Database db;
 
 
@@ -29,6 +30,11 @@ public class Application : Gtk.Application
 	public override void startup () {
 		base.startup ();
 
+		/* reports */
+		reports = new Gee.HashMap<string, Type> ();
+		reports.set ("List of the tenants", typeof (Report001));
+
+		/* database */
 		try {
 			db = new Database ();
 		} catch (Error e) {

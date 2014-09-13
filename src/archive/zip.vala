@@ -180,7 +180,8 @@ public class Zip {
 		stm.put_uint32 (cdir.header_offset);
 
 		stm.put_string (cdir.fname);
-		stm.write_bytes (cdir.extra);
+		if (cdir.extra != null && cdir.extra.length > 0)
+			stm.write_bytes (cdir.extra);
 		stm.put_string (cdir.comment);
 	}
 
@@ -225,7 +226,7 @@ public class Zip {
 		ostm.put_uint16 ((uint16) extra_length);
 		ostm.put_string (cdir.fname);
 
-		if (extra != null)
+		if (extra != null && extra.length > 0)
 			ostm.write_bytes (extra);
 	}
 
@@ -239,7 +240,7 @@ public class Zip {
 		istm.seek (cdir.header_offset + 0x1c, SeekType.SET);
 		var extra_length = istm.read_uint16 ();
 		istm.skip (cdir.fname.length);
-		var extra = istm.read_bytes (extra_length);
+		var extra = read_bytes (istm, extra_length);
 
 		write_local_header (ostm, cdir, extra);
 
@@ -255,7 +256,7 @@ public class Zip {
 	}
 
 
-	private void write_entity (DataOutputStream ostm, CentralDirectory cdir, Bytes data) {
+	private void write_entity (DataOutputStream ostm, CentralDirectory cdir, Bytes data) throws GLib.Error {
 		bool bit3 = (cdir.flags & (1 << 3)) > 0;
 
 		var offset = ostm.tell ();
@@ -321,6 +322,15 @@ stdout.printf ("NILE: %lu\n", cdir.compressed_size);
 	}
 
 
+	/* FIXME this function is a workaround to suppress runtime warning */
+	private Bytes read_bytes (InputStream stm, size_t length) throws Error {
+		if (length == 0)
+			return ByteArray.free_to_bytes (new ByteArray ());
+		else
+			return stm.read_bytes (length);
+	}
+
+
 	private void read_central_directory (int64 end_offset) throws Error {
 		while (fstm.tell () < end_offset) {
 			var sig = fstm.read_uint32 ();
@@ -346,7 +356,7 @@ stdout.printf ("NILE: %lu\n", cdir.compressed_size);
 			cdir.header_offset       = fstm.read_uint32 ();
 
 			cdir.fname               = read_string (fstm, fname_length);
-			cdir.extra               = fstm.read_bytes (extra_length);
+			cdir.extra               = read_bytes (fstm, extra_length);
 			cdir.comment             = read_string (fstm, comment_length);
 
 			cdir_list.add (cdir);

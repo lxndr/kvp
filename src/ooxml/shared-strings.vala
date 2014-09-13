@@ -13,7 +13,7 @@ namespace SharedStrings {
 	}
 
 
-	public Gee.List<StringValue> load_from_xml (Xml.Doc* xml_doc) throws Error {
+	public Gee.List<StringValue> load_from_xml (Xml.Doc* xml_doc) throws GLib.Error {
 		var list = new Gee.ArrayList<StringValue> ();
 
 		var sst_node = xml_doc->get_root_element ();
@@ -45,7 +45,7 @@ namespace SharedStrings {
 	}
 
 
-	public void store_to_xlsx (Gee.List<StringValue> list, Archive.Zip ar) {
+	public void store_to_xlsx (Gee.List<StringValue> list, Archive.Zip ar) throws GLib.Error {
 		Xml.Doc* xml_doc = store_to_xml (list);
 
 		string xml;
@@ -56,7 +56,7 @@ stdout.printf (xml);
 	}
 
 
-	public Xml.Doc* store_to_xml (Gee.List<StringValue> list) {
+	public Xml.Doc* store_to_xml (Gee.List<StringValue> list) throws GLib.Error {
 		Xml.Doc* xml_doc = new Xml.Doc ("1.0");
 
 		Xml.Node* root_node = xml_doc->new_node (null, "sst");

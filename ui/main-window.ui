@@ -23,7 +23,6 @@
                 <property name="tooltip_text" translatable="yes">Current period</property>
                 <property name="halign">end</property>
                 <property name="is_important">True</property>
-                <property name="label" translatable="yes">январь 2014</property>
                 <property name="icon_name">x-office-calendar</property>
                 <signal name="clicked" handler="current_period_button_clicked" swapped="no"/>
               </object>
@@ -92,17 +91,9 @@
                 <property name="use_underline">True</property>
                 <property name="icon_name">x-office-document</property>
                 <child type="menu">
-                  <object class="GtkMenu" id="menu2">
+                  <object class="GtkMenu" id="report_menu">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <child>
-                      <object class="GtkMenuItem" id="menuitem5">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Report 1</property>
-                        <property name="use_underline">True</property>
-                      </object>
-                    </child>
                   </object>
                 </child>
               </object>
