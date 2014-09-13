@@ -33,7 +33,7 @@ public class Database : Object {
 
 
 	public string? get_setting (string key) {
-		var query = "SELECT * FROM settings WHERE key='%s'".printf (key);
+		var query = "SELECT value FROM settings WHERE key='%s'".printf (key);
 		string? val = null;
 
 		exec_sql (query, (n_columns, values, column_names) => {

@@ -106,6 +106,10 @@ class MainWindow : Gtk.ApplicationWindow {
 
 	[GtkCallback]
 	private void current_period_button_clicked () {
+		/* set up popover widges */
+		current_period_month.active_id = current_period.month.to_string ();
+		current_period_year.value = (double) current_period.year;
+
 		current_period_popover.show ();
 	}
 
@@ -121,7 +125,7 @@ class MainWindow : Gtk.ApplicationWindow {
 
 
 	/*
-	 *
+	 * 
 	 */
 	private void account_changed () {
 		var account = account_table.get_selected_entity () as Account;

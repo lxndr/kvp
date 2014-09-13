@@ -3,7 +3,7 @@ namespace Kv {
 
 public class TaxTable : TableView {
 	private Period period;
-	private Account account;
+	private Account? account;
 
 
 	public TaxTable (Database dbase) {
@@ -11,7 +11,7 @@ public class TaxTable : TableView {
 	}
 
 
-	public void setup_view (Period _period, Account _account) {
+	public void setup_view (Period _period, Account? _account) {
 		period = _period;
 		account = _account;
 
@@ -36,6 +36,9 @@ public class TaxTable : TableView {
 
 
 	protected override Gee.List<Entity> get_entity_list () throws DatabaseError {
+		if (account == null)
+			return new Gee.ArrayList<Entity> ();
+
 		Gee.List<Entity> list = db.get_tax_list (period, account);
 		foreach (var i in list)
 			(i as Tax).calc ();

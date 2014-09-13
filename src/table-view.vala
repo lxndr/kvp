@@ -233,14 +233,17 @@ public abstract class TableView {
 
 
 	public void update_view () {
+		Gtk.TreeIter iter;
 		list_store.clear ();
 		var list = get_entity_list ();
 
 		foreach (var entity in list) {
-			Gtk.TreeIter iter;
 			list_store.append (out iter);
 			update_row (iter, entity);
 		}
+
+		if (list_store.get_iter_first (out iter) == true)
+			list_view.get_selection ().select_iter (iter);
 	}
 
 

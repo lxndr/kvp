@@ -34,6 +34,9 @@ public class PeopleTable : TableView {
 
 
 	protected override Gee.List<Entity> get_entity_list () throws DatabaseError {
+		if (account == null)
+			return new Gee.ArrayList<Entity> ();
+
 		return db.get_people_list (period, account);
 	}
 }
