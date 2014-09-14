@@ -24,7 +24,8 @@ SOURCES=src/db/entity.vala \
 		src/ooxml/utils.vala \
 		src/ooxml/error.vala \
 		src/report.vala \
-		src/reports/report-001.vala
+		src/reports/report-001.vala \
+		src/reports/report-002.vala
 
 
 

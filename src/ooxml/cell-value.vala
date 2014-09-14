@@ -5,11 +5,25 @@ public abstract class CellValue : Object {
 }
 
 
-public class NumberValue : CellValue {
+public class IntegerValue : CellValue {
 	public int64 val { get; set; default = 0; }
 
-	public NumberValue.from_string (string s) {
+	public IntegerValue.from_string (string s) {
 		Object (val: int64.parse (s));
+	}
+}
+
+
+public class NumberValue : CellValue {
+	public double val { get; set; default = 0; }
+
+	public NumberValue (double n) {
+		Object (val: n);
+	}
+
+
+	public NumberValue.from_string (string s) {
+		Object (val: double.parse (s));
 	}
 }
 

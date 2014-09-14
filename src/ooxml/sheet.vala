@@ -142,13 +142,22 @@ public class Sheet : Object {
 	}
 
 
-	public Cell get_cell (int row_number, int cell_number) {
+	public Cell get_cell (string cell_name) {
+		int row_number;
+		int cell_number;
+
+		Utils.parse_cell_name (cell_name, out row_number, out cell_number);
 		return get_row (row_number).get_cell (cell_number);
 	}
 
 
-	public void put_string (int row_number, int cell_number, string text) {
-		get_cell (row_number, cell_number).val = new StringValue.simple (text);
+	public void put_string (string cell_name, string text) {
+		get_cell (cell_name).val = new StringValue.simple (text);
+	}
+
+
+	public void put_number (string cell_name, double number) {
+		get_cell (cell_name).val = new NumberValue (number);
 	}
 
 
@@ -284,7 +293,7 @@ stdout.printf ("\t c%d r%d = %s\n", cell.number, cell.row.number, cell.get_name 
 	}
 
 
-	public string to_xml (ref Gee.List<StringValue> shared_strings) {
+	public string to_xml (Gee.List<StringValue> shared_strings) {
 		Xml.Doc* xml_doc = new Xml.Doc ("1.0");
 		Xml.Node* root_node = xml_doc->new_node (null, "worksheet");
 		root_node->set_prop ("xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
@@ -305,7 +314,7 @@ stdout.printf ("\t c%d r%d = %s\n", cell.number, cell.row.number, cell.get_name 
 		}
 
 		/* sheetData */
-		root_node->add_child (sheet_data_to_xml (ref shared_strings));
+		root_node->add_child (sheet_data_to_xml (shared_strings));
 
 		/* extra nodes */
 		string[] bottom_nodes = {
@@ -330,7 +339,7 @@ stdout.printf (xml);
 	}
 
 
-	private Xml.Node* sheet_data_to_xml (ref Gee.List<StringValue> shared_strings) {
+	private Xml.Node* sheet_data_to_xml (Gee.List<StringValue> shared_strings) {
 		Xml.Node* root_node = new Xml.Node (null, "sheetData");
 
 		foreach (var row in rows) {

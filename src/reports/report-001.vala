@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class Report001 : Object, Report {
+public class Report001 : Report {
 	private OOXML.Spreadsheet book;
 
 
@@ -10,7 +10,7 @@ public class Report001 : Object, Report {
 	}
 
 
-	public void make (Database db, Period period) throws Error {
+	public override void make () throws Error {
 		book.load (GLib.File.new_for_path ("./templates/list-of-tenants.xlsx"));
 		var sheet = book.sheet (0);
 		OOXML.Row row;
@@ -24,7 +24,7 @@ public class Report001 : Object, Report {
 			string birthday_string = "";
 			double row_height = 0.0;
 
-			var people = db.get_people_list (period, account);
+			var people = db.get_people_list (current_period, account);
 			foreach (var person in people) {
 				people_string += person.name + "\r\n";
 				birthday_string += person.birthday + "\r\n";
@@ -53,7 +53,7 @@ public class Report001 : Object, Report {
 	}
 
 
-	public void write (File f) throws Error {
+	public override void write (File f) throws Error {
 		book.save_as (f);
 	}
 }

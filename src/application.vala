@@ -33,6 +33,7 @@ public class Application : Gtk.Application
 		/* reports */
 		reports = new Gee.HashMap<string, Type> ();
 		reports.set ("List of the tenants", typeof (Report001));
+		reports.set ("Account", typeof (Report002));
 
 		/* database */
 		try {

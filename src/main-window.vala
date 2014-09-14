@@ -179,10 +179,14 @@ class MainWindow : Gtk.ApplicationWindow {
 
 		
 		var db = (application as Application).db;
-		var report = Object.new (type) as Report;
+		var report = Object.new (type,
+				"db", db,
+				"current_period", current_period,
+				"selected_account", account_table.get_selected_account ()
+				) as Report;
 
 		try {
-			report.make (db, current_period);
+			report.make ();
 		} catch (Error e) {
 			error ("Error making a report: %s", e.message);
 		}

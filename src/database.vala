@@ -116,6 +116,18 @@ public class Database : Object {
 	}
 
 
+	public Gee.Map<uint, Tax> find_taxes_by_service_id (Period period, Account account, int64 service_id) {
+		var query = "SELECT * FROM taxes WHERE year=%u AND account=%lld AND service=%lld ORDER BY month"
+				.printf (period.year, account.id, service_id);
+		var list = get_entity_list (typeof (Tax), query) as Gee.List<Tax>;
+
+		var map = new Gee.HashMap<uint, Tax> ();
+		foreach (var t in list)
+			map[t.month] = t;
+		return map;
+	}
+
+
 	private Gee.List<Entity> get_entity_list (Type type, string sql) {
 		var obj_class = (ObjectClass) type.class_ref ();
 		var list = new Gee.ArrayList<Entity> ();

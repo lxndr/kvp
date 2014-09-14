@@ -19,6 +19,11 @@ public class AccountTable : TableView {
 	protected override Gee.List<Entity> get_entity_list () throws DatabaseError {
 		return db.get_account_list ();
 	}
+
+
+	public Account? get_selected_account () {
+		return get_selected_entity () as Account;
+	}
 }
 
 
