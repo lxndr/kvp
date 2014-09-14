@@ -39,10 +39,10 @@ public class TaxTable : TableView {
 		if (account == null)
 			return new Gee.ArrayList<Entity> ();
 
-		Gee.List<Entity> list = db.get_tax_list (period, account);
-		foreach (var i in list)
-			(i as Tax).calc ();
-		return list;
+		Gee.List<Tax> taxes = db.get_tax_list (period, account);
+		foreach (var tax in taxes)
+			tax.calc (db);
+		return taxes;
 	}
 }
 

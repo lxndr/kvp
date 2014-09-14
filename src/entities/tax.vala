@@ -7,17 +7,9 @@ public class Tax : SimpleEntity
 	public int year { get; set; }
 	public int month { get; set; }
 	public Service service { get; set; }
+	public double amount { get; set; }
+	public int price { get; set; }
 	public int total {get; set; }
-
-
-	public double amount {
-		get { return _get_amount (); }
-	}
-
-
-	public int price {
-		get { return _get_price (); }
-	}
 
 
 	construct {
@@ -56,26 +48,25 @@ public class Tax : SimpleEntity
 	}
 
 
-	public double _get_amount () {
-		if (service.applied_to == 1) {
-			return account.area;
-		} else if (service.applied_to == 2) {
-			return 1.0;
-			//var list = get_account_people ();
-			//return (float
-		} else {
-			return 1.0;
-		}
-	}
+	public void calc (Database db) {
+			Period period = { year, month };
 
+			switch (service.applied_to) {
+			case 1:	/* apartment area */
+				amount = account.area;
+				break;
+			case 2:	/* number of people */
+				
+				amount = (double) db.get_people_list (period, account).size;
+				break;
+			default:
+				amount = 1.0;
+				break;
+			}
 
-	public int _get_price () {
-		return 100;
-	}
-
-
-	public void calc () {
-		total = (int) (amount * price);
+			price = db.get_price (period, service);
+			total = (int) (amount * (double) price);
+			db.persist (this);
 	}
 }
 

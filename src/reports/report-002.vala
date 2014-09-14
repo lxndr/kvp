@@ -48,6 +48,7 @@ public class Report002 : Report {
 
 				var row_number = month + 4;
 				var tax = taxes[month];
+//				tax.calc (db);
 				sheet.get_row (row_number).get_cell (column_number).put_string (tax.total.to_string ());
 			}
 		}

@@ -128,6 +128,20 @@ public class Database : Object {
 	}
 
 
+	public int get_price (Period period, Service service) {
+		int price = 0;
+		var query = "SELECT price FROM prices WHERE year=%d AND month=%d AND service=%lld"
+				.printf (period.year, period.month, service.id);
+
+		exec_sql (query, (n_columns, values, column_names) => {
+			price = (int) int64.parse (values[0]);
+			return 0;
+		});
+
+		return price;
+	}
+
+
 	private Gee.List<Entity> get_entity_list (Type type, string sql) {
 		var obj_class = (ObjectClass) type.class_ref ();
 		var list = new Gee.ArrayList<Entity> ();

@@ -24,7 +24,8 @@ public class Account : SimpleEntity
 		return {
 			"number",
 			"apartment",
-			"area"
+			"area",
+			"total"
 		};
 	}
 
