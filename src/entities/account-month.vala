@@ -69,6 +69,7 @@ public class AccountMonth : Entity
 
 
 	public void calc (Database db) {
+		/* calculate total */
 		total = 0;
 		var query = "SELECT SUM(total) FROM taxes WHERE account=%lld AND year=%d AND month=%d"
 				.printf (account.id, year, month);
@@ -77,6 +78,9 @@ public class AccountMonth : Entity
 				total = (int) int64.parse (values[0]);
 			return 0;
 		});
+
+		/* calculate balance */
+		balance = 0 + total - payment;
 
 		db.persist (this);
 	}

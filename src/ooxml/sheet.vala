@@ -24,7 +24,7 @@ public class Cell : Object {
 
 
 	public bool is_empty () {
-		return val == null;
+		return val == null && style == 0;
 	}
 
 

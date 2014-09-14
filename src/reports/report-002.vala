@@ -37,7 +37,7 @@ public class Report002 : Report {
 		sheet.put_string ("C1", tenant_name);
 		sheet.put_string ("L1", account.number);
 
-		/*  */
+		/* services & taxes */
 		for (var service_iter = 0; service_iter < service_ids.length; service_iter++) {
 			var column_number = 3 + service_iter;
 			var taxes = db.find_taxes_by_service_id (current_period, account, service_ids[service_iter]);
@@ -48,9 +48,21 @@ public class Report002 : Report {
 
 				var row_number = month + 4;
 				var tax = taxes[month];
-//				tax.calc (db);
 				sheet.get_row (row_number).get_cell (column_number).put_string (tax.total.to_string ());
 			}
+		}
+
+		/* account months */
+		var totals = db.find_account_month_by_year (account, current_period.year);
+		for (var month = 1; month <= 12; month++) {
+			if (totals.has_key (month) == false)
+				continue;
+
+			var row_number = month + 4;
+			var item = totals[month];
+			sheet.get_row (row_number).get_cell (12).put_string (item.total.to_string ());
+			sheet.get_row (row_number).get_cell (13).put_string (item.payment.to_string ());
+			sheet.get_row (row_number).get_cell (14).put_string (item.balance.to_string ());
 		}
 	}
 

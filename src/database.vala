@@ -136,6 +136,18 @@ public class Database : Object {
 	}
 
 
+	public Gee.Map<uint, AccountMonth> find_account_month_by_year (Account account, int year) {
+		var query = "SELECT * FROM account_month WHERE year=%u AND account=%lld ORDER BY month"
+				.printf (year, account.id);
+		var list = get_entity_list (typeof (AccountMonth), query) as Gee.List<AccountMonth>;
+
+		var map = new Gee.HashMap<uint, AccountMonth> ();
+		foreach (var t in list)
+			map[t.month] = t;
+		return map;
+	}
+
+
 	public int get_price (Period period, Service service) {
 		int price = 0;
 		var query = "SELECT price FROM prices WHERE year=%d AND month=%d AND service=%lld"
