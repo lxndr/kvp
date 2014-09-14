@@ -24,7 +24,7 @@ public class Database : Object {
 	}
 
 
-	private void exec_sql (string sql, Sqlite.Callback? callback = null) {
+	public void exec_sql (string sql, Sqlite.Callback? callback = null) {
 		string errmsg;
 		stdout.printf ("%s\n", sql);
 		if (db.exec (sql, callback, out errmsg) != Sqlite.OK)
@@ -97,8 +97,16 @@ public class Database : Object {
 	}
 
 
-	public Gee.List<Account> get_account_list () {
+	public Gee.List<Account> get_account_list (Period period) {
 		return get_entity_list (typeof (Account), "SELECT * FROM accounts") as Gee.List<Account>;
+	}
+
+
+	public Gee.List<AccountMonth> get_account_month_list (Period period) {
+		var query = "SELECT * FROM account_month WHERE year=%d AND month=%d"
+				.printf (period.year, period.month);
+		var list = get_entity_list (typeof (AccountMonth), query) as Gee.List<AccountMonth>;
+		return list;
 	}
 
 

@@ -18,6 +18,7 @@ public abstract class TableView {
 
 
 	public signal void selection_changed ();
+	public signal void row_edited (Entity ent);
 
 
 	protected virtual Entity new_entity () {
@@ -170,6 +171,7 @@ public abstract class TableView {
 		list_store.set_value (iter, property_column, val);
 
 		db.persist (entity);
+		row_edited (entity);
 	}
 
 

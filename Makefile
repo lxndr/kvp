@@ -15,6 +15,7 @@ SOURCES=src/db/entity.vala \
 		src/entities/tax.vala \
 		src/entities/person.vala \
 		src/entities/account.vala \
+		src/entities/account-month.vala \
 		src/entities/service.vala \
 		src/entities/price.vala \
 		src/archive/zip.vala \

@@ -7,7 +7,6 @@ public class Account : SimpleEntity
 	public string apartment { get; set; }
 	public double area { get; set; }
 
-
 	construct {
 		number = "000";
 		apartment = "000";
@@ -24,8 +23,7 @@ public class Account : SimpleEntity
 		return {
 			"number",
 			"apartment",
-			"area",
-			"total"
+			"area"
 		};
 	}
 

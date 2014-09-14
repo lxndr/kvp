@@ -3,7 +3,7 @@ namespace Kv {
 
 public class PeopleTable : TableView {
 	private Period period;
-	private Account account;
+	private Account? account;
 
 
 	public PeopleTable (Database dbase) {
@@ -11,7 +11,7 @@ public class PeopleTable : TableView {
 	}
 
 
-	public void setup_view (Period _period, Account _account) {
+	public void setup_view (Period _period, Account? _account) {
 		period = _period;
 		account = _account;
 

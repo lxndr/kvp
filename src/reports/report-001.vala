@@ -15,7 +15,7 @@ public class Report001 : Report {
 		var sheet = book.sheet (0);
 		OOXML.Row row;
 
-		var accounts = db.get_account_list ();
+		var accounts = db.get_account_list (current_period);
 		var count = accounts.size;
 		for (var i = 0; i < count; i++) {
 			var account = accounts[i];

@@ -68,7 +68,7 @@ class MainWindow : Gtk.ApplicationWindow {
 		paned1.add2 (tax_table.get_root_widget ());
 
 		/*  */
-		account_table.update_view ();
+//		account_table.update_view ();
 		init_current_period ();
 	}
 
@@ -145,6 +145,8 @@ class MainWindow : Gtk.ApplicationWindow {
 		db.set_setting ("current_month", period.month.to_string ());
 
 		/* update table views */
+		account_table.set_period (current_period);
+		account_table.update_view ();
 		account_changed ();
 	}
 
@@ -212,7 +214,7 @@ class MainWindow : Gtk.ApplicationWindow {
 	 * 
 	 */
 	private void account_changed () {
-		var account = account_table.get_selected_entity () as Account;
+		var account = account_table.get_selected_account ();
 
 		people_table.setup_view (current_period, account);
 		tax_table.setup_view (current_period, account);
