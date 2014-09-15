@@ -79,8 +79,21 @@ public class AccountMonth : Entity
 			return 0;
 		});
 
+		/* previous balance */
+		int previous_balance = 0;
+		query = "SELECT balance FROM account_month WHERE account=%lld AND year=%d AND month=%d"
+				.printf (account.id, year-1, 12); /* FIXME */
+		db.exec_sql (query, (n_columns, values, column_names) => {
+			if (values[0] != null)
+				previous_balance = (int) int64.parse (values[0]);
+			return 0;
+		});
+
+stdout.printf ("PREV BALANCE %d\n", previous_balance);
+
 		/* calculate balance */
-		balance = 0 + total - payment;
+		if (year == 2014)	/* FIXME */
+			balance = previous_balance + total - payment;
 
 		db.persist (this);
 	}

@@ -97,16 +97,26 @@ public class Database : Object {
 	}
 
 
-	public Gee.List<Account> get_account_list (Period period) {
+	public Gee.List<Account> get_account_list () {
 		return get_entity_list (typeof (Account), "SELECT * FROM accounts") as Gee.List<Account>;
 	}
 
 
 	public Gee.List<AccountMonth> get_account_month_list (Period period) {
-		var query = "SELECT * FROM account_month WHERE year=%d AND month=%d"
-				.printf (period.year, period.month);
-		var list = get_entity_list (typeof (AccountMonth), query) as Gee.List<AccountMonth>;
-		return list;
+		var months = new Gee.ArrayList<AccountMonth> ();
+		var accounts = get_account_list ();
+
+		foreach (var account in accounts) {
+			var query = "SELECT * FROM account_month WHERE year=%d AND month=%d AND account=%lld"
+					.printf (period.year, period.month, account.id);
+			var list = get_entity_list (typeof (AccountMonth), query) as Gee.List<AccountMonth>;
+			if (list.size == 0)
+				months.add (new AccountMonth (account, period));
+			else
+				months.add (list[0]);
+		}
+
+		return months;
 	}
 
 
