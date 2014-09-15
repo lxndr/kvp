@@ -50,6 +50,9 @@ public class Application : Gtk.Application
 				(ValueTransform) Utils.transform_string_to_int64);
 		Value.register_transform_func (typeof (string), typeof (double),
 				(ValueTransform) Utils.transform_string_to_double);
+
+		Value.register_transform_func (typeof (double), typeof (DB.PropertyAdapter),
+				(ValueTransform) Utils.db_transform_double_to_string);
 	}
 
 

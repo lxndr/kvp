@@ -21,6 +21,7 @@ SOURCES=src/db/database.vala \
 		src/entities/account-month.vala \
 		src/entities/service.vala \
 		src/entities/price.vala \
+		src/entities/relationship.vala \
 		src/archive/zip.vala \
 		src/ooxml/cell-value.vala \
 		src/ooxml/shared-strings.vala \

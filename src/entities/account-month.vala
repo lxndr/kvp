@@ -20,9 +20,23 @@ public class AccountMonth : DB.Entity, DB.Viewable
 		set { account.apartment = value; }
 	}
 
+	public int nrooms {
+		get { return account.nrooms; }
+		set { account.nrooms = value; }
+	}
+
 	public double area {
 		get { return account.area; }
 		set { account.area = value; }
+	}
+
+
+	private string _tenant;
+	public string tenant {
+		get {
+			_tenant = account.tenant_name (year, month);
+			return _tenant;
+		}
 	}
 
 

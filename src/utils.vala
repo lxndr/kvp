@@ -21,6 +21,12 @@ public void transform_string_to_double (Value src_value, ref Value dest_value) {
 }
 
 
+public void db_transform_double_to_string (Value src_value, ref Value dest_value) {
+	double d = src_value.get_double ();
+	dest_value.set_object (new DB.PropertyAdapter (d.to_string ()));
+}
+
+
 public unowned string month_to_string (int month) {
 	switch (month) {
 	case  1: return "January";

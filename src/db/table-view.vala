@@ -1,6 +1,16 @@
 namespace DB {
 
 
+public class PropertyAdapter : Object {
+	public string val;
+
+	public PropertyAdapter (string _val) {
+		val = _val;
+	}
+}
+
+
+
 public abstract class TableView {
 	protected Database db;
 	private Type object_type;
@@ -60,7 +70,7 @@ public abstract class TableView {
 
 		var props = view_properties ();
 		foreach (var prop_name in props)
-			types += typeof (string);
+				types += typeof (string);
 
 		list_store = new Gtk.ListStore.newv (types);
 
@@ -95,7 +105,8 @@ public abstract class TableView {
 
 			if (prop_type == typeof (string) ||
 					prop_type == typeof (int) ||
-					prop_type == typeof (double)) {
+					prop_type == typeof (double) ||
+					prop_type.is_a (Type.BOXED)) {
 				cell = new Gtk.CellRendererText ();
 				cell.set ("editable", true);
 				/* FIXME: could use Object.connect */
@@ -191,7 +202,7 @@ public abstract class TableView {
 		entity.set_property (property_name, prop_entity);
 
 		var val = Value (typeof (string));
-		val.set_string ((entity as Viewable).display_name);
+		val.set_string ((prop_entity as Viewable).display_name);
 		list_store.set_value (iter, property_column, val);
 
 		db.persist (entity);
@@ -260,12 +271,28 @@ public abstract class TableView {
 			var val = Value (prop_spec.value_type);
 			entity.get_property (prop_name, ref val);
 
-			if (val.type ().is_a (typeof (Entity))) {
+			if (val.type () == typeof (string) || val.type () == typeof (int)) {
+				/* these convert nicely */
+				list_store.set_value (iter, i + 1, val);
+			} else if (val.type ().is_a (typeof (Entity))) {
+				/* entity, a special case */
 				var obj = val.get_object () as Viewable;
 				if (obj != null)
 					list_store.set (iter, i + 1, obj.display_name);
-			} else
+			} else {
+				/* first, try usng an adaptor */
+				var ad_val = Value (typeof (PropertyAdapter));
+				if (val.transform (ref ad_val) == true) {
+					val.unset ();
+					val.init (typeof (string));
+					val.set_string ((ad_val.get_object () as PropertyAdapter).val);
+				} else {
+					warning ("Could not transform %s to %s",
+							val.type ().name (), ad_val.type ().name ());
+				}
+
 				list_store.set_value (iter, i + 1, val);
+			}
 		}
 	}
 }

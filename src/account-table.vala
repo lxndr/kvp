@@ -26,10 +26,12 @@ public class AccountTable : DB.TableView {
 		return {
 			"number",
 			"apartment",
+			"nrooms",
 			"area",
 			"total",
 			"payment",
-			"balance"
+			"balance",
+			"tenant"
 		};
 	}
 

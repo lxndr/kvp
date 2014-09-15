@@ -48,7 +48,7 @@ public class Report002 : Report {
 
 				var row_number = month + 4;
 				var tax = taxes[month];
-				sheet.get_row (row_number).get_cell (column_number).put_string (tax.total.to_string ());
+				sheet.get_row (row_number).get_cell (column_number).put_string (Money (tax.total).to_string ());
 			}
 		}
 
@@ -60,9 +60,9 @@ public class Report002 : Report {
 
 			var row_number = month + 4;
 			var item = totals[month];
-			sheet.get_row (row_number).get_cell (12).put_string (item.total.to_string ());
-			sheet.get_row (row_number).get_cell (13).put_string (item.payment.to_string ());
-			sheet.get_row (row_number).get_cell (14).put_string (item.balance.to_string ());
+			sheet.get_row (row_number).get_cell (12).put_string (Money (item.total).to_string ());
+			sheet.get_row (row_number).get_cell (13).put_string (Money (item.payment).to_string ());
+			sheet.get_row (row_number).get_cell (14).put_string (Money (item.balance).to_string ());
 		}
 	}
 

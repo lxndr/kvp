@@ -26,10 +26,11 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 
 	public override string[] db_fields () {
 		return {
-			"month",
-			"year",
 			"account",
+			"year",
+			"month",
 			"service",
+			"amount",
 			"total"
 		};
 	}
@@ -48,25 +49,27 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 	}
 
 
-	public void calc (Database db) {
-			Period period = { year, month };
+	public void calc_amount () {
+		switch (service.applied_to) {
+		case 1:	/* apartment area */
+			amount = account.area;
+			break;
+		case 2:	/* number of people */
+			amount = (double) account.number_of_people (year, month);
+			break;
+		case 3: /* amount is specified */
+			break;
+		default:
+			amount = 1.0;
+			break;
+		}
+	}
 
-			switch (service.applied_to) {
-			case 1:	/* apartment area */
-				amount = account.area;
-				break;
-			case 2:	/* number of people */
-				
-				amount = (double) db.get_people_list (period, account).size;
-				break;
-			default:
-				amount = 1.0;
-				break;
-			}
 
-			price = db.get_price (period, service);
-			total = (int) (amount * (double) price);
-			db.persist (this);
+	public void calc_total () {
+		Period period = { year, month };
+		price = (db as Database).get_price (period, service);
+		total = (int) (amount * (double) price);
 	}
 }
 

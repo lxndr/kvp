@@ -6,6 +6,7 @@ public class Service : DB.SimpleEntity, DB.Viewable
 	public string name { get; set; }
 	public string? unit { get; set; }
 	public int applied_to { get; set; }
+	public string extra1 { get; set; }
 
 
 	construct {
@@ -24,7 +25,8 @@ public class Service : DB.SimpleEntity, DB.Viewable
 		return {
 			"name",
 			"unit",
-			"applied_to"
+			"applied_to",
+			"extra1"
 		};
 	}
 

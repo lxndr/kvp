@@ -8,7 +8,7 @@ public class Person : DB.SimpleEntity, DB.Viewable
 	public int month { get; set; }
 	public string name { get; set; }
 	public string birthday { get; set; }
-	public string relationship { get; set; }
+	public Relationship relationship { get; set; }
 
 
 	construct {
@@ -24,9 +24,9 @@ public class Person : DB.SimpleEntity, DB.Viewable
 
 	public override string[] db_fields () {
 		return {
+			"account",
 			"year",
 			"month",
-			"account",
 			"name",
 			"birthday",
 			"relationship"

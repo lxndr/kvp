@@ -40,10 +40,16 @@ public class TaxTable : DB.TableView {
 			return new Gee.ArrayList<DB.Entity> ();
 
 		Gee.List<Tax> taxes = (db as Database).get_tax_list (period, account);
-		foreach (var tax in taxes)
-			tax.calc (db as Database);
+		foreach (var tax in taxes) {
+			tax.calc_amount ();
+			tax.calc_total ();
+			tax.persist ();
+		}
 		return taxes;
 	}
+
+
+	
 }
 
 

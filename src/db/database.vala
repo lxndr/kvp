@@ -6,6 +6,35 @@ public interface Database : Object {
 	public abstract int64 last_insert_rowid ();
 
 
+	public int64 query_count (string table, string expr) {
+		int64 result = 0;
+		var query = "SELECT COUNT(*) FROM `%s` WHERE %s"
+				.printf (table, expr);
+
+		exec_sql (query, (n_columns, values, column_names) => {
+			if (values[0] != null)
+				result = int64.parse (values[0]);
+			return 0;
+		});
+
+		return result;
+	}
+
+
+	public string? query_string (string table, string column, string expr) {
+		string? result = null;
+		var query = "SELECT `%s` FROM `%s` WHERE %s"
+				.printf (column, table, expr);
+
+		exec_sql (query, (n_columns, values, column_names) => {
+			result = values[0];
+			return 0;
+		});
+
+		return result;
+	}
+
+
 	public DB.Entity get_entity (Type type, int64 id) {
 		var tmp = Object.new (type) as DB.Entity;
 		var query = "SELECT * FROM `%s` WHERE id=%lld".printf (tmp.db_table (), id);
@@ -31,7 +60,7 @@ public interface Database : Object {
 		var str_val = Value (typeof (string));
 
 		exec_sql (sql, (n_columns, values, column_names) => {
-			var entity = Object.new (type) as DB.Entity;
+			var entity = Object.new (type, "db", this) as DB.Entity;
 			for (var i = 0; i < n_columns; i++) {
 				unowned string prop_name = column_names[i];
 				var prop = obj_class.find_property (prop_name);

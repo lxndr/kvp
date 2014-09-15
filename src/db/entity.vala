@@ -21,6 +21,11 @@ public abstract class Entity : Object {
 	private void property_changed (ParamSpec pspec) {
 		changed = true;
 	}
+
+
+	public void persist () {
+		db.persist (this);
+	}
 }
 
 
