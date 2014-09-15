@@ -70,7 +70,7 @@ public class Spreadsheet : Object {
 	}
 
 
-	private void store_worksheet (Sheet sheet, uint sheet_id, Gee.List<StringValue> shared_strings) {
+	private void store_worksheet (Sheet sheet, uint sheet_id, Gee.List<StringValue> shared_strings) throws GLib.Error {
 		string xml = sheet.to_xml (shared_strings);
 
 		var path = "xl/worksheets/sheet%u.xml".printf (sheet_id);

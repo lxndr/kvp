@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class AccountMonth : DB.Entity
+public class AccountMonth : DB.Entity, DB.Viewable
 {
 	public Account account { get; set; }
 	public int year { get; set; }

@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class Person : DB.SimpleEntity
+public class Person : DB.SimpleEntity, DB.Viewable
 {
 	public Account account { get; set; }
 	public int year { get; set; }

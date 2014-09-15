@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class Tax : DB.SimpleEntity
+public class Tax : DB.SimpleEntity, DB.Viewable
 {
 	public Account account { get; set; }
 	public int year { get; set; }
