@@ -88,7 +88,7 @@ public class Database : DB.SQLiteDatabase {
 					.printf (period.year, period.month, account.id);
 			var list = get_entity_list (typeof (AccountMonth), query) as Gee.List<AccountMonth>;
 			if (list.size == 0)
-				months.add (new AccountMonth (account, period));
+				months.add (new AccountMonth (this, account, period));
 			else
 				months.add (list[0]);
 		}
