@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class Price : Entity
+public class Price : DB.Entity
 {
 	public Service service { get; set; }
 	public int year { get; set; }
@@ -9,7 +9,7 @@ public class Price : Entity
 	public int price { get; set; }
 
 
-	public override unowned string db_table_name () {
+	public override unowned string db_table () {
 		return "prices";
 	}
 
@@ -30,8 +30,8 @@ public class Price : Entity
 	}
 
 
-	public override string get_display_name () {
-		return service.name;
+	public string display_name {
+		get { return service.name; }
 	}
 }
 

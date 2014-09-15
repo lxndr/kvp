@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class TaxTable : TableView {
+public class TaxTable : DB.TableView {
 	private Period period;
 	private Account? account;
 
@@ -19,7 +19,7 @@ public class TaxTable : TableView {
 	}
 
 
-	protected override Entity new_entity () {
+	protected override DB.Entity new_entity () {
 		var service = db.get_entity (typeof (Service), 1) as Service;
 		return new Tax (period, account, service);
 	}
@@ -35,13 +35,13 @@ public class TaxTable : TableView {
 	}
 
 
-	protected override Gee.List<Entity> get_entity_list () throws DatabaseError {
+	protected override Gee.List<DB.Entity> get_entity_list () {
 		if (account == null)
-			return new Gee.ArrayList<Entity> ();
+			return new Gee.ArrayList<DB.Entity> ();
 
-		Gee.List<Tax> taxes = db.get_tax_list (period, account);
+		Gee.List<Tax> taxes = (db as Database).get_tax_list (period, account);
 		foreach (var tax in taxes)
-			tax.calc (db);
+			tax.calc (db as Database);
 		return taxes;
 	}
 }

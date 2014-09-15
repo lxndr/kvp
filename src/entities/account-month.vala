@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class AccountMonth : Entity
+public class AccountMonth : DB.Entity
 {
 	public Account account { get; set; }
 	public int year { get; set; }
@@ -40,7 +40,7 @@ public class AccountMonth : Entity
 	}
 
 
-	public override unowned string db_table_name () {
+	public override unowned string db_table () {
 		return "account_month";
 	}
 
@@ -63,8 +63,8 @@ public class AccountMonth : Entity
 	}
 
 
-	public override string get_display_name () {
-		return account.number;
+	public string display_name {
+		get { return account.number; }
 	}
 
 

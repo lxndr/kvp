@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class Tax : SimpleEntity
+public class Tax : DB.SimpleEntity
 {
 	public Account account { get; set; }
 	public int year { get; set; }
@@ -19,7 +19,7 @@ public class Tax : SimpleEntity
 	}
 
 
-	public override unowned string db_table_name () {
+	public override unowned string db_table () {
 		return "taxes";
 	}
 
@@ -43,8 +43,8 @@ public class Tax : SimpleEntity
 	}
 
 
-	public override string get_display_name () {
-		return service.name;
+	public string display_name {
+		get { return service.name; }
 	}
 
 

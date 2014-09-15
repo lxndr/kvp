@@ -1,4 +1,4 @@
-namespace Kv {
+namespace DB {
 
 
 public abstract class SimpleEntity : Entity {

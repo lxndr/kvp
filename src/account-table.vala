@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class AccountTable : TableView {
+public class AccountTable : DB.TableView {
 	private Period current_period;
 
 
@@ -24,10 +24,10 @@ public class AccountTable : TableView {
 	}
 
 
-	protected override Gee.List<Entity> get_entity_list () throws DatabaseError {
-		var list = db.get_account_month_list (current_period) as Gee.List<AccountMonth>;
+	protected override Gee.List<DB.Entity> get_entity_list () {
+		var list = (db as Database).get_account_month_list (current_period) as Gee.List<AccountMonth>;
 		foreach (var a in list)
-			a.calc (db);
+			a.calc ((db as Database));
 		return list;
 	}
 
@@ -46,7 +46,7 @@ public class AccountTable : TableView {
 	}
 
 
-	private void account_edited (Entity ent) {
+	private void account_edited (DB.Entity ent) {
 		db.persist ((ent as AccountMonth).account);
 	}
 }

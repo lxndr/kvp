@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class PeopleTable : TableView {
+public class PeopleTable : DB.TableView {
 	private Period period;
 	private Account? account;
 
@@ -19,7 +19,7 @@ public class PeopleTable : TableView {
 	}
 
 
-	protected override Entity new_entity () {
+	protected override DB.Entity new_entity () {
 		return new Person (period, account, "New person");
 	}
 
@@ -33,11 +33,11 @@ public class PeopleTable : TableView {
 	}
 
 
-	protected override Gee.List<Entity> get_entity_list () throws DatabaseError {
+	protected override Gee.List<DB.Entity> get_entity_list () {
 		if (account == null)
-			return new Gee.ArrayList<Entity> ();
+			return new Gee.ArrayList<DB.Entity> ();
 
-		return db.get_people_list (period, account);
+		return (db as Database).get_people_list (period, account);
 	}
 }
 

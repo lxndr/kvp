@@ -1,13 +1,16 @@
 RESOURCES=ui/main-window.ui \
 	data/init.sql
 
-SOURCES=src/db/entity.vala \
+SOURCES=src/db/database.vala \
+		src/db/sqlite-database.vala \
+		src/db/entity.vala \
 		src/db/simple-entity.vala \
+		src/db/viewable.vala \
+		src/db/table-view.vala \
 		src/application.vala \
 		src/main-window.vala \
 		src/utils.vala \
 		src/types.vala \
-		src/table-view.vala \
 		src/account-table.vala \
 		src/people-table.vala \
 		src/tax-table.vala \

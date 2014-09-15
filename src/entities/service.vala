@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class Service : SimpleEntity
+public class Service : DB.SimpleEntity, DB.Viewable
 {
 	public string name { get; set; }
 	public string? unit { get; set; }
@@ -15,7 +15,7 @@ public class Service : SimpleEntity
 	}
 
 
-	public override unowned string db_table_name () {
+	public override unowned string db_table () {
 		return "services";
 	}
 
@@ -29,8 +29,8 @@ public class Service : SimpleEntity
 	}
 
 
-	public override string get_display_name () {
-		return name;
+	public string display_name {
+		get { return name; }
 	}
 }
 

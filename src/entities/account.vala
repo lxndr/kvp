@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class Account : SimpleEntity
+public class Account : DB.SimpleEntity
 {
 	public string number { get; set; }
 	public string apartment { get; set; }
@@ -14,7 +14,7 @@ public class Account : SimpleEntity
 	}
 
 
-	public override unowned string db_table_name () {
+	public override unowned string db_table () {
 		return "accounts";
 	}
 
@@ -28,8 +28,13 @@ public class Account : SimpleEntity
 	}
 
 
-	public override string get_display_name () {
-		return number;
+	public string display_name {
+		get { return number; }
+	}
+
+
+	public Account (DB.Database _db) {
+		Object (db: _db);
 	}
 }
 

@@ -1,4 +1,4 @@
-namespace Kv {
+namespace DB {
 
 
 public abstract class TableView {
@@ -14,7 +14,7 @@ public abstract class TableView {
 
 
 	protected abstract string[] view_properties ();
-	protected abstract Gee.List<Entity> get_entity_list () throws DatabaseError;
+	protected abstract Gee.List<Entity> get_entity_list ();
 
 
 	public signal void selection_changed ();
@@ -102,12 +102,12 @@ public abstract class TableView {
 				(cell as Gtk.CellRendererText).edited.connect (text_row_edited);
 			} else if (prop_type.is_a (typeof (Entity))) {
 				var combo_store = new Gtk.ListStore (2, typeof (string), typeof (Entity));
-				var service_list = db.get_service_list ();
+				var entity_list = db.get_entity_list (prop_type, null) as Gee.List<Viewable>;
 
-				foreach (var service in service_list) {
+				foreach (var entity in entity_list) {
 					Gtk.TreeIter iter;
 					combo_store.append (out iter);
-					combo_store.set (iter, 0, service.name, 1, service);
+					combo_store.set (iter, 0, entity.display_name, 1, entity);
 				}
 
 				cell = new Gtk.CellRendererCombo ();
@@ -191,7 +191,7 @@ public abstract class TableView {
 		entity.set_property (property_name, prop_entity);
 
 		var val = Value (typeof (string));
-		val.set_string (entity.get_display_name ());
+		val.set_string ((entity as Viewable).display_name);
 		list_store.set_value (iter, property_column, val);
 
 		db.persist (entity);
@@ -220,7 +220,7 @@ public abstract class TableView {
 		var msg = new Gtk.MessageDialog (null, Gtk.DialogFlags.MODAL,
 				Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO,
 				"Are you sure you want to delete '%s' and all its data?",
-				obj.get_display_name ());
+				(obj as Viewable).display_name);
 		msg.response.connect ((response_id) => {
 			if (response_id == Gtk.ResponseType.YES) {
 //				update_account_list ();
@@ -261,9 +261,9 @@ public abstract class TableView {
 			entity.get_property (prop_name, ref val);
 
 			if (val.type ().is_a (typeof (Entity))) {
-				var obj = val.get_object () as Entity;
+				var obj = val.get_object () as Viewable;
 				if (obj != null)
-					list_store.set (iter, i + 1, obj.get_display_name ());
+					list_store.set (iter, i + 1, obj.display_name);
 			} else
 				list_store.set_value (iter, i + 1, val);
 		}
