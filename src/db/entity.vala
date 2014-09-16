@@ -26,6 +26,9 @@ public abstract class Entity : Object {
 	public void persist () {
 		db.persist (this);
 	}
+
+
+	public abstract void remove ();
 }
 
 

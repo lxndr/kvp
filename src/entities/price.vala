@@ -33,6 +33,9 @@ public class Price : DB.Entity
 	public string display_name {
 		get { return service.name; }
 	}
+
+
+	public override void remove () {}
 }
 
 

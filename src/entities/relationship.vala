@@ -26,6 +26,9 @@ public class Relationship : DB.SimpleEntity, DB.Viewable
 	public Relationship (DB.Database _db) {
 		Object (db: _db);
 	}
+
+
+	public override void remove () {}
 }
 
 

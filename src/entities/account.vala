@@ -43,6 +43,21 @@ public class Account : DB.SimpleEntity
 	}
 
 
+	public override void remove () {
+		var query = ("DELETE FROM accounts WHERE id=%" + int64.FORMAT)
+				.printf (id);
+		db.exec_sql (query, null);
+
+		query = ("DELETE FROM people WHERE account=%" + int64.FORMAT)
+				.printf (id);
+		db.exec_sql (query, null);
+
+		query = ("DELETE FROM taxes WHERE account=%" + int64.FORMAT)
+				.printf (id);
+		db.exec_sql (query, null);
+	}
+
+
 	public int64 number_of_people (int year, int month) {
 		return db.query_count ("people",
 				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")

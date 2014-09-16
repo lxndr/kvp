@@ -31,13 +31,13 @@ public abstract class TableView {
 	public signal void row_edited (Entity ent);
 
 
-	protected virtual DB.Entity new_entity () {
+	protected virtual Entity new_entity () {
 		return Object.new (object_type) as Entity;
 	}
 
 
-	protected virtual void delete_entity (DB.Entity entity) {
-		db.remove (entity);
+	protected virtual void remove_entity (Entity entity) {
+		entity.remove ();
 	}
 
 
@@ -261,6 +261,8 @@ public abstract class TableView {
 				remove_entity (obj);
 				list_store.remove (iter);
 			}
+
+			msg.destroy ();
 		});
 		msg.show ();
 	}

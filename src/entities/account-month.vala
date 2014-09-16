@@ -84,6 +84,9 @@ public class AccountMonth : DB.Entity, DB.Viewable
 	}
 
 
+	public override void remove () {}
+
+
 	public void calc (Database db) {
 		/* calculate total */
 		total.val = 0;
