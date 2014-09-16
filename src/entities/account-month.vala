@@ -7,7 +7,7 @@ public class AccountMonth : DB.Entity, DB.Viewable
 	public int year { get; set; }
 	public int month { get; set; }
 	public int total { get; set; }
-	public int payment { get; set; }
+	public Money payment { get; set; }
 	public int balance { get; set; }
 
 	public string number {
@@ -42,7 +42,7 @@ public class AccountMonth : DB.Entity, DB.Viewable
 
 	construct {
 		total = 0;
-		payment = 0;
+		payment.val = 0;
 		balance = 0;
 	}
 
@@ -111,7 +111,7 @@ stdout.printf ("PREV %d.%d BALANCE %d\n", prev_period.year, prev_period.month, p
 
 		/* calculate balance */
 		if (year == 2014)	/* FIXME */
-			balance = previous_balance + total - payment;
+			balance = previous_balance + total - (int) payment.val;
 
 		db.persist (this);
 	}

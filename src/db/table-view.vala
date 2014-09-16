@@ -173,14 +173,34 @@ public abstract class TableView {
 		list_store.get (iter, 0, out entity);
 
 		var property_name = cell.get_data<string> ("property_name");
-		var property_column = cell.get_data<int> ("property_column");
+//		var property_column = cell.get_data<int> ("property_column");
 
-		var val = Value (typeof (string));
-		val.set_string (new_text);
+		var obj_class = (ObjectClass) entity.get_type ().class_ref ();
+		var prop_spec = obj_class.find_property (property_name);
+		var prop_type = prop_spec.value_type;
 
-		entity.set_property (property_name, val);
-		list_store.set_value (iter, property_column, val);
+		if (prop_type == typeof (int) || prop_type == typeof (string)) {
+			var val = Value (typeof (string));
+			val.set_string (new_text);
+			entity.set_property (property_name, val);
+			// list_store.set_value (iter, property_column, val);
+		} else {
+			var ad_val = Value (typeof (PropertyAdapter));
+			ad_val.set_object (new PropertyAdapter (new_text));
+stdout.printf ("NEW_TEXT %s\n", new_text);
+			/* transform string to property value */
+			var val = Value (prop_type);
+			if (ad_val.transform (ref val) == false)
+				warning ("Could not transform %s to %s",
+						ad_val.type ().name (), val.type ().name ());
+//stdout.printf ("NEW_TEXT= %s\n", val.get_string ());
+			entity.set_property (property_name, val);
 
+			/* quick and dirty */
+			// list_store.set_value (iter, property_column, val);
+		}
+
+		update_row (iter, entity);
 		db.persist (entity);
 		row_edited (entity);
 	}

@@ -21,9 +21,9 @@ public class SQLiteDatabase : Object, Database {
 
 	public void exec_sql (string sql, Sqlite.Callback? callback = null) {
 		string errmsg;
-#if 0
+// #if 1
 		stdout.printf ("%s\n", sql);
-#endif
+// #endif
 		if (db.exec (sql, callback, out errmsg) != Sqlite.OK)
 			error ("Error executing SQL statement: %s\n", errmsg);
 	}

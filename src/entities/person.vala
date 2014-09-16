@@ -13,7 +13,7 @@ public class Person : DB.SimpleEntity, DB.Viewable
 
 	construct {
 		name = "000";
-		birthday = "000";
+		birthday = "";
 	}
 
 
@@ -34,11 +34,14 @@ public class Person : DB.SimpleEntity, DB.Viewable
 	}
 
 
-	public Person (Period _period, Account _account, string _name) {
-		Object (year: _period.year,
-				month: _period.month,
+	public Person (Database _db, Account _account, Period _period) {
+		var _relationship = _db.get_entity (typeof (Relationship), 2) as Relationship;
+
+		Object (db: _db,
 				account: _account,
-				name: _name);
+				year: _period.year,
+				month: _period.month,
+				relationship: _relationship);
 	}
 
 

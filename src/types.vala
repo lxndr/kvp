@@ -6,7 +6,7 @@ public struct Money {
 	public int64 val;
 
 
-	public Money (int _val) {
+	public Money (int64 _val) {
 		val = _val;
 	}
 
@@ -29,13 +29,13 @@ public struct Money {
 	}
 
 
-	public Money.from_string (string s) {
+	public Money.from_formatted (string s) {
 		var p = s.index_of_char ('.');
 		if (p == -1)
 			p = s.index_of_char (',');
-		
+
 		if (p == -1) {
-			val = int64.parse (clean (s, 256, true));
+			val = int64.parse (clean (s, 256, true)) * 100;
 		} else {
 			var p1 = s[0:p];
 			var p2 = s[p+1:s.length];
@@ -48,11 +48,11 @@ public struct Money {
 	}
 
 
-	public string to_string () {
+	public string format () {
 		var p0 = (val / 100);
 		var p1 = (val % 100).abs ();
 
-		return ("%" + int64.FORMAT + ",%" + int64.FORMAT).printf (p0, p1);
+		return ("%" + int64.FORMAT + ",%02" + int64.FORMAT).printf (p0, p1);
 	}
 }
 

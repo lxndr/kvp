@@ -51,8 +51,19 @@ public class Application : Gtk.Application
 		Value.register_transform_func (typeof (string), typeof (double),
 				(ValueTransform) Utils.transform_string_to_double);
 
+		Value.register_transform_func (typeof (string), typeof (Money),
+				(ValueTransform) Utils.transform_string_to_money);
+		Value.register_transform_func (typeof (Money), typeof (string),
+				(ValueTransform) Utils.transform_money_to_string);
+
 		Value.register_transform_func (typeof (double), typeof (DB.PropertyAdapter),
-				(ValueTransform) Utils.db_transform_double_to_string);
+				(ValueTransform) Utils.transform_double_to_property_adapter);
+		Value.register_transform_func (typeof (DB.PropertyAdapter), typeof (double),
+				(ValueTransform) Utils.transform_property_adapter_to_double);
+		Value.register_transform_func (typeof (Money), typeof (DB.PropertyAdapter),
+				(ValueTransform) Utils.transform_money_to_property_adapter);
+		Value.register_transform_func (typeof (DB.PropertyAdapter), typeof (Money),
+				(ValueTransform) Utils.transform_property_adapter_to_money);
 	}
 
 

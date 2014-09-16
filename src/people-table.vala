@@ -20,7 +20,7 @@ public class PeopleTable : DB.TableView {
 
 
 	protected override DB.Entity new_entity () {
-		return new Person (period, account, "New person");
+		return new Person (db as Database, account, period);
 	}
 
 

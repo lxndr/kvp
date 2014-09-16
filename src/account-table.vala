@@ -79,7 +79,7 @@ public class AccountTable : DB.TableView {
 
 		var new_account = new_entity () as AccountMonth;
 
-		var query = "INSERT INTO taxes SELECT NULL,month,year,%lld,service,0 FROM taxes WHERE year=%d AND month=%d AND account=%lld"
+		var query = "INSERT INTO taxes SELECT NULL,%lld,year,month,service,0,0 FROM taxes WHERE year=%d AND month=%d AND account=%lld"
 				.printf (new_account.account.id, current_period.year, current_period.month, account.id);
 		db.exec_sql (query, null);
 
@@ -91,13 +91,13 @@ public class AccountTable : DB.TableView {
 		var account = get_selected_account ();
 
 		/* copy taxes */
-		var query = "INSERT INTO taxes SELECT NULL,%d,%d,%lld,service,0 from taxes where account=%lld and year=%d and month=%d"
-				.printf (current_period.month + 1, current_period.year, account.id, account.id, current_period.year, current_period.month);
+		var query = "INSERT INTO taxes SELECT NULL,%lld,%d,%d,service,0,0 from taxes where account=%lld and year=%d and month=%d"
+				.printf (account.id, current_period.year, current_period.month + 1, account.id, current_period.year, current_period.month);
 		db.exec_sql (query, null);
 
 		/* copy people */
-		query = "INSERT INTO people SELECT NULL,%d,%d,%lld,name,birthday,relationship from people where account=%lld and year=%d and month=%d"
-				.printf (current_period.year, current_period.month + 1, account.id, account.id, current_period.year, current_period.month);
+		query = "INSERT INTO people SELECT NULL,%lld,%d,%d,name,birthday,relationship from people where account=%lld and year=%d and month=%d"
+				.printf (account.id, current_period.year, current_period.month + 1, account.id, current_period.year, current_period.month);
 		db.exec_sql (query, null);
 	}
 }

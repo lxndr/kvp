@@ -74,8 +74,8 @@ public interface Database : Object {
 				if (prop_type.is_a (typeof (DB.Entity)))
 					dest_val.set_object (get_entity (prop_type, int64.parse (values[i])));
 				else if (str_val.transform (ref dest_val) == false)
-					stdout.printf ("Couldn't transform from '%s' to '%s' for property '%s' of '%s'\n",
-							str_val.type ().name (), dest_val.type ().name (),
+					warning ("Couldn't transform value '%s' from '%s' to '%s' for property '%s' of '%s'\n",
+							values[i], str_val.type ().name (), dest_val.type ().name (),
 							prop_name, type.name ());
 
 				entity.set_property (column_names[i], dest_val);
@@ -208,7 +208,7 @@ public interface Database : Object {
 
 			var str_val = Value (typeof (string));
 			if (val.transform (ref str_val) == false)
-				stdout.printf ("Couldn't transform from '%s' to '%s' for property '%s' of '%s'\n",
+				warning ("Couldn't transform from '%s' to '%s' for property '%s' of '%s'\n",
 						val.type ().name (), str_val.type ().name (),
 						prop_name, prop_spec.value_type.name ());
 

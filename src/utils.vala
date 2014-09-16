@@ -21,9 +21,41 @@ public void transform_string_to_double (Value src_value, ref Value dest_value) {
 }
 
 
-public void db_transform_double_to_string (Value src_value, ref Value dest_value) {
+public void transform_string_to_money (Value src_value, ref Value dest_value) {
+	int64 n = int64.parse (src_value.get_string ());
+	var m = Money (n);
+	dest_value.set_boxed (&m);
+}
+
+
+public void transform_money_to_string (Value src_value, ref Value dest_value) {
+	Money* m = (Money*) src_value.get_boxed ();
+	dest_value.set_string (m->val.to_string ());
+}
+
+
+public void transform_double_to_property_adapter (Value src_value, ref Value dest_value) {
 	double d = src_value.get_double ();
 	dest_value.set_object (new DB.PropertyAdapter (d.to_string ()));
+}
+
+
+public void transform_property_adapter_to_double (Value src_value, ref Value dest_value) {
+	var ad = src_value.get_object () as DB.PropertyAdapter;
+	dest_value.set_double (double.parse (ad.val));
+}
+
+
+public void transform_money_to_property_adapter (Value src_value, ref Value dest_value) {
+	Money* m = (Money*) src_value.get_boxed ();
+	dest_value.set_object (new DB.PropertyAdapter (m->format ()));
+}
+
+
+public void transform_property_adapter_to_money (Value src_value, ref Value dest_value) {
+	var ad = src_value.get_object () as DB.PropertyAdapter;
+	var m = Money.from_formatted (ad.val);
+	dest_value.set_boxed (&m);
 }
 
 
