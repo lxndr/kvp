@@ -8,14 +8,14 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 	public int month { get; set; }
 	public Service service { get; set; }
 	public double amount { get; set; }
-	public int price { get; set; }
-	public int total {get; set; }
+	public Money price { get; set; }
+	public Money total {get; set; }
 
 
 	construct {
 		year = 2000;
 		month = 1;
-		total = 0;
+		total.val = 0;
 	}
 
 
@@ -68,8 +68,8 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 
 	public void calc_total () {
 		Period period = { year, month };
-		price = (db as Database).get_price (period, service);
-		total = (int) (amount * (double) price);
+		price = Money ((db as Database).get_price (period, service));
+		total.val = (int64) (amount * (double) price.val);
 	}
 }
 

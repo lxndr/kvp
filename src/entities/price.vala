@@ -6,7 +6,7 @@ public class Price : DB.Entity
 	public Service service { get; set; }
 	public int year { get; set; }
 	public int month { get; set; }
-	public int price { get; set; }
+	public Money price { get; set; }
 
 
 	public override unowned string db_table () {

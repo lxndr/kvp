@@ -135,13 +135,13 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public int get_price (Period period, Service service) {
-		int price = 0;
+	public int64 get_price (Period period, Service service) {
+		int64 price = 0;
 		var query = "SELECT price FROM prices WHERE year=%d AND month=%d AND service=%lld"
 				.printf (period.year, period.month, service.id);
 
 		exec_sql (query, (n_columns, values, column_names) => {
-			price = (int) int64.parse (values[0]);
+			price = int64.parse (values[0]);
 			return 0;
 		});
 

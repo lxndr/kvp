@@ -6,9 +6,9 @@ public class AccountMonth : DB.Entity, DB.Viewable
 	public Account account { get; set; }
 	public int year { get; set; }
 	public int month { get; set; }
-	public int total { get; set; }
+	public Money total { get; set; }
 	public Money payment { get; set; }
-	public int balance { get; set; }
+	public Money balance { get; set; }
 
 	public string number {
 		get { return account.number; }
@@ -41,9 +41,9 @@ public class AccountMonth : DB.Entity, DB.Viewable
 
 
 	construct {
-		total = 0;
+		total.val = 0;
 		payment.val = 0;
-		balance = 0;
+		balance.val = 0;
 	}
 
 
@@ -86,32 +86,32 @@ public class AccountMonth : DB.Entity, DB.Viewable
 
 	public void calc (Database db) {
 		/* calculate total */
-		total = 0;
+		total.val = 0;
 		var query = "SELECT SUM(total) FROM taxes WHERE account=%lld AND year=%d AND month=%d"
 				.printf (account.id, year, month);
 		db.exec_sql (query, (n_columns, values, column_names) => {
 			if (values[0] != null)
-				total = (int) int64.parse (values[0]);
+				total.val = int64.parse (values[0]);
 			return 0;
 		});
 
 		/* previous balance */
-		int previous_balance = 0;
+		int64 previous_balance = 0;
 		Period current_period = {year, month};
 		var prev_period = current_period.prev ();
 		query = "SELECT balance FROM account_month WHERE account=%lld AND year=%d AND month=%d"
 				.printf (account.id, prev_period.year, prev_period.month); /* FIXME */
 		db.exec_sql (query, (n_columns, values, column_names) => {
 			if (values[0] != null)
-				previous_balance = (int) int64.parse (values[0]);
+				previous_balance = int64.parse (values[0]);
 			return 0;
 		});
 
-stdout.printf ("PREV %d.%d BALANCE %d\n", prev_period.year, prev_period.month, previous_balance);
+// stdout.printf ("PREV %d.%d BALANCE %d\n", prev_period.year, prev_period.month, previous_balance);
 
 		/* calculate balance */
 		if (year == 2014)	/* FIXME */
-			balance = previous_balance + total - (int) payment.val;
+			balance.val = previous_balance + total.val - payment.val;
 
 		db.persist (this);
 	}

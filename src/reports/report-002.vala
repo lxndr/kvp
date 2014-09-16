@@ -31,10 +31,8 @@ public class Report002 : Report {
 
 		/* base information */
 		var account = selected_account;
-		var people = db.get_people_list (current_period, account);
-		var tenant_name = people[0].name;
 
-		sheet.put_string ("C1", tenant_name);
+		sheet.put_string ("C1", account.tenant_name (current_period.year, current_period.month));
 		sheet.put_string ("L1", account.number);
 
 		/* services & taxes */
@@ -48,7 +46,7 @@ public class Report002 : Report {
 
 				var row_number = month + 4;
 				var tax = taxes[month];
-				sheet.get_row (row_number).get_cell (column_number).put_string (Money (tax.total).format ());
+				sheet.get_row (row_number).get_cell (column_number).put_string (tax.total.format ());
 			}
 		}
 
@@ -60,9 +58,9 @@ public class Report002 : Report {
 
 			var row_number = month + 4;
 			var item = totals[month];
-			sheet.get_row (row_number).get_cell (12).put_string (Money (item.total).format ());
+			sheet.get_row (row_number).get_cell (12).put_string (item.total.format ());
 			sheet.get_row (row_number).get_cell (13).put_string (item.payment.format ());
-			sheet.get_row (row_number).get_cell (14).put_string (Money (item.balance).format ());
+			sheet.get_row (row_number).get_cell (14).put_string (item.balance.format ());
 		}
 	}
 
