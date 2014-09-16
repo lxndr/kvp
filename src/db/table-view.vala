@@ -31,8 +31,13 @@ public abstract class TableView {
 	public signal void row_edited (Entity ent);
 
 
-	protected virtual Entity new_entity () {
+	protected virtual DB.Entity new_entity () {
 		return Object.new (object_type) as Entity;
+	}
+
+
+	protected virtual void delete_entity (DB.Entity entity) {
+		db.remove (entity);
 	}
 
 
@@ -187,13 +192,12 @@ public abstract class TableView {
 		} else {
 			var ad_val = Value (typeof (PropertyAdapter));
 			ad_val.set_object (new PropertyAdapter (new_text));
-stdout.printf ("NEW_TEXT %s\n", new_text);
+
 			/* transform string to property value */
 			var val = Value (prop_type);
 			if (ad_val.transform (ref val) == false)
 				warning ("Could not transform %s to %s",
 						ad_val.type ().name (), val.type ().name ());
-//stdout.printf ("NEW_TEXT= %s\n", val.get_string ());
 			entity.set_property (property_name, val);
 
 			/* quick and dirty */
@@ -254,14 +258,11 @@ stdout.printf ("NEW_TEXT %s\n", new_text);
 				(obj as Viewable).display_name);
 		msg.response.connect ((response_id) => {
 			if (response_id == Gtk.ResponseType.YES) {
-//				update_account_list ();
-//				update_people_list ();
-//				update_tax_list ();
+				remove_entity (obj);
+				list_store.remove (iter);
 			}
 		});
 		msg.show ();
-
-//		db.persist (obj);
 	}
 
 

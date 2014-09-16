@@ -36,7 +36,7 @@ public class AccountTable : DB.TableView {
 	}
 
 
-	protected override DB.Entity new_entity () {
+	protected new DB.Entity new_entity () {
 		var account = new Account (db);
 		db.persist (account);
 
@@ -44,6 +44,12 @@ public class AccountTable : DB.TableView {
 		db.persist (account_month);
 
 		return account_month;
+	}
+
+
+	protected new void delete_entity (DB.Entity entity) {
+		error ("removing %s", (entity as AccountMonth).number);
+//		db.remove (entity);
 	}
 
 
