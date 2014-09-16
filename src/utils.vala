@@ -36,7 +36,7 @@ public void transform_money_to_string (Value src_value, ref Value dest_value) {
 
 public void transform_double_to_property_adapter (Value src_value, ref Value dest_value) {
 	double d = src_value.get_double ();
-	dest_value.set_object (new DB.PropertyAdapter (d.to_string ()));
+	dest_value.set_object (new DB.PropertyAdapter ("%.3f".printf (d)));
 }
 
 
@@ -57,6 +57,17 @@ public void transform_property_adapter_to_money (Value src_value, ref Value dest
 	var m = Money.from_formatted (ad.val);
 	dest_value.set_boxed (&m);
 }
+
+
+/*
+public string format_double (double n, int digits) {
+	var f = "%.*f".printf (digits, n);
+
+	int p = f.length;
+	for (p = p - 1; p >= 0; p--)
+		
+}
+*/
 
 
 public unowned string month_to_string (int month) {
