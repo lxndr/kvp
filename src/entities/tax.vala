@@ -69,7 +69,7 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 	public void calc_total () {
 		Period period = { year, month };
 		price = Money ((db as Database).get_price (period, service));
-		total.val = (int64) (amount * (double) price.val);
+		total = Money (Math.llround (amount * (double) price.val));
 	}
 
 

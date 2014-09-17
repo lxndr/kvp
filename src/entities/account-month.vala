@@ -94,7 +94,7 @@ public class AccountMonth : DB.Entity, DB.Viewable
 				.printf (account.id, year, month);
 		db.exec_sql (query, (n_columns, values, column_names) => {
 			if (values[0] != null)
-				total.val = int64.parse (values[0]);
+				total = Money (int64.parse (values[0]));
 			return 0;
 		});
 
@@ -114,7 +114,7 @@ public class AccountMonth : DB.Entity, DB.Viewable
 
 		/* calculate balance */
 		if (year == 2014)	/* FIXME */
-			balance.val = previous_balance + total.val - payment.val;
+			balance = Money (previous_balance + total.val - payment.val);
 
 		db.persist (this);
 	}
