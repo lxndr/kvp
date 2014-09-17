@@ -28,7 +28,7 @@ public abstract class TableView {
 
 
 	public signal void selection_changed ();
-	public signal void row_edited (Entity ent);
+	public virtual signal void row_edited (Entity entity, string prop_name) {}
 
 
 	protected virtual Entity new_entity () {
@@ -169,7 +169,8 @@ public abstract class TableView {
 	}
 
 
-	private void text_row_edited (Gtk.CellRendererText cell, string _path, string new_text) {
+	private void text_row_edited (Gtk.CellRendererText cell, string _path,
+			string new_text) {
 		Entity entity;
 		Gtk.TreeIter iter;
 
@@ -206,11 +207,12 @@ public abstract class TableView {
 
 		update_row (iter, entity);
 		db.persist (entity);
-		row_edited (entity);
+		row_edited (entity, property_name);
 	}
 
 
-	private void combo_row_changed (Gtk.CellRendererCombo cell, string _path, Gtk.TreeIter prop_iter) {
+	private void combo_row_changed (Gtk.CellRendererCombo cell, string _path,
+			Gtk.TreeIter prop_iter) {
 		Entity entity;
 		Gtk.TreeIter iter;
 		var path = new Gtk.TreePath.from_string (_path);
@@ -317,6 +319,27 @@ public abstract class TableView {
 				list_store.set_value (iter, i + 1, val);
 			}
 		}
+	}
+
+
+	private bool find_row (out Gtk.TreeIter iter, DB.Entity entity) {
+		if (list_store.get_iter_first (out iter) == true) {
+			do {
+				DB.Entity ent;
+				list_store.get (iter, 0, out ent);
+				if (ent == entity)
+					return true;
+			} while (list_store.iter_next (ref iter) == true);
+		}
+
+		return false;
+	}
+
+
+	public void refresh_row (DB.Entity entity) {
+		Gtk.TreeIter iter;
+		if (find_row (out iter, entity) == true)
+			update_row (iter, entity);
 	}
 }
 

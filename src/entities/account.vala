@@ -44,8 +44,8 @@ public class Account : DB.SimpleEntity
 
 
 	public override void remove () {
-		db.delete_entity (db_table (),
-				("id=%" + int64.FORMAT).printf (id));
+		base.remove ();
+
 		db.delete_entity ("account_month",
 				("account=%" + int64.FORMAT).printf (id));
 		db.delete_entity ("people",

@@ -100,6 +100,19 @@ public class AccountMonth : DB.Entity, DB.Viewable
 	}
 
 
+	public void calc_total () {
+		total = Money (db.query_sum ("taxes", "total",
+				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
+				.printf (account.id, year, month)));
+	}
+
+
+	public void calc_balance () {
+		var prev = previuos_balance ();
+		balance = Money (prev.val + total.val - payment.val);
+	}
+
+
 	public void calc (Database db) {
 		/* calculate total */
 		total = Money (0);

@@ -8,8 +8,6 @@ public class AccountTable : DB.TableView {
 	public AccountTable (Database dbase) {
 		base (dbase, typeof (AccountMonth));
 
-		row_edited.connect (account_edited);
-
 		var menu_item = new Gtk.MenuItem.with_label ("Duplicate");
 		menu_item.activate.connect (duplicate_item_clicked);
 		menu_item.visible = true;
@@ -74,8 +72,13 @@ public class AccountTable : DB.TableView {
 	}
 
 
-	private void account_edited (DB.Entity ent) {
-		db.persist ((ent as AccountMonth).account);
+	public override void row_edited (DB.Entity entity, string prop_name) {
+		var account_period = entity as AccountMonth;
+
+		if (prop_name == "payment") {
+			account_period.calc_balance ();
+			refresh_row (entity);
+		}
 	}
 
 

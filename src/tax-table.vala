@@ -47,9 +47,6 @@ public class TaxTable : DB.TableView {
 		}
 		return taxes;
 	}
-
-
-	
 }
 
 

@@ -21,6 +21,21 @@ public interface Database : Object {
 	}
 
 
+	public int64 query_sum (string table, string column, string expr) {
+		int64 result = 0;
+		var query = "SELECT SUM(%s) FROM `%s` WHERE %s"
+				.printf (column, table, expr);
+
+		exec_sql (query, (n_columns, values, column_names) => {
+			if (values[0] != null)
+				result = int64.parse (values[0]);
+			return 0;
+		});
+
+		return result;
+	}
+
+
 	public string? query_string (string table, string column, string expr) {
 		string? result = null;
 		var query = "SELECT `%s` FROM `%s` WHERE %s"
