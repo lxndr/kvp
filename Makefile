@@ -31,7 +31,8 @@ SOURCES=src/db/database.vala \
 		src/ooxml/error.vala \
 		src/report.vala \
 		src/reports/report-001.vala \
-		src/reports/report-002.vala
+		src/reports/report-002.vala \
+		src/reports/report-003.vala
 
 
 

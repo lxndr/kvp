@@ -74,6 +74,7 @@ public class Application : Gtk.Application
 		reports = new Gee.HashMap<string, Type> ();
 		reports.set ("List of the tenants", typeof (Report001));
 		reports.set ("Account", typeof (Report002));
+		reports.set ("People and taxes", typeof (Report003));
 
 		/* database */
 		try {
