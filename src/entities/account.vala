@@ -80,6 +80,13 @@ public class Account : DB.SimpleEntity
 				int64.FORMAT + " AND year=%d AND month=%d AND relationship=1")
 				.printf (id, year, month));
 	}
+
+
+	public AccountMonth? fetch_period (int year, int month) {
+		return db.fetch_entity<AccountMonth> ("account_month",
+				("account=%" + int64.FORMAT + " AND year=%d AND month=%d").
+				printf (id, year, month));
+	}
 }
 
 

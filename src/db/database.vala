@@ -35,6 +35,16 @@ public interface Database : Object {
 	}
 
 
+	public T? fetch_entity<T> (string table, string expr) {
+		var query = "SELECT * FROM %s WHERE %s LIMIT 1"
+				.printf (table, expr);
+		var list = get_entity_list (typeof (T), query) as Gee.List<T>;
+		if (list.size == 0)
+			return null;
+		return list[0];
+	}
+
+
 	public DB.Entity get_entity (Type type, int64 id) {
 		var tmp = Object.new (type) as DB.Entity;
 		var query = "SELECT * FROM `%s` WHERE id=%lld".printf (tmp.db_table (), id);

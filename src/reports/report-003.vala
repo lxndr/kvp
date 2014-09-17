@@ -34,6 +34,8 @@ public class Report003 : Report {
 		int row_number = 10;
 
 		foreach (var ac in accounts) {
+			var account_period = ac.fetch_period (current_period.year, current_period.month);
+
 			var row = sheet.get_row (row_number);
 			row.get_cell (1).put_string (ac.number);
 			row.get_cell (3).put_string (ac.apartment);
@@ -53,11 +55,11 @@ public class Report003 : Report {
 			row.get_cell (10).put_string ("");
 			row.get_cell (11).put_string ("");
 			row.get_cell (12).put_string ("");
-			row.get_cell (13).put_string ("");
-			row.get_cell (14).put_string ("");
-			row.get_cell (15).put_string ("");
-			row.get_cell (16).put_string ("");
-			row.get_cell (17).put_string ("");*/
+			row.get_cell (13).put_string ("");*/
+			row.get_cell (14).put_string (account_period.total.format ());
+			row.get_cell (15).put_string (account_period.payment.format ());
+/*			row.get_cell (16).put_string (); */
+			row.get_cell (17).put_string (account_period.balance.format ());
 
 			row_number++;
 		}
