@@ -15,6 +15,16 @@ public abstract class SimpleEntity : Entity {
 			"id"
 		};
 	}
+
+
+	public override void remove () {
+		if (id == 0)
+			error ("The entity being removed is not present in the database.");
+
+		var query = ("DELETE FROM %s WHERE id=%" + int64.FORMAT)
+				.printf (db_table (), id);
+		db.exec_sql (query, null);
+	}
 }
 
 

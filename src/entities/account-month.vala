@@ -89,7 +89,7 @@ public class AccountMonth : DB.Entity, DB.Viewable
 
 	public void calc (Database db) {
 		/* calculate total */
-		total.val = 0;
+		total = Money (0);
 		var query = "SELECT SUM(total) FROM taxes WHERE account=%lld AND year=%d AND month=%d"
 				.printf (account.id, year, month);
 		db.exec_sql (query, (n_columns, values, column_names) => {

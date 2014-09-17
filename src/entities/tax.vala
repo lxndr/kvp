@@ -71,9 +71,6 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 		price = Money ((db as Database).get_price (period, service));
 		total = Money (Math.llround (amount * (double) price.val));
 	}
-
-
-	public override void remove () {}
 }
 
 
