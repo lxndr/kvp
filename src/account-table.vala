@@ -47,10 +47,15 @@ public class AccountTable : DB.TableView {
 	}
 
 
+	protected override void remove_entity (DB.Entity entity) {
+		(entity as AccountMonth).account.remove ();
+	}
+
+
 	protected override Gee.List<DB.Entity> get_entity_list () {
 		var list = (db as Database).get_account_month_list (current_period) as Gee.List<AccountMonth>;
-		foreach (var a in list)
-			a.calc ((db as Database));
+//		foreach (var a in list)
+//			a.calc ((db as Database));
 		return list;
 	}
 

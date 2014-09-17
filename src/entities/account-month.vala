@@ -87,6 +87,19 @@ public class AccountMonth : DB.Entity, DB.Viewable
 	public override void remove () {}
 
 
+	public Money previuos_balance () {
+		int p = year * 12 + month - 1;
+		p--;
+		int _year = p / 12;
+		int _month = (p % 12) + 1;
+
+		var n = db.query_int64 ("account_month", "balance",
+				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
+				.printf (account.id, _year, _month));
+		return Money (n);
+	}
+
+
 	public void calc (Database db) {
 		/* calculate total */
 		total = Money (0);

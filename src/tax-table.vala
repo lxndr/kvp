@@ -41,9 +41,9 @@ public class TaxTable : DB.TableView {
 
 		Gee.List<Tax> taxes = (db as Database).get_tax_list (period, account);
 		foreach (var tax in taxes) {
-			tax.calc_amount ();
-			tax.calc_total ();
-			tax.persist ();
+//			tax.calc_amount ();
+//			tax.calc_total ();
+//			tax.persist ();
 		}
 		return taxes;
 	}

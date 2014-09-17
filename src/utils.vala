@@ -3,6 +3,26 @@ namespace Kv {
 namespace Utils {
 
 
+/*
+ * Formats a double removing trailing zeroes.
+ */
+public string format_double (double n, int max_digits) {
+	var s = "%.*f".printf (max_digits, n);
+
+	int p = s.length - 1;
+	for (; p >= 0; p--) {
+		var ch = s[p];
+		if (ch != '0') {
+			if (ch == '.' || ch == ',')
+				p--;
+			break;
+		}
+	}
+
+	return s[0:p+1];
+}
+
+
 public void transform_string_to_int (Value src_value, ref Value dest_value) {
 	unowned string s = src_value.get_string ();
 	dest_value.set_int (int.parse (s));
@@ -36,7 +56,7 @@ public void transform_money_to_string (Value src_value, ref Value dest_value) {
 
 public void transform_double_to_property_adapter (Value src_value, ref Value dest_value) {
 	double d = src_value.get_double ();
-	dest_value.set_object (new DB.PropertyAdapter ("%.3f".printf (d)));
+	dest_value.set_object (new DB.PropertyAdapter (format_double (d, 2)));
 }
 
 
@@ -58,16 +78,6 @@ public void transform_property_adapter_to_money (Value src_value, ref Value dest
 	dest_value.set_boxed (&m);
 }
 
-
-/*
-public string format_double (double n, int digits) {
-	var f = "%.*f".printf (digits, n);
-
-	int p = f.length;
-	for (p = p - 1; p >= 0; p--)
-		
-}
-*/
 
 
 public unowned string month_to_string (int month) {

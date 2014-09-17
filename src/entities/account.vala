@@ -44,17 +44,14 @@ public class Account : DB.SimpleEntity
 
 
 	public override void remove () {
-		var query = ("DELETE FROM accounts WHERE id=%" + int64.FORMAT)
-				.printf (id);
-		db.exec_sql (query, null);
-
-		query = ("DELETE FROM people WHERE account=%" + int64.FORMAT)
-				.printf (id);
-		db.exec_sql (query, null);
-
-		query = ("DELETE FROM taxes WHERE account=%" + int64.FORMAT)
-				.printf (id);
-		db.exec_sql (query, null);
+		db.delete_entity (db_table (),
+				("id=%" + int64.FORMAT).printf (id));
+		db.delete_entity ("account_month",
+				("account=%" + int64.FORMAT).printf (id));
+		db.delete_entity ("people",
+				("account=%" + int64.FORMAT).printf (id));
+		db.delete_entity ("taxes",
+				("account=%" + int64.FORMAT).printf (id));
 	}
 
 

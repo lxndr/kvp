@@ -35,6 +35,15 @@ public interface Database : Object {
 	}
 
 
+	public int64 query_int64 (string table, string column, string expr) {
+		int64 n = 0;
+		var s = query_string (table, column, expr);
+		if (s != null)
+			n = int64.parse (s);
+		return n;
+	}
+
+
 	public T? fetch_entity<T> (string table, string expr) {
 		var query = "SELECT * FROM %s WHERE %s LIMIT 1"
 				.printf (table, expr);
@@ -42,6 +51,11 @@ public interface Database : Object {
 		if (list.size == 0)
 			return null;
 		return list[0];
+	}
+
+
+	public void delete_entity (string table, string expr) {
+		exec_sql ("DELETE FROM %s WHERE %s".printf (table, expr), null);
 	}
 
 
