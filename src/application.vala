@@ -5,32 +5,6 @@ namespace Kv {
 public struct Period {
 	public int year;
 	public int month;
-
-
-	public Period prev () {
-		Period p = this;
-		if (p.month == 1) {
-			p.year--;
-			p.month = 12;
-		} else {
-			p.month--;
-		}
-
-		return p;
-	}
-
-
-	public Period next () {
-		Period p = this;
-		if (p.month == 12) {
-			p.year++;
-			p.month = 1;
-		} else {
-			p.month++;
-		}
-
-		return p;
-	}
 }
 
 

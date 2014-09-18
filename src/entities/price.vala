@@ -4,8 +4,7 @@ namespace Kv {
 public class Price : DB.Entity
 {
 	public Service service { get; set; }
-	public int year { get; set; }
-	public int month { get; set; }
+	public int period { get; set; }
 	public Money value { get; set; }
 
 

@@ -3,7 +3,7 @@ namespace Kv {
 
 public class Report003 : Report {
 	const int service_ids[] = {
-		5, 6, 1, 2, 7, 8, 4, 9
+		5, 6, 1, 7, 8, 4, 9
 	};
 
 
@@ -27,24 +27,9 @@ public class Report003 : Report {
 	}
 
 
-	private Gee.Map<int, Money?> fetch_totals (int64 acc) {
-		var list = new Gee.HashMap<int, Money?> ();
-		foreach (var id in service_ids)
-			list[id] = Money (0);
-
-		var query = ("SELECT service,total FROM taxes WHERE account=%" +
-				int64.FORMAT + " AND year=%d AND month=%d")
-				.printf (acc, current_period.year, current_period.month);
-		db.exec_sql (query, (n_columns, values, column_names) => {
-			var id = (int) int64.parse (values[0]);
-			list.set (id, Money (int64.parse (values[1])));
-			return 0;
-		});
-		return list;
-	}
-
-
 	public override void make () throws Error {
+		int period = current_period.year * 12 + current_period.month - 1;
+
 		book.load (GLib.File.new_for_path ("./templates/people-and-taxes.xlsx"));
 
 		var sheet = book.sheet (0);
@@ -77,13 +62,16 @@ public class Report003 : Report {
 		OOXML.Row row = sheet.get_row(1);
 		int row_number = 10;
 
+		int64 totals[17];
+		for (var i = 0; i < 17; i++)
+			totals[i] = 0;
+
 		foreach (var ac in accounts) {
-			var account_period = ac.fetch_period (current_period.year * 12 + current_period.month - 1);
+			var account_period = ac.fetch_period (period);
 
 			row = sheet.get_row (row_number);
 			row.get_cell (1).put_string (ac.number).style = cstyles[0];
-			row.get_cell (2).put_string (make_name (ac.tenant_name (
-					current_period.year * 12 + current_period.month - 1))).style = cstyles[1];
+			row.get_cell (2).put_string (make_name (ac.tenant_name (period))).style = cstyles[1];
 			row.get_cell (3).put_string (account_period.apartment).style = cstyles[2];
 			row.get_cell (4).put_string (account_period.n_rooms.to_string ()).style = cstyles[3];
 			row.get_cell (5).put_string (Utils.format_double (account_period.area, 2)).style = cstyles[4];
@@ -91,40 +79,65 @@ public class Report003 : Report {
 			int64 n_people = ac.number_of_people (current_period.year, current_period.month);
 			row.get_cell (6).put_string (n_people.to_string ()).style = cstyles[5];
 
-			var totals = fetch_totals (ac.id);
-			row.get_cell (7).put_string (totals[5].format ()).style = cstyles[6];
-			row.get_cell (8).put_string (totals[5].format ()).style = cstyles[7];
-			row.get_cell (9).put_string (totals[5].format ()).style = cstyles[8];
-			row.get_cell (10).put_string (totals[5].format ()).style = cstyles[9];
-			row.get_cell (11).put_string (totals[5].format ()).style = cstyles[10];
-			row.get_cell (12).put_string (totals[5].format ()).style = cstyles[11];
-			row.get_cell (13).put_string (totals[5].format ()).style = cstyles[12];
+			var taxes = db.fetch_int_int64_map (Tax.table_name, "service", "total",
+					("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
+					.printf (ac.id, period / 12, period % 12 + 1));
 
-			row.get_cell (14).put_string (account_period.total.format ()).style = cstyles[13];
-			row.get_cell (15).put_string (account_period.payment.format ()).style = cstyles[14];
-			row.get_cell (16).put_string (account_period.previuos_balance ().format ()).style = cstyles[15];
-			row.get_cell (17).put_string (account_period.balance.format ()).style = cstyles[16];
+			OOXML.Cell cell;
+
+			for (var i = 0; i < 7; i++) {
+				var id = service_ids[i];
+				var val = taxes[id];
+
+				cell = row.get_cell (7 + i);
+				if (val != null && val > 0) {
+					totals[6 + i] += val;
+					cell.put_string (Money (val).format ());
+				}
+				cell.style = cstyles[6 + i];
+			}
+
+			int64 val;
+			val = account_period.total.val;
+			totals[13] += val;
+			cell = row.get_cell (14);
+			cell.put_string (Money (val).format ());
+			cell.style = cstyles[13];
+
+			val = account_period.payment.val;
+			totals[14] += val;
+			cell = row.get_cell (15);
+			cell.put_string (Money (val).format ());
+			cell.style = cstyles[14];
+
+			val = account_period.previuos_balance ().val;
+			totals[15] += val;
+			cell = row.get_cell (16);
+			cell.put_string (Money (val).format ());
+			cell.style = cstyles[15];
+
+			val = account_period.balance.val;
+			totals[16] += val;
+			cell = row.get_cell (17);
+			cell.put_string (Money (val).format ());
+			cell.style = cstyles[16];
 
 			row_number++;
 		}
 
-		row.get_cell(1).style = estyles[0];
-		row.get_cell(2).style = estyles[1];
-		row.get_cell(3).style = estyles[2];
-		row.get_cell(4).style = estyles[3];
-		row.get_cell(5).style = estyles[4];
-		row.get_cell(6).style = estyles[5];
-		row.get_cell(7).style = estyles[6];
-		row.get_cell(8).style = estyles[7];
-		row.get_cell(9).style = estyles[8];
-		row.get_cell(10).style = estyles[9];
-		row.get_cell(11).style = estyles[10];
-		row.get_cell(12).style = estyles[11];
-		row.get_cell(13).style = estyles[12];
-		row.get_cell(14).style = estyles[13];
-		row.get_cell(15).style = estyles[14];
-		row.get_cell(16).style = estyles[15];
-		row.get_cell(17).style = estyles[16];
+		/* totals and ending style */
+		for (var i = 0; i < 17; i++) {
+			row = sheet.get_row (row_number);
+			var cell = row.get_cell (i+1);
+			cell.style = estyles[i];
+
+			if (i == 3)
+				cell.put_string (totals[i].to_string ());
+			else if (i == 5)
+				cell.put_string ("-");
+			else if (i >= 6)
+				cell.put_string (Money (totals[i]).format ());
+		}
 	}
 
 
