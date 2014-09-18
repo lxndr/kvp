@@ -37,6 +37,25 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
+	public Gee.Map<int, int64?> fetch_int_int64_map (string table, string key_field, string value_field,
+			string? where = null) {
+		var sb = new StringBuilder ();
+		sb.append_printf ("SELECT %s,%s FROM %s", key_field, value_field, table);
+
+		if (where != null)
+			sb.append_printf (" WHERE %s", where);
+
+		var map = new Gee.HashMap<int, int64?> ();
+		exec_sql (sb.str, (n_columns, values, column_names) => {
+			int @key = (int) int64.parse (values[0]);
+			int64 @value = int64.parse (values[1]);
+			map.set (@key, @value);
+			return 0;
+		});
+		return map;
+	}
+
+
 	public bool is_empty_period (Period period) {
 		string query;
 		bool result = true;

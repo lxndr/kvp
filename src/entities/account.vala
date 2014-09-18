@@ -17,8 +17,9 @@ public class Account : DB.SimpleEntity
 	}
 
 
+	public static unowned string table_name = "accounts";
 	public override unowned string db_table () {
-		return "accounts";
+		return table_name;
 	}
 
 

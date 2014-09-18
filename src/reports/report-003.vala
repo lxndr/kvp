@@ -48,12 +48,30 @@ public class Report003 : Report {
 		book.load (GLib.File.new_for_path ("./templates/people-and-taxes.xlsx"));
 
 		var sheet = book.sheet (0);
+
+		/* save sheet styles */
 		uint cstyles[17];
 		for (var i = 0; i < 17; i++)
 			cstyles[i] = sheet.get_row (11).get_cell (i + 1).style;
 		uint estyles[17];
 		for (var i = 0; i < 17; i++)
 			estyles[i] = sheet.get_row (12).get_cell (i + 1).style;
+
+		/* tax prices */
+		var prices = db.fetch_int_int64_map (Price.table_name, "service", "value",
+				"period=%d".printf (current_period.year * 12 + current_period.month - 1));
+
+		foreach (var id in service_ids)
+			if (prices[id] == null) prices[id] = 0;
+
+		sheet.put_string ("D3", Money (prices[5]).format ());
+		sheet.put_string ("D4", Money (prices[6]).format ());
+		sheet.put_string ("D5", Money (prices[1]).format ());
+		sheet.put_string ("D6", Money (prices[7]).format ());
+		sheet.put_string ("J3", Money (prices[8]).format ());
+		sheet.put_string ("J4", Money (prices[4]).format ());
+		sheet.put_string ("J5", Money (prices[9]).format ());
+
 
 		var accounts = db.get_account_list ();
 		OOXML.Row row = sheet.get_row(1);
