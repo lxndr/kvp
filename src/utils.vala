@@ -3,6 +3,40 @@ namespace Kv {
 namespace Utils {
 
 
+private string string_remove_leading (string in_str, char unneeded_ch) {
+	var len = in_str.length;
+	var i = 0;
+
+	for (i = 0; i < len; i++)
+		if (in_str[i] != '0')
+			break;
+
+	return in_str[i:len];
+}
+
+
+public string string_remove_trailing (string in_str, char unneeded_ch) {
+	int p;
+
+	for (p = in_str.length - 1; p >= 0; p--) {
+		var ch = in_str[p];
+		if (ch != unneeded_ch)
+			break;
+	}
+
+	return in_str[0:p];
+}
+
+
+public int pow_integer (int number, int pow) {
+	var result = 1;
+	for (var i = 0; i < pow; i++)
+		result *= number;
+	return result;
+}
+
+
+
 /*
  * Formats a double removing trailing zeroes.
  */
