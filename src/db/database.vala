@@ -38,7 +38,7 @@ public interface Database : Object {
 
 	public string? query_string (string table, string column, string expr) {
 		string? result = null;
-		var query = "SELECT `%s` FROM `%s` WHERE %s"
+		var query = "SELECT %s FROM %s WHERE %s"
 				.printf (column, table, expr);
 
 		exec_sql (query, (n_columns, values, column_names) => {
@@ -50,7 +50,7 @@ public interface Database : Object {
 	}
 
 
-	public int64 query_int64 (string table, string column, string expr) {
+	public int64 fetch_int64 (string table, string column, string expr) {
 		int64 n = 0;
 		var s = query_string (table, column, expr);
 		if (s != null)
@@ -66,6 +66,22 @@ public interface Database : Object {
 		if (list.size == 0)
 			return null;
 		return list[0];
+	}
+
+
+	public Gee.List<T> fetch_entity_list<T> (string table, string? where = null,
+			string? order_by = null, int limit = -1) {
+		var sb = new StringBuilder ();
+		sb.append_printf ("SELECT * FROM %s", table);
+
+		if (where != null)
+			sb.append_printf (" WHERE %s", where);
+		if (order_by != null)
+			sb.append_printf (" ORDER BY %s", order_by);
+		if (limit > -1)
+			sb.append_printf (" LIMIT %d", limit);
+
+		return get_entity_list (typeof (T), sb.str) as Gee.List<T>;
 	}
 
 

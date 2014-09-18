@@ -13,8 +13,7 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 
 	public Money price {
 		get {
-			Period period = { year, month };
-			return Money ((db as Database).get_price (period, service));
+			return service.get_price (year * 12 + month - 1);
 		}
 	}
 
@@ -26,8 +25,9 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 	}
 
 
+	public static unowned string table_name = "taxes";
 	public override unowned string db_table () {
-		return "taxes";
+		return table_name;
 	}
 
 
@@ -74,8 +74,6 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 
 
 	public void calc_total () {
-		// Period period = { year, month };
-		// price = Money ((db as Database).get_price (period, service));
 		total = Money (Math.llround (amount * (double) price.val));
 	}
 }

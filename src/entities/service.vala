@@ -39,8 +39,10 @@ public class Service : DB.SimpleEntity, DB.Viewable
 	public override void remove () {}
 
 
-	public fetch_price (int period) {
-		return Money (db.fetch_int64 ());
+	public Money get_price (int period) {
+		return Money (db.fetch_int64 (Price.table_name, "value",
+				("period=%d AND service=%" + int64.FORMAT)
+				.printf (period, id)));
 	}
 }
 

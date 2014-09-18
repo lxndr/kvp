@@ -117,6 +117,17 @@ public class AccountTable : DB.TableView {
 
 	public void recalculate_clicked () {
 		var account_month = get_selected_entity () as AccountMonth;
+
+		var taxes = db.fetch_entity_list<Tax> (Tax.table_name,
+				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
+				.printf (account_month.account.id, current_period.year, current_period.month));
+
+		foreach (var tax in taxes) {
+			tax.calc_amount ();
+			tax.calc_total ();
+			tax.persist ();
+		}
+
 		account_month.calc_total ();
 		account_month.calc_balance ();
 		refresh_row (account_month);

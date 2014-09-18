@@ -133,22 +133,6 @@ public class Database : DB.SQLiteDatabase {
 			map[t.month] = t;
 		return map;
 	}
-
-
-	public int64 get_price (Period period, Service service) {
-		int64 price = 0;
-		var query = "SELECT price FROM prices WHERE year=%d AND month=%d AND service=%lld"
-				.printf (period.year, period.month, service.id);
-
-		exec_sql (query, (n_columns, values, column_names) => {
-			price = int64.parse (values[0]);
-			return 0;
-		});
-
-		return price;
-	}
-
-
 }
 
 

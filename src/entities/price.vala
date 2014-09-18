@@ -6,26 +6,26 @@ public class Price : DB.Entity
 	public Service service { get; set; }
 	public int year { get; set; }
 	public int month { get; set; }
-	public Money price { get; set; }
+	public Money value { get; set; }
 
 
+	public static unowned string table_name = "price";
 	public override unowned string db_table () {
-		return "prices";
+		return table_name;
 	}
 
 
 	public override string[] db_keys () {
 		return {
-			"service",
-			"year",
-			"month"
+			"period",
+			"service"
 		};
 	}
 
 
 	public override string[] db_fields () {
 		return {
-			"val"
+			"value"
 		};
 	}
 

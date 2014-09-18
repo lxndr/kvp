@@ -93,7 +93,7 @@ public class AccountMonth : DB.Entity, DB.Viewable
 		int _year = p / 12;
 		int _month = (p % 12) + 1;
 
-		var n = db.query_int64 ("account_month", "balance",
+		var n = db.fetch_int64 ("account_month", "balance",
 				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
 				.printf (account.id, _year, _month));
 		return Money (n);
