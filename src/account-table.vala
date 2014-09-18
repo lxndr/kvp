@@ -17,6 +17,11 @@ public class AccountTable : DB.TableView {
 		menu_item.activate.connect (duplicate_next_month_item_clicked);
 		menu_item.visible = true;
 		popup_menu.add (menu_item);
+
+		menu_item = new Gtk.MenuItem.with_label ("Recalculate");
+		menu_item.activate.connect (recalculate_clicked);
+		menu_item.visible = true;
+		popup_menu.add (menu_item);
 	}
 
 
@@ -107,6 +112,15 @@ public class AccountTable : DB.TableView {
 		query = "INSERT INTO people SELECT NULL,%lld,%d,%d,name,birthday,relationship from people where account=%lld and year=%d and month=%d"
 				.printf (account.id, current_period.year, current_period.month + 1, account.id, current_period.year, current_period.month);
 		db.exec_sql (query, null);
+	}
+
+
+	public void recalculate_clicked () {
+		var account_month = get_selected_entity () as AccountMonth;
+		account_month.calc_total ();
+		account_month.calc_balance ();
+		refresh_row (account_month);
+		account_month.persist ();
 	}
 }
 

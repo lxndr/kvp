@@ -37,6 +37,11 @@ public class Service : DB.SimpleEntity, DB.Viewable
 
 
 	public override void remove () {}
+
+
+	public fetch_price (int period) {
+		return Money (db.fetch_int64 ());
+	}
 }
 
 

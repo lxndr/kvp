@@ -109,6 +109,7 @@ public class AccountMonth : DB.Entity, DB.Viewable
 
 	public void calc_balance () {
 		var prev = previuos_balance ();
+		stdout.printf ("PREVIOUS BALANCE %s\n", prev.format ());
 		balance = Money (prev.val + total.val - payment.val);
 	}
 
