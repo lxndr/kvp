@@ -37,11 +37,11 @@ public class Report001 : Report {
 			row = sheet.get_row (3 + i);
 			row.custom_height = true;
 			row.height = row_height;
-			row.get_cell (1).put_string (account.apartment).style = 13;
+//			row.get_cell (1).put_string (account.apartment).style = 13;
 			row.get_cell (2).put_string (people_string).style = 14;
 			row.get_cell (3).put_string (birthday_string).style = 10;
 			row.get_cell (4).put_string (people.size.to_string ()).style = 11;
-			row.get_cell (5).put_string (account.area.to_string ()).style = 12;
+//			row.get_cell (5).put_string (account.area.to_string ()).style = 12;
 		}
 
 		row = sheet.get_row (count + 2);

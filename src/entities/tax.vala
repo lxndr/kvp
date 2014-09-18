@@ -57,12 +57,14 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 
 
 	public void calc_amount () {
+		var account_period = account.fetch_period (year * 12 + month - 1);
+
 		switch (service.applied_to) {
 		case 1:	/* apartment area */
-			amount = account.area;
+			amount = account_period.area;
 			break;
 		case 2:	/* number of people */
-			amount = (double) account.number_of_people (year, month);
+			amount = (double) account_period.number_of_people ();
 			break;
 		case 3: /* amount is specified */
 			break;

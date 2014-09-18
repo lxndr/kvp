@@ -32,7 +32,7 @@ public class Report002 : Report {
 		/* base information */
 		var account = selected_account;
 
-		sheet.put_string ("C1", account.tenant_name (current_period.year, current_period.month));
+		sheet.put_string ("C1", account.tenant_name (current_period.year * 12 + current_period.month - 1));
 		sheet.put_string ("L1", account.number);
 
 		/* services & taxes */

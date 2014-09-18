@@ -78,15 +78,15 @@ public class Report003 : Report {
 		int row_number = 10;
 
 		foreach (var ac in accounts) {
-			var account_period = ac.fetch_period (current_period.year, current_period.month);
+			var account_period = ac.fetch_period (current_period.year * 12 + current_period.month - 1);
 
 			row = sheet.get_row (row_number);
 			row.get_cell (1).put_string (ac.number).style = cstyles[0];
 			row.get_cell (2).put_string (make_name (ac.tenant_name (
-					current_period.year, current_period.month))).style = cstyles[1];
-			row.get_cell (3).put_string (ac.apartment).style = cstyles[2];
-			row.get_cell (4).put_string (ac.nrooms.to_string ()).style = cstyles[3];
-			row.get_cell (5).put_string (Utils.format_double (ac.area, 2)).style = cstyles[4];
+					current_period.year * 12 + current_period.month - 1))).style = cstyles[1];
+			row.get_cell (3).put_string (account_period.apartment).style = cstyles[2];
+			row.get_cell (4).put_string (account_period.n_rooms.to_string ()).style = cstyles[3];
+			row.get_cell (5).put_string (Utils.format_double (account_period.area, 2)).style = cstyles[4];
 
 			int64 n_people = ac.number_of_people (current_period.year, current_period.month);
 			row.get_cell (6).put_string (n_people.to_string ()).style = cstyles[5];

@@ -29,7 +29,7 @@ public class AccountTable : DB.TableView {
 		return {
 			"number",
 			"apartment",
-			"nrooms",
+			"n_rooms",
 			"area",
 			"total",
 			"payment",
@@ -43,7 +43,7 @@ public class AccountTable : DB.TableView {
 		var account = new Account (db);
 		db.persist (account);
 
-		var account_month = new AccountMonth (db, account, current_period);
+		var account_month = new AccountMonth (db, account, current_period.year * 12 + current_period.month - 1);
 		db.persist (account_month);
 
 		return account_month;
@@ -56,10 +56,7 @@ public class AccountTable : DB.TableView {
 
 
 	protected override Gee.List<DB.Entity> get_entity_list () {
-		var list = (db as Database).get_account_month_list (current_period) as Gee.List<AccountMonth>;
-//		foreach (var a in list)
-//			a.calc ((db as Database));
-		return list;
+		return (db as Database).get_account_month_list (current_period) as Gee.List<AccountMonth>;
 	}
 
 

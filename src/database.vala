@@ -14,7 +14,7 @@ public class Database : DB.SQLiteDatabase {
 		/* prepare the database */
 		var bytes = resources_lookup_data ("/data/init.sql", ResourceLookupFlags.NONE);
 		unowned uint8[] data = bytes.get_data ();
-		exec_sql ((string) data);
+//		exec_sql ((string) data);
 	}
 
 
@@ -94,7 +94,7 @@ public class Database : DB.SQLiteDatabase {
 
 
 	public Gee.List<Account> get_account_list () {
-		return get_entity_list (typeof (Account), "SELECT * FROM accounts") as Gee.List<Account>;
+		return get_entity_list (typeof (Account), "SELECT * FROM account") as Gee.List<Account>;
 	}
 
 
@@ -103,11 +103,11 @@ public class Database : DB.SQLiteDatabase {
 		var accounts = get_account_list ();
 
 		foreach (var account in accounts) {
-			var query = "SELECT * FROM account_month WHERE year=%d AND month=%d AND account=%lld"
-					.printf (period.year, period.month, account.id);
+			var query = "SELECT * FROM account_period WHERE account=%lld AND period=%d"
+					.printf (account.id, period.year * 12 + period.month - 1);
 			var list = get_entity_list (typeof (AccountMonth), query) as Gee.List<AccountMonth>;
 			if (list.size == 0)
-				months.add (new AccountMonth (this, account, period));
+				months.add (new AccountMonth (this, account, period.year * 12 + period.month - 1));
 			else
 				months.add (list[0]);
 		}
@@ -143,13 +143,13 @@ public class Database : DB.SQLiteDatabase {
 
 
 	public Gee.Map<uint, AccountMonth> find_account_month_by_year (Account account, int year) {
-		var query = "SELECT * FROM account_month WHERE year=%u AND account=%lld ORDER BY month"
-				.printf (year, account.id);
-		var list = get_entity_list (typeof (AccountMonth), query) as Gee.List<AccountMonth>;
+		var list = fetch_entity_list<AccountMonth> (AccountMonth.table_name,
+				("account=%" + int64.FORMAT + " AND period>=%d AND period<%d")
+				.printf (account.id, year * 12, (year + 1) * 12));
 
 		var map = new Gee.HashMap<uint, AccountMonth> ();
 		foreach (var t in list)
-			map[t.month] = t;
+			map[t.period % 12] = t;
 		return map;
 	}
 }

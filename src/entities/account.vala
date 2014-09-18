@@ -3,21 +3,17 @@ namespace Kv {
 
 public class Account : DB.SimpleEntity
 {
+	public int building { get; set; default = 1;}
 	public string number { get; set; }
-	public int open_date {get; set; default = 0; } /* FIXME gotta be now */
-	public string apartment { get; set; }
-	public int nrooms {get; set; default = 1;}
-	public double area { get; set; }
+	public int opened {get; set; default = 0; } /* FIXME gotta be now */
 
 
 	construct {
 		number = "000";
-		apartment = "000";
-		area = 0.0;
 	}
 
 
-	public static unowned string table_name = "accounts";
+	public static unowned string table_name = "account";
 	public override unowned string db_table () {
 		return table_name;
 	}
@@ -25,11 +21,9 @@ public class Account : DB.SimpleEntity
 
 	public override string[] db_fields () {
 		return {
+			"building",
 			"number",
-			"open_date",
-			"apartment",
-			"nrooms",
-			"area"
+			"opened"
 		};
 	}
 
@@ -47,7 +41,7 @@ public class Account : DB.SimpleEntity
 	public override void remove () {
 		base.remove ();
 
-		db.delete_entity ("account_month",
+		db.delete_entity (AccountMonth.table_name,
 				("account=%" + int64.FORMAT).printf (id));
 		db.delete_entity ("people",
 				("account=%" + int64.FORMAT).printf (id));
@@ -73,17 +67,17 @@ public class Account : DB.SimpleEntity
 */
 
 
-	public string? tenant_name (int year, int month) {
+	public string? tenant_name (int period) {
 		return db.query_string ("people", "name", ("account=%" +
 				int64.FORMAT + " AND year=%d AND month=%d AND relationship=1")
-				.printf (id, year, month));
+				.printf (id, period / 12, period % 12 + 1));
 	}
 
 
-	public AccountMonth? fetch_period (int year, int month) {
-		return db.fetch_entity<AccountMonth> ("account_month",
-				("account=%" + int64.FORMAT + " AND year=%d AND month=%d").
-				printf (id, year, month));
+	public AccountMonth? fetch_period (int period) {
+		return db.fetch_entity<AccountMonth> (AccountMonth.table_name,
+				("account=%" + int64.FORMAT + " AND period=%d").
+				printf (id, period));
 	}
 }
 
