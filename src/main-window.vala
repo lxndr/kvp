@@ -57,15 +57,15 @@ class MainWindow : Gtk.ApplicationWindow {
 		/* UI: account list */
 		account_table = new AccountTable (app.db);
 		account_table.selection_changed.connect (account_changed);
-		paned2.add1 (account_table.get_root_widget ());
+		paned1.pack1 (account_table.get_root_widget (), true, false);
 
 		/* UI: people list */
 		people_table = new PeopleTable (app.db);
-		paned2.add2 (people_table.get_root_widget ());
+		paned2.pack1 (people_table.get_root_widget (), false, false);
 
 		/* UI: tax list */
 		tax_table = new TaxTable (app.db);
-		paned1.add2 (tax_table.get_root_widget ());
+		paned2.pack2 (tax_table.get_root_widget (), false, false);
 
 		/*  */
 //		account_table.update_view ();
