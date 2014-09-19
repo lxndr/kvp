@@ -96,6 +96,13 @@ public class AccountMonth : DB.Entity, DB.Viewable
 		stdout.printf ("PREVIOUS BALANCE %s\n", prev.format ());
 		balance = Money (prev.val + total.val - payment.val);
 	}
+
+
+	public string? tenant_name () {
+		return db.query_string ("people", "name", ("account=%" +
+				int64.FORMAT + " AND year=%d AND month=%d AND relationship=1")
+				.printf (account.id, period / 12, period % 12 + 1));
+	}
 }
 
 

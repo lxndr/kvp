@@ -152,6 +152,13 @@ public class Database : DB.SQLiteDatabase {
 			map[t.period % 12] = t;
 		return map;
 	}
+
+
+	public Gee.List<AccountMonth> get_account_periods (Account account, int start_period, int end_period) {
+		return fetch_entity_list<AccountMonth> (AccountMonth.table_name,
+				("account=%" + int64.FORMAT + " AND period>=%d AND period<=%d")
+				.printf (account.id, start_period, end_period));
+	}
 }
 
 

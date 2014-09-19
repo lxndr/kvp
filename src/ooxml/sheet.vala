@@ -152,7 +152,7 @@ public class Sheet : Object {
 
 
 	public void put_string (string cell_name, string text) {
-		get_cell (cell_name).val = new StringValue.simple (text);
+		get_cell (cell_name).put_string (text);
 	}
 
 

@@ -17,12 +17,19 @@ public class Report002 : Report {
 
 	public override void make () throws Error {
 		book.load (GLib.File.new_for_path ("./templates/account.xlsx"));
-		make_page1 ();
-		make_page2 ();
+
+		var period = current_period.year * 12 + current_period.month - 1;
+		var account_periods = db.get_account_periods (selected_account, period, period + 11);
+		var last_account_period = account_periods[account_periods.size - 1];
+
+		make_page1 (book.sheet (1), last_account_period);
+//		make_page2 ();
 	}
 
 
-	private void make_page1 () {
+	private void make_page1 (OOXML.Sheet sheet, AccountMonth account_period) {
+		sheet.put_string ("BZ1", account_period.account.number);
+		sheet.put_string ("R3", account_period.tenant_name ());
 	}
 
 

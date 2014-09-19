@@ -37,9 +37,13 @@ public void parse_cell_name (string name, out int row_number, out int cell_numbe
 public string format_cell_name (int row_number, int cell_number) {
 	/* TODO */
 	string cell = "";
-	if (cell_number > 26)
+//	if (cell_number > (26 * 26))
+//		cell += "%c".printf ((uint8) (cell_number / (26 * 26)) + 0x40);
+
+	cell_number--;
+	if (cell_number >= 26)
 		cell += "%c".printf ((uint8) (cell_number / 26) + 0x40);
-	cell += "%c".printf ((uint8) (cell_number % 26) + 0x40);
+	cell += "%c".printf ((uint8) (cell_number % 26) + 0x41);
 
 	return cell + row_number.to_string ();
 }
