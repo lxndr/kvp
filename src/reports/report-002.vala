@@ -18,8 +18,7 @@ public class Report002 : Report {
 	public override void make () throws Error {
 		book.load (GLib.File.new_for_path ("./templates/account.xlsx"));
 
-		var period = current_period.year * 12 + current_period.month - 1;
-		var account_periods = db.get_account_periods (selected_account, period, period + 11);
+		var account_periods = db.get_account_periods (account, period, period + 11);
 		var last_account_period = account_periods[account_periods.size - 1];
 		var people = last_account_period.get_people ();
 
@@ -31,7 +30,7 @@ public class Report002 : Report {
 	}
 
 
-	private void make_page1 (OOXML.Sheet sheet, AccountMonth account_period,
+	private void make_page1 (OOXML.Sheet sheet, AccountPeriod account_period,
 			string account_number, string account_tenant, Gee.List<Person> people) {
 		var n_people = people.size;
 
@@ -54,7 +53,7 @@ public class Report002 : Report {
 
 
 	private void make_page2 (OOXML.Sheet sheet, string account_number,
-			string account_tenant, Gee.List<AccountMonth> account_periods) {
+			string account_tenant, Gee.List<AccountPeriod> account_periods) {
 		/* base information */
 		sheet.put_string ("C1", account_tenant);
 		sheet.put_string ("L1", account_number);
@@ -71,7 +70,7 @@ public class Report002 : Report {
 			if (taxes.size == 0)
 				continue;
 
-			var month = taxes[0].month - 1;
+			var month = taxes[0].period % 12;
 			var row = sheet.get_row (5 + month);
 
 			for (var j = 0; j < 7; j++) {

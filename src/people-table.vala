@@ -2,7 +2,7 @@ namespace Kv {
 
 
 public class PeopleTable : DB.TableView {
-	private Period period;
+	private int period;
 	private Account? account;
 
 
@@ -11,7 +11,7 @@ public class PeopleTable : DB.TableView {
 	}
 
 
-	public void setup_view (Period _period, Account? _account) {
+	public void setup_view (int _period, Account? _account) {
 		period = _period;
 		account = _account;
 
@@ -37,7 +37,7 @@ public class PeopleTable : DB.TableView {
 		if (account == null)
 			return new Gee.ArrayList<DB.Entity> ();
 
-		return (db as Database).get_people_list (period, account);
+		return (db as Database).get_people_list (account, period);
 	}
 }
 

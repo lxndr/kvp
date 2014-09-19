@@ -30,7 +30,7 @@ class MainWindow : Gtk.ApplicationWindow {
 	private TaxTable tax_table;
 
 	/*  */
-	private Period current_period;
+	private int current_period;
 
 
 	public MainWindow (Application app) {
@@ -81,34 +81,23 @@ class MainWindow : Gtk.ApplicationWindow {
 
 		/* real world period is the default */
 		var now = new DateTime.now_local ();
-		var period = Period () {
-			year = now.get_year (),
-			month = now.get_month ()
-		};
+		int period = now.get_year () * 12 + now.get_month () - 1;
 
 		/* load current year from the settings */
-		var setting = db.get_setting ("current_year");
+		var setting = db.get_setting ("current_period");
 		if (setting != null) {
-			var year = int64.parse (setting);
-			if (year > 0)
-				period.year = (int) year;
-		}
-
-		/* load current month from the settings */
-		setting = db.get_setting ("current_month");
-		if (setting != null) {
-			var month = int64.parse (setting);
-			if (month >= 1 && month <= 12)
-				period.month = (int) month;
+			var val = (int) int64.parse (setting);
+			if (val > 0)
+				period = val;
 		}
 
 		set_current_period (period);
 	}
 
 
-	private void set_current_period (Period period) {
+	private void set_current_period (int period) {
 		var db = (application as Application).db;
-		var label = "%s %d".printf (Utils.month_to_string(period.month), period.year);
+		var label = "%s %d".printf (Utils.month_to_string(period % 12), period / 12);
 
 		/* check if this is an empty period and we need to duplicate all the data */
 		if (db.is_empty_period (period) == true) {
@@ -141,8 +130,7 @@ class MainWindow : Gtk.ApplicationWindow {
 		current_period = period;
 
 		/* store current period */
-		db.set_setting ("current_year", period.year.to_string ());
-		db.set_setting ("current_month", period.month.to_string ());
+		db.set_setting ("current_period", period.to_string ());
 
 		/* update table views */
 		account_table.set_period (current_period);
@@ -154,19 +142,17 @@ class MainWindow : Gtk.ApplicationWindow {
 	[GtkCallback]
 	private void current_period_button_clicked () {
 		/* set up popover widges */
-		current_period_month.active_id = current_period.month.to_string ();
-		current_period_year.value = (double) current_period.year;
+		current_period_month.active_id = (current_period % 12 + 1).to_string ();
+		current_period_year.value = (double) (current_period / 12);
 
 		current_period_popover.show ();
 	}
 
 
 	private void current_period_popover_closed () {
-		var period = Period () {
-			month = (int) int.parse (current_period_month.active_id),
-			year = (int) current_period_year.value
-		};
-
+		int month = (int) int.parse (current_period_month.active_id);
+		int year = (int) current_period_year.value;
+		int period = year * 12 + month - 1;
 		set_current_period (period);
 	}
 

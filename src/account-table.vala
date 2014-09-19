@@ -2,11 +2,11 @@ namespace Kv {
 
 
 public class AccountTable : DB.TableView {
-	private Period current_period;
+	private int current_period;
 
 
 	public AccountTable (Database dbase) {
-		base (dbase, typeof (AccountMonth));
+		base (dbase, typeof (AccountPeriod));
 
 		var menu_item = new Gtk.MenuItem.with_label ("Duplicate");
 		menu_item.activate.connect (duplicate_item_clicked);
@@ -48,20 +48,20 @@ public class AccountTable : DB.TableView {
 		var account = new Account (db);
 		db.persist (account);
 
-		var account_month = new AccountMonth (db, account, current_period.year * 12 + current_period.month - 1);
-		db.persist (account_month);
+		var account_period = new AccountPeriod (db, account, current_period);
+		db.persist (account_period);
 
-		return account_month;
+		return account_period;
 	}
 
 
 	protected override void remove_entity (DB.Entity entity) {
-		(entity as AccountMonth).account.remove ();
+		(entity as AccountPeriod).account.remove ();
 	}
 
 
 	protected override Gee.List<DB.Entity> get_entity_list () {
-		return (db as Database).get_account_month_list (current_period) as Gee.List<AccountMonth>;
+		return (db as Database).get_account_month_list (current_period) as Gee.List<AccountPeriod>;
 	}
 
 
@@ -70,17 +70,17 @@ public class AccountTable : DB.TableView {
 		if (account_month == null)
 			return null;
 
-		return (account_month as AccountMonth).account;
+		return (account_month as AccountPeriod).account;
 	}
 
 
-	public void set_period (Period period) {
+	public void set_period (int period) {
 		current_period = period;
 	}
 
 
 	public override void row_edited (DB.Entity entity, string prop_name) {
-		var account_period = entity as AccountMonth;
+		var account_period = entity as AccountPeriod;
 
 		if (prop_name == "payment") {
 			account_period.calc_balance ();
@@ -92,10 +92,10 @@ public class AccountTable : DB.TableView {
 	public void duplicate_item_clicked () {
 		var account = get_selected_account ();
 
-		var new_account = new_entity () as AccountMonth;
+		var new_account = new_entity () as AccountPeriod;
 
-		var query = "INSERT INTO taxes SELECT NULL,%lld,year,month,service,0,0 FROM taxes WHERE year=%d AND month=%d AND account=%lld"
-				.printf (new_account.account.id, current_period.year, current_period.month, account.id);
+		var query = "INSERT INTO tax SELECT NULL,%lld,period,service,0,0 FROM tax WHERE period=%d AND account=%lld"
+				.printf (new_account.account.id, current_period, account.id);
 		db.exec_sql (query, null);
 
 		update_view ();
@@ -106,18 +106,18 @@ public class AccountTable : DB.TableView {
 		var account = get_selected_account ();
 
 		/* copy taxes */
-		var query = "INSERT INTO taxes SELECT NULL,%lld,%d,%d,service,0,0 from taxes where account=%lld and year=%d and month=%d"
-				.printf (account.id, current_period.year, current_period.month + 1, account.id, current_period.year, current_period.month);
+		var query = "INSERT INTO tax SELECT NULL,%lld,%d,service,0,0 from taxes where account=%lld and period=%d"
+				.printf (account.id, current_period + 1, account.id, current_period);
 		db.exec_sql (query, null);
 
 		/* copy people */
-		query = "INSERT INTO people SELECT NULL,%lld,%d,%d,name,birthday,relationship from people where account=%lld and year=%d and month=%d"
-				.printf (account.id, current_period.year, current_period.month + 1, account.id, current_period.year, current_period.month);
+		query = "INSERT INTO people SELECT NULL,%lld,%d,name,birthday,relationship from people where account=%lld and period=%d"
+				.printf (account.id, current_period + 1, account.id, current_period);
 		db.exec_sql (query, null);
 	}
 
 
-	private void recalculate_period (AccountMonth account_month) {
+	private void recalculate_period (AccountPeriod account_month) {
 		var taxes = db.fetch_entity_list<Tax> (Tax.table_name,
 				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
 				.printf (account_month.account.id, account_month.period / 12, account_month.period % 12 + 1));
@@ -135,17 +135,17 @@ public class AccountTable : DB.TableView {
 
 
 	public void recalculate_clicked () {
-		var account_month = get_selected_entity () as AccountMonth;
-		recalculate_period (account_month);
-		refresh_row (account_month);
+		var account_period = get_selected_entity () as AccountPeriod;
+		recalculate_period (account_period);
+		refresh_row (account_period);
 	}
 
 
 	public void recalculate_period_clicked () {
-		var periods = db.fetch_entity_list<AccountMonth> (AccountMonth.table_name,
-				("period=%d").printf (current_period.year * 12 + current_period.month - 1));
-		foreach (var period_month in periods)
-			recalculate_period (period_month);
+		var periods = db.fetch_entity_list<AccountPeriod> (AccountPeriod.table_name,
+				("period=%d").printf (current_period));
+		foreach (var account_period in periods)
+			recalculate_period (account_period);
 		update_view ();
 	}
 }

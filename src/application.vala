@@ -1,13 +1,6 @@
 namespace Kv {
 
 
-[Compact]
-public struct Period {
-	public int year;
-	public int month;
-}
-
-
 public class Application : Gtk.Application
 {
 	public Gee.Map<string, Type> reports;
@@ -66,6 +59,10 @@ public class Application : Gtk.Application
 
 
 	public static int main (string[] args) {
+//		Intl.bindtextdomain ("kvp", "/usr/share/locale/");
+//		Intl.bind_textdomain_codeset ("kvp", "UTF-8");
+//		Intl.textdomain ("kvp");
+
 		Application app = new Application ();
 		return app.run (args);
 	}

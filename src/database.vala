@@ -69,33 +69,16 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public bool is_empty_period (Period period) {
-		string query;
-		bool result = true;
-
+	public bool is_empty_period (int period) {
 		/* check if we've got any people */
-		query = "SELECT COUNT(*) FROM people WHERE year=%d AND month=%d"
-				.printf (period.year, period.month);
-		exec_sql (query, (n_columns, values, column_names) => {
-			if (int64.parse (values[0]) > 0)
-				result = false;
-			return 0;
-		});
-
-		if (result == false)
-			return result;
+		if (query_count (Person.table_name,
+				"period=%d".printf (period)) > 0)
+			return false;
 
 		/* check if we've got any taxes */
-		query = "SELECT COUNT(*) FROM taxes WHERE year=%d AND month=%d"
-				.printf (period.year, period.month);
-		exec_sql (query, (n_columns, values, column_names) => {
-			if (int64.parse (values[0]) > 0)
-				result = false;
-			return 0;
-		});
-
-		if (result == false)
-			return result;
+		if (query_count (Tax.table_name,
+				"period=%d".printf (period)) > 0)
+			return false;
 
 		return true;
 	}
@@ -111,16 +94,16 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.List<AccountMonth> get_account_month_list (Period period) {
-		var months = new Gee.ArrayList<AccountMonth> ();
+	public Gee.List<AccountPeriod> get_account_month_list (int period) {
+		var months = new Gee.ArrayList<AccountPeriod> ();
 		var accounts = get_account_list ();
 
 		foreach (var account in accounts) {
 			var query = "SELECT * FROM account_period WHERE account=%lld AND period=%d"
-					.printf (account.id, period.year * 12 + period.month - 1);
-			var list = get_entity_list (typeof (AccountMonth), query) as Gee.List<AccountMonth>;
+					.printf (account.id, period);
+			var list = get_entity_list (typeof (AccountPeriod), query) as Gee.List<AccountPeriod>;
 			if (list.size == 0)
-				months.add (new AccountMonth (this, account, period.year * 12 + period.month - 1));
+				months.add (new AccountPeriod (this, account, period));
 			else
 				months.add (list[0]);
 		}
@@ -129,20 +112,20 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.List<Person> get_people_list (Period period, Account account) {
-		var query = "SELECT * FROM people WHERE year=%d AND month=%d AND account=%lld"
-				.printf (period.year, period.month, account.id);
-		return get_entity_list (typeof (Person), query) as Gee.List<Person>;
+	public Gee.List<Person> get_people_list (Account account, int period) {
+		return fetch_entity_list<Person> (Person.table_name,
+				("account=%" + int64.FORMAT + " AND period=%d")
+				.printf (account.id, period));
 	}
 
 
-	public Gee.List<Tax> get_tax_list (Period period, Account account) {
-		var query = "SELECT * FROM taxes WHERE year=%d AND month=%d AND account=%lld"
-				.printf (period.year, period.month, account.id);
-		return get_entity_list (typeof (Tax), query) as Gee.List<Tax>;
+	public Gee.List<Tax> get_tax_list (Account account, int period) {
+		return fetch_entity_list<Tax> (Tax.table_name,
+				("account=%" + int64.FORMAT + " AND period=%d")
+				.printf (account.id, period));
 	}
 
-
+/*
 	public Gee.Map<uint, Tax> find_taxes_by_service_id (Period period, Account account, int64 service_id) {
 		var query = "SELECT * FROM taxes WHERE year=%u AND account=%lld AND service=%lld ORDER BY month"
 				.printf (period.year, account.id, service_id);
@@ -165,10 +148,10 @@ public class Database : DB.SQLiteDatabase {
 			map[t.period % 12] = t;
 		return map;
 	}
+*/
 
-
-	public Gee.List<AccountMonth> get_account_periods (Account account, int start_period, int end_period) {
-		return fetch_entity_list<AccountMonth> (AccountMonth.table_name,
+	public Gee.List<AccountPeriod> get_account_periods (Account account, int start_period, int end_period) {
+		return fetch_entity_list<AccountPeriod> (AccountPeriod.table_name,
 				("account=%" + int64.FORMAT + " AND period>=%d AND period<=%d")
 				.printf (account.id, start_period, end_period));
 	}

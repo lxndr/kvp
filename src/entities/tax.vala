@@ -4,28 +4,20 @@ namespace Kv {
 public class Tax : DB.SimpleEntity, DB.Viewable
 {
 	public Account account { get; set; }
-	public int year { get; set; }
-	public int month { get; set; }
+	public int period { get; set; }
 	public Service service { get; set; }
 	public double amount { get; set; }
-	public Money total {get; set; }
+	public Money total {get; set; default = Money (0); }
 
 
 	public Money price {
 		get {
-			return service.get_price (year * 12 + month - 1);
+			return service.get_price (period);
 		}
 	}
 
 
-	construct {
-		year = 2000;
-		month = 1;
-		total.val = 0;
-	}
-
-
-	public static unowned string table_name = "taxes";
+	public static unowned string table_name = "tax";
 	public override unowned string db_table () {
 		return table_name;
 	}
@@ -34,8 +26,7 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 	public override string[] db_fields () {
 		return {
 			"account",
-			"year",
-			"month",
+			"period",
 			"service",
 			"amount",
 			"total"
@@ -43,10 +34,9 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 	}
 
 
-	public Tax (Period _period, Account _account, Service _service) {
-		Object (year: _period.year,
-				month: _period.month,
-				account: _account,
+	public Tax (Account _account, int _period, Service _service) {
+		Object (account: _account,
+				period: _period,
 				service: _service);
 	}
 
@@ -57,7 +47,7 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 
 
 	public void calc_amount () {
-		var account_period = account.fetch_period (year * 12 + month - 1);
+		var account_period = account.fetch_period (period);
 
 		switch (service.applied_to) {
 		case 1:	/* apartment area */

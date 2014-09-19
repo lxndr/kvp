@@ -41,7 +41,7 @@ public class Account : DB.SimpleEntity
 	public override void remove () {
 		base.remove ();
 
-		db.delete_entity (AccountMonth.table_name,
+		db.delete_entity (AccountPeriod.table_name,
 				("account=%" + int64.FORMAT).printf (id));
 		db.delete_entity ("people",
 				("account=%" + int64.FORMAT).printf (id));
@@ -50,10 +50,10 @@ public class Account : DB.SimpleEntity
 	}
 
 
-	public int64 number_of_people (int year, int month) {
+	public int64 number_of_people (int period) {
 		return db.query_count ("people",
-				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
-				.printf (id, year, month));
+				("account=%" + int64.FORMAT + " AND period=%d")
+				.printf (id, period));
 	}
 
 
@@ -68,14 +68,14 @@ public class Account : DB.SimpleEntity
 
 
 	public string? tenant_name (int period) {
-		return db.query_string ("people", "name", ("account=%" +
-				int64.FORMAT + " AND year=%d AND month=%d AND relationship=1")
-				.printf (id, period / 12, period % 12 + 1));
+		return db.query_string (Person.table_name, "name", ("account=%" +
+				int64.FORMAT + " AND period=%d AND relationship=1")
+				.printf (id, period));
 	}
 
 
-	public AccountMonth? fetch_period (int period) {
-		return db.fetch_entity<AccountMonth> (AccountMonth.table_name,
+	public AccountPeriod? fetch_period (int period) {
+		return db.fetch_entity<AccountPeriod> (AccountPeriod.table_name,
 				("account=%" + int64.FORMAT + " AND period=%d").
 				printf (id, period));
 	}

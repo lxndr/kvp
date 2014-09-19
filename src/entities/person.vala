@@ -4,20 +4,19 @@ namespace Kv {
 public class Person : DB.SimpleEntity, DB.Viewable
 {
 	public Account account { get; set; }
-	public int year { get; set; }
-	public int month { get; set; }
+	public int period { get; set; }
 	public string name { get; set; }
 	public string birthday { get; set; }
 	public Relationship relationship { get; set; }
 
 
 	construct {
-		name = "000";
+		name = _("A person");
 		birthday = "";
 	}
 
 
-	public static unowned string table_name = "people";
+	public static unowned string table_name = "person";
 	public override unowned string db_table () {
 		return table_name;
 	}
@@ -35,13 +34,12 @@ public class Person : DB.SimpleEntity, DB.Viewable
 	}
 
 
-	public Person (Database _db, Account _account, Period _period) {
+	public Person (Database _db, Account _account, int _period) {
 		var _relationship = _db.get_entity (typeof (Relationship), 2) as Relationship;
 
 		Object (db: _db,
 				account: _account,
-				year: _period.year,
-				month: _period.month,
+				period: _period,
 				relationship: _relationship);
 	}
 

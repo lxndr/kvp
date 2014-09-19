@@ -28,8 +28,6 @@ public class Report003 : Report {
 
 
 	public override void make () throws Error {
-		int period = current_period.year * 12 + current_period.month - 1;
-
 		book.load (GLib.File.new_for_path ("./templates/people-and-taxes.xlsx"));
 
 		var sheet = book.sheet (0);
@@ -44,7 +42,7 @@ public class Report003 : Report {
 
 		/* tax prices */
 		var prices = db.fetch_int_int64_map (Price.table_name, "service", "value",
-				"period=%d".printf (current_period.year * 12 + current_period.month - 1));
+				"period=%d".printf (period));
 
 		foreach (var id in service_ids)
 			if (prices[id] == null) prices[id] = 0;
@@ -76,7 +74,7 @@ public class Report003 : Report {
 			row.get_cell (4).put_string (account_period.n_rooms.to_string ()).style = cstyles[3];
 			row.get_cell (5).put_string (Utils.format_double (account_period.area, 2)).style = cstyles[4];
 
-			int64 n_people = ac.number_of_people (current_period.year, current_period.month);
+			int64 n_people = ac.number_of_people (period);
 			row.get_cell (6).put_string (n_people.to_string ()).style = cstyles[5];
 
 			var taxes = db.fetch_int_int64_map (Tax.table_name, "service", "total",

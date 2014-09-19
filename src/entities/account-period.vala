@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class AccountMonth : DB.Entity, DB.Viewable
+public class AccountPeriod : DB.Entity, DB.Viewable
 {
 	public Account account { get; set; }
 	public int period { get; set; }
@@ -27,7 +27,7 @@ public class AccountMonth : DB.Entity, DB.Viewable
 	}
 
 
-	public AccountMonth (DB.Database _db, Account _account, int _period) {
+	public AccountPeriod (DB.Database _db, Account _account, int _period) {
 		Object (db: _db);
 
 		account = _account;
@@ -70,14 +70,14 @@ public class AccountMonth : DB.Entity, DB.Viewable
 
 
 	public int64 number_of_people () {
-		return db.query_count ("people",
-				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
-				.printf (account.id, period / 12, period % 12 + 1));
+		return db.query_count (Person.table_name,
+				("account=%" + int64.FORMAT + " AND period=%d")
+				.printf (account.id, period));
 	}
 
 
 	public Money previuos_balance () {
-		var n = db.fetch_int64 (AccountMonth.table_name, "balance",
+		var n = db.fetch_int64 (AccountPeriod.table_name, "balance",
 				("account=%" + int64.FORMAT + " AND period=%d")
 				.printf (account.id, period - 1));
 		return Money (n);
@@ -85,9 +85,9 @@ public class AccountMonth : DB.Entity, DB.Viewable
 
 
 	public void calc_total () {
-		total = Money (db.query_sum ("taxes", "total",
-				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
-				.printf (account.id, period / 12, period % 12 + 1)));
+		total = Money (db.query_sum (Person.table_name, "total",
+				("account=%" + int64.FORMAT + " AND period=%d")
+				.printf (account.id, period)));
 	}
 
 
@@ -99,23 +99,23 @@ public class AccountMonth : DB.Entity, DB.Viewable
 
 
 	public string? tenant_name () {
-		return db.query_string ("people", "name", ("account=%" +
-				int64.FORMAT + " AND year=%d AND month=%d AND relationship=1")
-				.printf (account.id, period / 12, period % 12 + 1));
+		return db.query_string (Person.table_name, "name", ("account=%" +
+				int64.FORMAT + " AND period=%d AND relationship=1")
+				.printf (account.id, period));
 	}
 
 
 	public Gee.List<Person> get_people () {
 		return db.fetch_entity_list<Person> (Person.table_name,
-				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
-				.printf (account.id, period / 12, period % 12 + 1));
+				("account=%" + int64.FORMAT + " AND period=%d")
+				.printf (account.id, period));
 	}
 
 
 	public Gee.List<Tax> get_taxes () {
 		return db.fetch_entity_list<Tax> (Tax.table_name,
-				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
-				.printf (account.id, period / 12, period % 12 + 1));
+				("account=%" + int64.FORMAT + " AND period=%d")
+				.printf (account.id, period));
 	}
 }
 

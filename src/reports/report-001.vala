@@ -24,7 +24,7 @@ public class Report001 : Report {
 			string birthday_string = "";
 			double row_height = 0.0;
 
-			var people = db.get_people_list (current_period, account);
+			var people = db.get_people_list (account, period);
 			foreach (var person in people) {
 				people_string += person.name + "\r\n";
 				birthday_string += person.birthday + "\r\n";

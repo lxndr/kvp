@@ -6,10 +6,10 @@ public interface Database : Object {
 	public abstract int64 last_insert_rowid ();
 
 
-	public int64 query_count (string table, string expr) {
+	public int64 query_count (string table, string? where = null) {
 		int64 result = 0;
 		var query = "SELECT COUNT(*) FROM `%s` WHERE %s"
-				.printf (table, expr);
+				.printf (table, where);
 
 		exec_sql (query, (n_columns, values, column_names) => {
 			if (values[0] != null)
