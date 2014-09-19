@@ -25,6 +25,7 @@ SOURCES=src/db/database.vala \
 		src/archive/zip.vala \
 		src/ooxml/cell-value.vala \
 		src/ooxml/shared-strings.vala \
+		src/ooxml/cell.vala \
 		src/ooxml/sheet.vala \
 		src/ooxml/spreadsheet.vala \
 		src/ooxml/utils.vala \

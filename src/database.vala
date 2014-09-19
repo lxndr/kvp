@@ -37,8 +37,8 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.Map<int, int64?> fetch_int_int64_map (string table, string key_field, string value_field,
-			string? where = null) {
+	public Gee.Map<int, int64?> fetch_int_int64_map (string table, string key_field,
+			string value_field, string? where = null) {
 		var sb = new StringBuilder ();
 		sb.append_printf ("SELECT %s,%s FROM %s", key_field, value_field, table);
 
@@ -52,6 +52,19 @@ public class Database : DB.SQLiteDatabase {
 			map.set (@key, @value);
 			return 0;
 		});
+		return map;
+	}
+
+
+	public Gee.Map<int64?, T> fetch_int64_entity_map<T> (string table, string key_field,
+			string? where = null) {
+		var list = fetch_entity_list<DB.Entity> (table, where);
+		var map = new Gee.HashMap<int64?, T> ();
+		foreach (var item in list) {
+			var key_val = Value (typeof (int64));
+			item.get_property (key_field, ref key_val);
+			map[key_val.get_int ()] = item;
+		}
 		return map;
 	}
 

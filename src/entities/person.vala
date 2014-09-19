@@ -17,8 +17,9 @@ public class Person : DB.SimpleEntity, DB.Viewable
 	}
 
 
+	public static unowned string table_name = "people";
 	public override unowned string db_table () {
-		return "people";
+		return table_name;
 	}
 
 

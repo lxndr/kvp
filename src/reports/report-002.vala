@@ -21,53 +21,69 @@ public class Report002 : Report {
 		var period = current_period.year * 12 + current_period.month - 1;
 		var account_periods = db.get_account_periods (selected_account, period, period + 11);
 		var last_account_period = account_periods[account_periods.size - 1];
+		var people = last_account_period.get_people ();
 
-		make_page1 (book.sheet (1), last_account_period);
-//		make_page2 ();
+		var account_number = last_account_period.account.number;
+		var account_tenant = last_account_period.tenant_name ();
+
+		make_page1 (book.sheet (0), last_account_period, account_number, account_tenant, people);
+		make_page2 (book.sheet (1), account_number, account_tenant, account_periods);
 	}
 
 
-	private void make_page1 (OOXML.Sheet sheet, AccountMonth account_period) {
-		sheet.put_string ("BZ1", account_period.account.number);
-		sheet.put_string ("R3", account_period.tenant_name ());
+	private void make_page1 (OOXML.Sheet sheet, AccountMonth account_period,
+			string account_number, string account_tenant, Gee.List<Person> people) {
+		var n_people = people.size;
+
+		sheet.put_string ("BZ1", account_number);
+		sheet.put_string ("R3", account_tenant);
+		sheet.put_string ("T12", account_period.n_rooms.to_string ());
+		sheet.put_string ("AD12", account_period.area.to_string ());
+		sheet.put_string ("AZ8", n_people.to_string ());
+		sheet.put_string ("BF8", n_people.to_string ());
+		sheet.put_string ("CA4", account_period.apartment);
+
+		/* people */
+		for (var i = 0; i < n_people; i++) {
+			var person = people[i];
+			sheet.get_row (14 + i).get_cell (27).put_string (person.name);
+			sheet.get_row (14 + i).get_cell (49).put_string (person.birthday);
+			sheet.get_row (14 + i).get_cell (57).put_string (person.relationship.name);
+		}
 	}
 
 
-	private void make_page2 () {
-		var sheet = book.sheet (1);
-
+	private void make_page2 (OOXML.Sheet sheet, string account_number,
+			string account_tenant, Gee.List<AccountMonth> account_periods) {
 		/* base information */
-		var account = selected_account;
-
-		sheet.put_string ("C1", account.tenant_name (current_period.year * 12 + current_period.month - 1));
-		sheet.put_string ("L1", account.number);
+		sheet.put_string ("C1", account_tenant);
+		sheet.put_string ("L1", account_number);
 
 		/* services & taxes */
-		for (var service_iter = 0; service_iter < service_ids.length; service_iter++) {
-			var column_number = 3 + service_iter;
-			var taxes = db.find_taxes_by_service_id (current_period, account, service_ids[service_iter]);
+		var list = new Gee.ArrayList<Gee.Map<int64?, Tax>> ();
+		foreach (var account_period in account_periods)
+			list.add (db.fetch_int64_entity_map<Tax> (Tax.table_name, "service",
+					("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
+					.printf (account_period.account.id, account_period.period / 12, account_period.period % 12 + 1)));
 
-			for (var month = 1; month <= 12; month++) {
-				if (taxes.has_key (month) == false)
-					continue;
-
-				var row_number = month + 4;
-				var tax = taxes[month];
-				sheet.get_row (row_number).get_cell (column_number).put_string (tax.total.format ());
-			}
-		}
-
-		/* account months */
-		var totals = db.find_account_month_by_year (account, current_period.year);
-		for (var month = 1; month <= 12; month++) {
-			if (totals.has_key (month) == false)
+		/*  */
+		foreach (var taxes in list) {
+			if (taxes.size == 0)
 				continue;
 
-			var row_number = month + 4;
-			var item = totals[month];
-			sheet.get_row (row_number).get_cell (12).put_string (item.total.format ());
-			sheet.get_row (row_number).get_cell (13).put_string (item.payment.format ());
-			sheet.get_row (row_number).get_cell (14).put_string (item.balance.format ());
+			var month = taxes[0].month - 1;
+			var row = sheet.get_row (5 + month);
+
+			for (var j = 0; j < 7; j++) {
+				var service_id = service_ids[j];
+
+				var tax = taxes[service_id];
+				if (tax != null) {
+					row.get_cell (3).put_string (tax.total.format ());
+//					row.get_cell (3).put_string (tax.payment.format ());
+//					row.get_cell (3).put_string (tax.balance.format ());
+				}
+			}
 		}
 	}
 

@@ -103,6 +103,20 @@ public class AccountMonth : DB.Entity, DB.Viewable
 				int64.FORMAT + " AND year=%d AND month=%d AND relationship=1")
 				.printf (account.id, period / 12, period % 12 + 1));
 	}
+
+
+	public Gee.List<Person> get_people () {
+		return db.fetch_entity_list<Person> (Person.table_name,
+				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
+				.printf (account.id, period / 12, period % 12 + 1));
+	}
+
+
+	public Gee.List<Tax> get_taxes () {
+		return db.fetch_entity_list<Tax> (Tax.table_name,
+				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
+				.printf (account.id, period / 12, period % 12 + 1));
+	}
 }
 
 
