@@ -22,6 +22,11 @@ public class AccountTable : DB.TableView {
 		menu_item.activate.connect (recalculate_clicked);
 		menu_item.visible = true;
 		popup_menu.add (menu_item);
+
+		menu_item = new Gtk.MenuItem.with_label ("Recalculate this period");
+		menu_item.activate.connect (recalculate_period_clicked);
+		menu_item.visible = true;
+		popup_menu.add (menu_item);
 	}
 
 
@@ -112,12 +117,10 @@ public class AccountTable : DB.TableView {
 	}
 
 
-	public void recalculate_clicked () {
-		var account_month = get_selected_entity () as AccountMonth;
-
+	private void recalculate_period (AccountMonth account_month) {
 		var taxes = db.fetch_entity_list<Tax> (Tax.table_name,
 				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
-				.printf (account_month.account.id, current_period.year, current_period.month));
+				.printf (account_month.account.id, account_month.period / 12, account_month.period % 12 + 1));
 
 		foreach (var tax in taxes) {
 			tax.calc_amount ();
@@ -127,8 +130,23 @@ public class AccountTable : DB.TableView {
 
 		account_month.calc_total ();
 		account_month.calc_balance ();
-		refresh_row (account_month);
 		account_month.persist ();
+	}
+
+
+	public void recalculate_clicked () {
+		var account_month = get_selected_entity () as AccountMonth;
+		recalculate_period (account_month);
+		refresh_row (account_month);
+	}
+
+
+	public void recalculate_period_clicked () {
+		var periods = db.fetch_entity_list<AccountMonth> (AccountMonth.table_name,
+				("period=%d").printf (current_period.year * 12 + current_period.month - 1));
+		foreach (var period_month in periods)
+			recalculate_period (period_month);
+		update_view ();
 	}
 }
 
