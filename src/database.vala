@@ -56,15 +56,30 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.Map<int64?, T> fetch_int64_entity_map<T> (string table, string key_field,
+	public Gee.Map<int, T> fetch_int64_entity_map<T> (string table, string key_field,
 			string? where = null) {
-		var list = fetch_entity_list<DB.Entity> (table, where);
-		var map = new Gee.HashMap<int64?, T> ();
-		foreach (var item in list) {
-			var key_val = Value (typeof (int64));
-			item.get_property (key_field, ref key_val);
-			map[key_val.get_int ()] = item;
-		}
+		int key_column = -1;
+
+		/* query */
+		var sb = new StringBuilder ();
+		sb.append_printf ("SELECT * FROM %s", table);
+		if (where != null)
+			sb.append_printf (" WHERE %s", where);
+
+		var map = new Gee.HashMap<int, T> ();
+		exec_sql (sb.str, (n_columns, values, column_names) => {
+			if (key_column == -1) {
+				for (var i = 0; i < n_columns; i++)
+					if (column_names[i] == key_field)
+						key_column = i;
+				if (key_column == -1)
+					error ("Table '%s' doesn't have column '%s'", table, key_field);
+			}
+
+			var key = (int) int64.parse (values[key_column]);
+			map[key] = make_entity<T> (n_columns, values, column_names, true);
+			return 0;
+		});
 		return map;
 	}
 

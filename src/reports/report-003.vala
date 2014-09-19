@@ -78,8 +78,8 @@ public class Report003 : Report {
 			row.get_cell (6).put_string (n_people.to_string ()).style = cstyles[5];
 
 			var taxes = db.fetch_int_int64_map (Tax.table_name, "service", "total",
-					("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
-					.printf (ac.id, period / 12, period % 12 + 1));
+					("account=%" + int64.FORMAT + " AND period=%d")
+					.printf (ac.id, period));
 
 			OOXML.Cell cell;
 

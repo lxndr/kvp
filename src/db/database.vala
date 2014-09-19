@@ -70,7 +70,7 @@ public interface Database : Object {
 
 
 	public Gee.List<T> fetch_entity_list<T> (string table, string? where = null,
-			string? order_by = null, int limit = -1) {
+			string? order_by = null, int limit = -1, bool recursive = true) {
 		var sb = new StringBuilder ();
 		sb.append_printf ("SELECT * FROM %s", table);
 
@@ -81,7 +81,13 @@ public interface Database : Object {
 		if (limit > -1)
 			sb.append_printf (" LIMIT %d", limit);
 
-		return get_entity_list (typeof (T), sb.str) as Gee.List<T>;
+		var list = new Gee.ArrayList<T> ();
+		exec_sql (sb.str, (n_columns, values, column_names) => {
+			list.add (make_entity<T> (n_columns, values, column_names, recursive));
+			return 0;
+		});
+
+		return list;
 	}
 
 
@@ -96,6 +102,41 @@ public interface Database : Object {
 
 		var list = get_entity_list (type, query);
 		return list[0];
+	}
+
+
+	public T make_entity<T> (int n_columns, string[] values, string[] column_names, bool recursive) {
+		var type = typeof (T);
+		var ent = Object.new (type, "db", this);
+		var obj_class = (ObjectClass) type.class_ref ();
+
+		var str_val = Value (typeof (string));
+
+		for (var i = 0; i < n_columns; i++) {
+			unowned string prop_name = column_names[i];
+			var prop = obj_class.find_property (prop_name);
+			if (prop == null)
+				error ("Could not find propery '%s' in '%s'", prop_name, type.name ());
+			var prop_type = prop.value_type;
+
+			str_val.set_string (values[i]);
+			var dest_val = Value (prop_type);
+
+			if (prop_type.is_a (typeof (DB.Entity))) {
+				Entity? obj = null;
+				if (recursive == true)
+					obj = get_entity (prop_type, int64.parse (values[i]));
+				dest_val.set_object (obj);
+			} else if (str_val.transform (ref dest_val) == false) {
+				warning ("Couldn't transform value '%s' from '%s' to '%s' for property '%s' of '%s'\n",
+						values[i], str_val.type ().name (), dest_val.type ().name (),
+						prop_name, type.name ());
+			}
+
+			ent.set_property (column_names[i], dest_val);
+		}
+
+		return ent;
 	}
 
 

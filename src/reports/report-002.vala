@@ -2,7 +2,7 @@ namespace Kv {
 
 
 public class Report002 : Report {
-	const int64 service_ids[] = {
+	const int service_ids[] = {
 		5, 6, 1, 2, 7, 8, 4, 9
 	};
 
@@ -18,7 +18,8 @@ public class Report002 : Report {
 	public override void make () throws Error {
 		book.load (GLib.File.new_for_path ("./templates/account.xlsx"));
 
-		var account_periods = db.get_account_periods (account, period, period + 11);
+		var year = period / 12;
+		var account_periods = db.get_account_periods (account, year * 12, year * 12 + 11);
 		var last_account_period = account_periods[account_periods.size - 1];
 		var people = last_account_period.get_people ();
 
@@ -59,31 +60,40 @@ public class Report002 : Report {
 		sheet.put_string ("L1", account_number);
 
 		/* services & taxes */
-		var list = new Gee.ArrayList<Gee.Map<int64?, Tax>> ();
-		foreach (var account_period in account_periods)
-			list.add (db.fetch_int64_entity_map<Tax> (Tax.table_name, "service",
-					("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
-					.printf (account_period.account.id, account_period.period / 12, account_period.period % 12 + 1)));
+		int64 totals[11];
+		for (var j = 0; j < 11; j++)
+			totals[j] = 0;
 
-		/*  */
-		foreach (var taxes in list) {
-			if (taxes.size == 0)
-				continue;
+		foreach (var account_period in account_periods) {
+			var taxes = db.fetch_int64_entity_map<Tax> (Tax.table_name, "service",
+					("account=%" + int64.FORMAT + " AND period=%d")
+					.printf (account_period.account.id, account_period.period));
 
-			var month = taxes[0].period % 12;
+			var month = account_period.period % 12;
 			var row = sheet.get_row (5 + month);
 
-			for (var j = 0; j < 7; j++) {
-				var service_id = service_ids[j];
-
-				var tax = taxes[service_id];
+			for (var j = 0; j < 8; j++) {
+				var tax = taxes[service_ids[j]];
 				if (tax != null) {
-					row.get_cell (3).put_string (tax.total.format ());
-//					row.get_cell (3).put_string (tax.payment.format ());
-//					row.get_cell (3).put_string (tax.balance.format ());
+					totals[j] += tax.total.val;
+					row.get_cell (3 + j).put_string (tax.total.format ());
 				}
 			}
+
+			totals[8] += account_period.total.val;
+			row.get_cell (12).put_string (account_period.total.format ());
+			totals[9] += account_period.payment.val;
+			row.get_cell (13).put_string (account_period.payment.format ());
+			totals[10] += account_period.balance.val;
+			row.get_cell (14).put_string (account_period.balance.format ());
 		}
+
+		var row = sheet.get_row (17);
+		for (var j = 0; j < 8; j++)
+			row.get_cell (3 + j).put_string (Money (totals[j]).format ());
+		row.get_cell (12).put_string (Money (totals[8]).format ());
+		row.get_cell (13).put_string (Money (totals[9]).format ());
+		row.get_cell (14).put_string (Money (totals[10]).format ());
 	}
 
 

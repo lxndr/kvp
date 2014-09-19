@@ -169,9 +169,8 @@ class MainWindow : Gtk.ApplicationWindow {
 		var db = (application as Application).db;
 		var report = Object.new (type,
 				"db", db,
-				"current_period", current_period,
-				"selected_account", account_table.get_selected_account ()
-				) as Report;
+				"account", account_table.get_selected_account (),
+				"period", current_period) as Report;
 
 		try {
 			report.make ();
