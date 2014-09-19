@@ -1,7 +1,7 @@
 namespace Archive {
 
 
-public class Zip {
+public class Zip : Object {
 	private class CentralDirectory : Object {
 		public uint16 version;
 		public uint16 version_needed;
