@@ -35,7 +35,7 @@ public class Person : DB.SimpleEntity, DB.Viewable
 
 
 	public Person (Database _db, Account _account, int _period) {
-		var _relationship = _db.get_entity (typeof (Relationship), 2) as Relationship;
+		var _relationship = _db.fetch_entity_by_id<Relationship> (2);
 
 		Object (db: _db,
 				account: _account,

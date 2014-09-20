@@ -60,7 +60,6 @@ class MainWindow : Gtk.ApplicationWindow {
 		account_table = new AccountTable (app.db);
 		account_table.selection_changed.connect (account_changed);
 		box2.destroy ();	/* a work around */
-		box2 = null;
 		paned1.pack1 (account_table.get_root_widget (), true, false);
 
 		/* UI: people list */

@@ -16,8 +16,9 @@ public class Service : DB.SimpleEntity, DB.Viewable
 	}
 
 
+	public static unowned string table_name = "services";
 	public override unowned string db_table () {
-		return "services";
+		return table_name;
 	}
 
 

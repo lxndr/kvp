@@ -99,7 +99,7 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 
 	public string? tenant_name () {
-		return db.query_string (Person.table_name, "name", ("account=%" +
+		return db.fetch_string (Person.table_name, "name", ("account=%" +
 				int64.FORMAT + " AND period=%d AND relationship=1")
 				.printf (account.id, period));
 	}

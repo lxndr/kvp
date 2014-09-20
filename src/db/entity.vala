@@ -8,21 +8,6 @@ public abstract class Entity : Object {
 	public abstract string[] db_keys ();
 	public abstract string[] db_fields ();
 
-	public bool changed;
-
-
-	construct {
-		changed = false;
-
-		notify.connect (property_changed);
-	}
-
-
-	private void property_changed (ParamSpec pspec) {
-		changed = true;
-	}
-
-
 	public void persist () {
 		db.persist (this);
 	}

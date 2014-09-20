@@ -118,7 +118,7 @@ public abstract class TableView {
 				(cell as Gtk.CellRendererText).edited.connect (text_row_edited);
 			} else if (prop_type.is_a (typeof (Entity))) {
 				var combo_store = new Gtk.ListStore (2, typeof (string), typeof (Entity));
-				var entity_list = db.get_entity_list (prop_type, null) as Gee.List<Viewable>;
+				var entity_list = db.fetch_entity_list_full (prop_type) as Gee.List<Viewable>;
 
 				foreach (var entity in entity_list) {
 					Gtk.TreeIter iter;

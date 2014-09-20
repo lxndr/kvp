@@ -6,41 +6,33 @@ public interface Database : Object {
 	public abstract int64 last_insert_rowid ();
 
 
-	public int64 query_count (string table, string? where = null) {
-		int64 result = 0;
-		var query = "SELECT COUNT(*) FROM `%s` WHERE %s"
-				.printf (table, where);
+	public string build_select_query (string table, string? columns = null,
+			string? where = null, string? order_by = null, int limit = -1,
+			string? extra = null) {
+		var sb = new StringBuilder ("SELECT ");
 
-		exec_sql (query, (n_columns, values, column_names) => {
-			if (values[0] != null)
-				result = int64.parse (values[0]);
-			return 0;
-		});
+		if (columns == null)
+			sb.append_printf ("* FROM %s", table);
+		else
+			sb.append_printf ("%s FROM %s", columns, table);
 
-		return result;
+		if (where != null)
+			sb.append_printf (" WHERE %s", where);
+		if (order_by != null)
+			sb.append_printf (" ORDER BY %s", order_by);
+		if (limit > -1)
+			sb.append_printf (" LIMIT %d", limit);
+		if (extra != null)
+			sb.append_printf (" %s", extra);
+
+		return sb.str;
 	}
 
 
-	public int64 query_sum (string table, string column, string expr) {
-		int64 result = 0;
-		var query = "SELECT SUM(%s) FROM `%s` WHERE %s"
-				.printf (column, table, expr);
-
-		exec_sql (query, (n_columns, values, column_names) => {
-			if (values[0] != null)
-				result = int64.parse (values[0]);
-			return 0;
-		});
-
-		return result;
-	}
-
-
-	public string? query_string (string table, string column, string expr) {
+	public string? fetch_string (string table, string column, string where) {
 		string? result = null;
-		var query = "SELECT %s FROM %s WHERE %s"
-				.printf (column, table, expr);
 
+		var query = build_select_query (table, column, where);
 		exec_sql (query, (n_columns, values, column_names) => {
 			result = values[0];
 			return 0;
@@ -50,70 +42,36 @@ public interface Database : Object {
 	}
 
 
-	public int64 fetch_int64 (string table, string column, string expr) {
+	public int64 fetch_int64 (string table, string column, string where) {
 		int64 n = 0;
-		var s = query_string (table, column, expr);
+		var s = fetch_string (table, column, where);
 		if (s != null)
 			n = int64.parse (s);
 		return n;
 	}
 
 
-	public T? fetch_entity<T> (string table, string expr) {
-		var query = "SELECT * FROM %s WHERE %s LIMIT 1"
-				.printf (table, expr);
-		var list = get_entity_list (typeof (T), query) as Gee.List<T>;
-		if (list.size == 0)
-			return null;
-		return list[0];
+	public int64 query_count (string table, string? where) {
+		return fetch_int64 (table, "COUNT(*)", where);
 	}
 
 
-	public Gee.List<T> fetch_entity_list<T> (string table, string? where = null,
-			string? order_by = null, int limit = -1, bool recursive = true) {
-		var sb = new StringBuilder ();
-		sb.append_printf ("SELECT * FROM %s", table);
-
-		if (where != null)
-			sb.append_printf (" WHERE %s", where);
-		if (order_by != null)
-			sb.append_printf (" ORDER BY %s", order_by);
-		if (limit > -1)
-			sb.append_printf (" LIMIT %d", limit);
-
-		var list = new Gee.ArrayList<T> ();
-		exec_sql (sb.str, (n_columns, values, column_names) => {
-			list.add (make_entity<T> (n_columns, values, column_names, recursive));
-			return 0;
-		});
-
-		return list;
+	public int64 query_sum (string table, string column, string where) {
+		return fetch_int64 (table, "SUM(%s)".printf (column), where);
 	}
 
 
-	public void delete_entity (string table, string expr) {
-		exec_sql ("DELETE FROM %s WHERE %s".printf (table, expr), null);
-	}
-
-
-	public DB.Entity get_entity (Type type, int64 id) {
-		var tmp = Object.new (type) as DB.Entity;
-		var query = "SELECT * FROM `%s` WHERE id=%lld".printf (tmp.db_table (), id);
-
-		var list = get_entity_list (type, query);
-		return list[0];
-	}
-
-
-	public T make_entity<T> (int n_columns, string[] values, string[] column_names, bool recursive) {
-		var type = typeof (T);
-		var ent = Object.new (type, "db", this);
+	private void prepare_entity (Entity ent, int n_fields,
+			[CCode (array_length = false)] string[] fields,
+			[CCode (array_length = false)] string[] values,
+			bool recursive = true) {
+		var type = ent.get_type ();
 		var obj_class = (ObjectClass) type.class_ref ();
 
 		var str_val = Value (typeof (string));
 
-		for (var i = 0; i < n_columns; i++) {
-			unowned string prop_name = column_names[i];
+		for (var i = 0; i < n_fields; i++) {
+			unowned string prop_name = fields[i];
 			var prop = obj_class.find_property (prop_name);
 			if (prop == null)
 				error ("Could not find propery '%s' in '%s'", prop_name, type.name ());
@@ -124,22 +82,111 @@ public interface Database : Object {
 
 			if (prop_type.is_a (typeof (DB.Entity))) {
 				Entity? obj = null;
-				if (recursive == true)
-					obj = get_entity (prop_type, int64.parse (values[i]));
+				if (recursive == true) {
+					var obj_id = int64.parse (values[i]);
+					if (obj_id > 0)
+						obj = fetch_entity_full (prop_type, null,
+								("id=%" + int64.FORMAT).printf (obj_id));
+				}
 				dest_val.set_object (obj);
 			} else if (str_val.transform (ref dest_val) == false) {
 				warning ("Couldn't transform value '%s' from '%s' to '%s' for property '%s' of '%s'\n",
-						values[i], str_val.type ().name (), dest_val.type ().name (),
-						prop_name, type.name ());
+						values[i], str_val.type ().name (), dest_val.type ().name (), prop_name, type.name ());
 			}
 
-			ent.set_property (column_names[i], dest_val);
+			ent.set_property (prop_name, dest_val);
 		}
+	}
 
+
+	private Entity? fetch_entity_full (Type type, string? table, string where, bool recursive = true) {
+		bool found = false;
+		var ent = Object.new (type, "db", this) as Entity;
+
+		if (table == null)
+			table = ent.db_table ();
+
+		var query = build_select_query (table, null, where, null, 1);
+		exec_sql (query, (n_columns, values, column_names) => {
+			prepare_entity (ent, n_columns, column_names, values, recursive);
+			found = true;
+			return 0;
+		});
+
+		if (found == false)
+			return null;
 		return ent;
 	}
 
 
+	public T? fetch_entity<T> (string table, string where, bool recursive = true) {
+		return fetch_entity_full (typeof (T), table, where, recursive);
+	}
+
+
+	public T? fetch_entity_by_id<T> (int64 id, string? table = null, bool recursive = true) {
+		return fetch_entity<T> (table, ("id=%" + int64.FORMAT).printf (id));
+	}
+
+
+	public Entity make_entity_full (Type type, int n_fields,
+			[CCode (array_length = false)] string[] fields,
+			[CCode (array_length = false)] string[] values,
+			bool recursive = true) {
+		var ent = Object.new (type, "db", this) as Entity;
+		prepare_entity (ent, n_fields, fields, values, recursive);
+		return ent;
+	}
+
+
+	public T make_entity<T> (int n_fields,
+			[CCode (array_length = false)] string[] fields,
+			[CCode (array_length = false)] string[] values,
+			bool recursive = true) {
+		return make_entity_full (typeof (T), n_fields, fields, values, recursive);
+	}
+
+
+	public Gee.List<Entity> fetch_entity_list_full (Type type, string? table = null,
+			string? where = null, string? order_by = null, int limit = -1,
+			bool recursive = true) {
+		if (table == null) {
+			var tmp = Object.new (type) as Entity;
+			table = tmp.db_table ();
+		}
+
+		var list = new Gee.ArrayList<Entity> ();
+		var query = build_select_query (table, null, where, order_by, limit);
+		exec_sql (query, (n_columns, values, column_names) => {
+			list.add (make_entity_full (type, n_columns, column_names, values, recursive));
+			return 0;
+		});
+		return list;
+	}
+
+
+	public Gee.List<T> fetch_entity_list<T> (string table, string? where = null,
+			string? order_by = null, int limit = -1, bool recursive = true) {
+		return fetch_entity_list_full (typeof (T), table, where, order_by, limit, recursive);
+	}
+
+
+	public void delete_entity (string table, string where) {
+		exec_sql ("DELETE FROM %s WHERE %s".printf (table, where), null);
+	}
+
+
+/*
+	public DB.Entity get_entity (Type type, int64 id) {
+		var tmp = Object.new (type) as DB.Entity;
+		var query = "SELECT * FROM `%s` WHERE id=%lld".printf (tmp.db_table (), id);
+
+		var list = get_entity_list (type, query);
+		return list[0];
+	}
+*/
+
+/*
 	public Gee.List<DB.Entity> get_entity_list (Type type, string? _sql) {
 		string sql;
 
@@ -176,13 +223,14 @@ public interface Database : Object {
 
 				entity.set_property (column_names[i], dest_val);
 			}
-			entity.changed = false;
+
 			list.add (entity);
 			return 0;
 		});
 
 		return list;
 	}
+*/
 
 
 	private string prepare_insert_values (Entity entity, string[] props, ObjectClass obj_class) {

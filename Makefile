@@ -46,7 +46,7 @@ kvp: resources $(SOURCES)
 
 
 debug: resources $(SOURCES)
-	valac $(SOURCES) src/resources.c --Xcc="-lm" --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --pkg=zlib --gresources=kvartplata.gresource.xml -g --save-temps -D TES_SAVE_DEBUG -o kvp
+	valac $(SOURCES) src/resources.c --Xcc="-lm" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --pkg=zlib --gresources=kvartplata.gresource.xml -g --save-temps -o kvp
 
 
 win32: resources $(SOURCES)

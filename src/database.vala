@@ -77,7 +77,7 @@ public class Database : DB.SQLiteDatabase {
 			}
 
 			var key = (int) int64.parse (values[key_column]);
-			map[key] = make_entity<T> (n_columns, values, column_names, true);
+			map[key] = make_entity<T> (n_columns, column_names, values);
 			return 0;
 		});
 		return map;
@@ -100,12 +100,12 @@ public class Database : DB.SQLiteDatabase {
 
 
 	public Gee.List<Service> get_service_list () {
-		return get_entity_list (typeof (Service), "SELECT * FROM services") as Gee.List<Service>;
+		return fetch_entity_list<Service> (Service.table_name);
 	}
 
 
 	public Gee.List<Account> get_account_list () {
-		return get_entity_list (typeof (Account), "SELECT * FROM account") as Gee.List<Account>;
+		return fetch_entity_list<Account> (Account.table_name);
 	}
 
 
@@ -114,9 +114,9 @@ public class Database : DB.SQLiteDatabase {
 		var accounts = get_account_list ();
 
 		foreach (var account in accounts) {
-			var query = "SELECT * FROM account_period WHERE account=%lld AND period=%d"
-					.printf (account.id, period);
-			var list = get_entity_list (typeof (AccountPeriod), query) as Gee.List<AccountPeriod>;
+			var list = fetch_entity_list<AccountPeriod> (AccountPeriod.table_name,
+					("account=%" + int64.FORMAT + " AND period=%d")
+					.printf (account.id, period));
 			if (list.size == 0)
 				months.add (new AccountPeriod (this, account, period));
 			else

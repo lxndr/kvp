@@ -20,7 +20,7 @@ public class TaxTable : DB.TableView {
 
 
 	protected override DB.Entity new_entity () {
-		var service = db.get_entity (typeof (Service), 1) as Service;
+		var service = db.fetch_entity_by_id<Service> (1);
 		return new Tax (account, period, service);
 	}
 
