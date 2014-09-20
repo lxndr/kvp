@@ -23,6 +23,8 @@ class MainWindow : Gtk.ApplicationWindow {
 	private Gtk.Paned paned1;
 	[GtkChild]
 	private Gtk.Paned paned2;
+	[GtkChild]
+	private Gtk.Box box2;	/* a work around */
 
 	/* tables */
 	private AccountTable account_table;
@@ -57,6 +59,8 @@ class MainWindow : Gtk.ApplicationWindow {
 		/* UI: account list */
 		account_table = new AccountTable (app.db);
 		account_table.selection_changed.connect (account_changed);
+		box2.destroy ();	/* a work around */
+		box2 = null;
 		paned1.pack1 (account_table.get_root_widget (), true, false);
 
 		/* UI: people list */
@@ -68,7 +72,6 @@ class MainWindow : Gtk.ApplicationWindow {
 		paned2.pack2 (tax_table.get_root_widget (), false, false);
 
 		/*  */
-//		account_table.update_view ();
 		init_current_period ();
 	}
 
