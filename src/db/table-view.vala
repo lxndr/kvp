@@ -23,7 +23,7 @@ public abstract class TableView {
 	private Gtk.MenuItem remove_menu_item;
 
 
-	protected abstract string[] view_properties ();
+	protected abstract unowned string[] view_properties ();
 	protected abstract Gee.List<Entity> get_entity_list ();
 
 

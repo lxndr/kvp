@@ -24,12 +24,13 @@ public class PeopleTable : DB.TableView {
 	}
 
 
-	protected override string[] view_properties () {
-		return {
-			"name",
-			"birthday",
-			"relationship"
+	protected override unowned string[] view_properties () {
+		const string props[] = {
+			N_("name"),
+			N_("birthday"),
+			N_("relationship")
 		};
+		return props;
 	}
 
 

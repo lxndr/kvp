@@ -1,0 +1,92 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.1\n"
+"Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
+"POT-Creation-Date: 2014-09-21 22:18+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Russian <LL@li.org>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/application.vala:42
+msgid "List of the tenants"
+msgstr "Список жилцов"
+
+#: src/application.vala:43
+msgid "Account"
+msgstr "Лицевой счёт"
+
+#: src/application.vala:44
+msgid "People and taxes"
+msgstr "Жильцы и услуги"
+
+#: src/account-table.vala:35
+msgid "number"
+msgstr "ЛС"
+
+#: src/account-table.vala:36
+msgid "apartment"
+msgstr "Комната"
+
+#: src/account-table.vala:37
+msgid "n_rooms"
+msgstr "Кол-во комнат"
+
+#: src/account-table.vala:38
+msgid "area"
+msgstr "Площадь"
+
+#: src/account-table.vala:39 src/tax-table.vala:33
+msgid "total"
+msgstr "Начислено"
+
+#: src/account-table.vala:40
+msgid "payment"
+msgstr "Уплачено"
+
+#: src/account-table.vala:41
+msgid "balance"
+msgstr "Остаток"
+
+#: src/account-table.vala:42
+msgid "tenant"
+msgstr "Квартиронаниматель"
+
+#: src/people-table.vala:29
+msgid "name"
+msgstr "Имя"
+
+#: src/people-table.vala:30
+msgid "birthday"
+msgstr "Дата рождения"
+
+#: src/people-table.vala:31
+msgid "relationship"
+msgstr "Отношение"
+
+#: src/tax-table.vala:30
+msgid "service"
+msgstr "Услуга"
+
+#: src/tax-table.vala:31
+msgid "amount"
+msgstr "Кол-во"
+
+#: src/tax-table.vala:32
+msgid "price"
+msgstr "Стоимость"
+
+#: src/entities/person.vala:14
+msgid "A person"
+msgstr "Человек"

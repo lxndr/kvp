@@ -25,13 +25,14 @@ public class TaxTable : DB.TableView {
 	}
 
 
-	protected override string[] view_properties () {
-		return {
-			"service",
-			"amount",
-			"price",
-			"total"
+	protected override unowned string[] view_properties () {
+		const string props[] = {
+			N_("service"),
+			N_("amount"),
+			N_("price"),
+			N_("total")
 		};
+		return props;
 	}
 
 

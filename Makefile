@@ -7,6 +7,7 @@ SOURCES=src/db/database.vala \
 		src/db/simple-entity.vala \
 		src/db/viewable.vala \
 		src/db/table-view.vala \
+		src/widgets/year-month.vala \
 		src/application.vala \
 		src/main-window.vala \
 		src/utils.vala \
@@ -35,6 +36,12 @@ SOURCES=src/db/database.vala \
 		src/reports/report-002.vala \
 		src/reports/report-003.vala
 
+PACKAGES=--pkg=gtk+-3.0 \
+		--pkg=gee-0.8 \
+		--pkg=json-glib-1.0 \
+		--pkg=sqlite3 \
+		--pkg=libxml-2.0 \
+		--pkg=zlib
 
 
 all: kvp
@@ -46,34 +53,48 @@ kvp: resources $(SOURCES)
 
 
 debug: resources $(SOURCES)
-	valac $(SOURCES) src/resources.c -D KVP_DEBUG --Xcc="-lm" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --pkg=zlib --gresources=kvartplata.gresource.xml -g --save-temps -o kvp
+	valac $(SOURCES) src/resources.c \
+		-D KVP_DEBUG \
+		--Xcc="-lm" \
+		--Xcc="-DGETTEXT_PACKAGE=\"kvp\"" \
+		--target-glib=2.38 \
+		$(PACKAGES) \
+		--gresources=kvartplata.gresource.xml \
+		-g --save-temps \
+		-o kvp
 
 
-win-launcher.exe: src/win-launcher.c
-	i686-w64-mingw32-gcc -o win-launcher.exe src/win-launcher.c
+# win-launcher.exe: src/win-launcher.c
+#	i686-w64-mingw32-gcc -o win-launcher.exe src/win-launcher.c
 
-win32: win-launcher.exe resources $(SOURCES)
-	valac --cc=i686-w64-mingw32-gcc --pkg-config=i686-w64-mingw32-pkg-config -D WINDOWS_BUILD --Xcc="-w" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(SOURCES) src/resources.c --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --pkg=zlib --gresources=kvartplata.gresource.xml -o kvp-x86_32.exe
+win32: resources $(SOURCES)
+	valac --cc=i686-w64-mingw32-gcc --pkg-config=i686-w64-mingw32-pkg-config -D WINDOWS_BUILD --Xcc="-w" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(SOURCES) src/resources.c --target-glib=2.38 $(PACKAGES) --gresources=kvartplata.gresource.xml -o kvp-x86_32.exe
 
-win64: win-launcher.exe resources $(SOURCES)
-	valac --cc=x86_64-w64-mingw32-gcc --pkg-config=x86_64-w64-mingw32-pkg-config --Xcc="-w" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(SOURCES) src/resources.c --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --pkg=zlib --gresources=kvartplata.gresource.xml -o kvp-x86_64.exe
+win64: resources $(SOURCES)
+	valac --cc=x86_64-w64-mingw32-gcc --pkg-config=x86_64-w64-mingw32-pkg-config --Xcc="-w" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(SOURCES) src/resources.c --target-glib=2.38 $(PACKAGES) --gresources=kvartplata.gresource.xml -o kvp-x86_64.exe
 
 
 resources: kvartplata.gresource.xml $(RESOURCES)
 	glib-compile-resources --generate-source --target=src/resources.c kvartplata.gresource.xml
 
 
-po: 
-	
+po: kvp.pot
+	msgfmt --output=ru.mo ru.po
 
-kvp.pot:
-	xgettext --output=kvp.pot --keyword=_ --keyword=N_ $(SOURCES) --msgid-bugs-address=lxndr87@users.sourceforge.net
+kvp.pot: $(SOURCES)
+	xgettext --output=kvp.pot \
+			--keyword=_ --keyword=N_ --keyword=C_:1c,2 --keyword=NC_:1c,2\
+			$(SOURCES) \
+			--msgid-bugs-address=lxndr87@users.sourceforge.net \
+			--from-code=UTF-8
+	msgmerge --update --quiet ru.po kvp.pot
 
 
 clean:
 	rm -f src/*.c
 	rm -f src/db/*.c
 	rm -f src/archive/*.c
+	rm -f src/widgets/*.c
 	rm -f src/entities/*.c
 	rm -f src/ooxml/*.c
 	rm -f src/reports/*.c

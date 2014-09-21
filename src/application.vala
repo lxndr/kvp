@@ -8,7 +8,7 @@ public class Application : Gtk.Application
 
 
 	public Application() {
-		Object (application_id: "org.lxndr.kvartplata",
+		Object (application_id: "org.lxndr.kvp",
 			flags: ApplicationFlags.FLAGS_NONE);
 
 		Value.register_transform_func (typeof (string), typeof (int),
@@ -39,9 +39,9 @@ public class Application : Gtk.Application
 
 		/* reports */
 		reports = new Gee.HashMap<string, Type> ();
-		reports.set ("List of the tenants", typeof (Report001));
-		reports.set ("Account", typeof (Report002));
-		reports.set ("People and taxes", typeof (Report003));
+		reports.set (_("List of the tenants"), typeof (Report001));
+		reports.set (_("Account"), typeof (Report002));
+		reports.set (_("People and taxes"), typeof (Report003));
 
 		/* database */
 		try {
@@ -65,16 +65,10 @@ public class Application : Gtk.Application
 		var root_dir = Path.get_dirname (Path.get_dirname (args[0]));
 #endif
 		var locale_path = Path.build_filename (root_dir, "share/locale");
-stdout.printf ("! %s\n", locale_path);
+
 		Intl.bindtextdomain ("kvp", locale_path);
 		Intl.bind_textdomain_codeset ("kvp", "UTF-8");
 		Intl.textdomain ("kvp");
-
-var sl = Intl.get_language_names ();
-foreach (var s in sl)
-	stdout.printf (">> %s\n", s);
-
-stdout.printf ("test %s\n", _("number"));
 
 		Application app = new Application ();
 		return app.run (args);

@@ -30,17 +30,18 @@ public class AccountTable : DB.TableView {
 	}
 
 
-	protected override string[] view_properties () {
-		return {
-			"number",
-			"apartment",
-			"n_rooms",
-			"area",
-			"total",
-			"payment",
-			"balance",
-			"tenant"
+	protected override unowned string[] view_properties () {
+		const string props[] = {
+			N_("number"),
+			N_("apartment"),
+			N_("n_rooms"),
+			N_("area"),
+			N_("total"),
+			N_("payment"),
+			N_("balance"),
+			N_("tenant")
 		};
+		return props;
 	}
 
 

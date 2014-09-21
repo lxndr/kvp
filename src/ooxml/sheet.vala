@@ -275,6 +275,10 @@ stdout.printf (xml);
 					}
 
 					cell_node->new_text_child (null, "v", string_number.to_string ());
+				} else if (cell.val is NumberValue) {
+					var cell_val = cell.val as NumberValue;
+					cell_node->set_prop ("t", "n");
+					cell_node->new_text_child (null, "v", cell_val.val.to_string ());
 				}
 			}
 		}
