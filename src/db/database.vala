@@ -171,66 +171,37 @@ public interface Database : Object {
 	}
 
 
+	public Gee.Map<int, T> fetch_int_entity_map<T> (string table, string key_field,
+			string? where = null) {
+		int key_column = -1;
+
+		/* query */
+		var sb = new StringBuilder ();
+		sb.append_printf ("SELECT * FROM %s", table);
+		if (where != null)
+			sb.append_printf (" WHERE %s", where);
+
+		var map = new Gee.HashMap<int, T> ();
+		exec_sql (sb.str, (n_columns, values, column_names) => {
+			if (key_column == -1) {
+				for (var i = 0; i < n_columns; i++)
+					if (column_names[i] == key_field)
+						key_column = i;
+				if (key_column == -1)
+					error ("Table '%s' doesn't have column '%s'", table, key_field);
+			}
+
+			var key = (int) int64.parse (values[key_column]);
+			map[key] = make_entity<T> (n_columns, column_names, values);
+			return 0;
+		});
+		return map;
+	}
+
+
 	public void delete_entity (string table, string where) {
 		exec_sql ("DELETE FROM %s WHERE %s".printf (table, where), null);
 	}
-
-
-/*
-	public DB.Entity get_entity (Type type, int64 id) {
-		var tmp = Object.new (type) as DB.Entity;
-		var query = "SELECT * FROM `%s` WHERE id=%lld".printf (tmp.db_table (), id);
-
-		var list = get_entity_list (type, query);
-		return list[0];
-	}
-*/
-
-/*
-	public Gee.List<DB.Entity> get_entity_list (Type type, string? _sql) {
-		string sql;
-
-		if (_sql == null) {
-			var tmp = Object.new (type) as Entity;
-			var table = tmp.db_table ();
-			sql = "SELECT * FROM `%s`".printf (table);
-		} else {
-			sql = _sql;
-		}
-
-		var obj_class = (ObjectClass) type.class_ref ();
-		var list = new Gee.ArrayList<DB.Entity> ();
-		var str_val = Value (typeof (string));
-
-		exec_sql (sql, (n_columns, values, column_names) => {
-			var entity = Object.new (type, "db", this) as DB.Entity;
-			for (var i = 0; i < n_columns; i++) {
-				unowned string prop_name = column_names[i];
-				var prop = obj_class.find_property (prop_name);
-				if (prop == null)
-					error ("Could not find propery '%s' in '%s'", prop_name, type.name ());
-				var prop_type = prop.value_type;
-
-				str_val.set_string (values[i]);
-				var dest_val = Value (prop_type);
-
-				if (prop_type.is_a (typeof (DB.Entity)))
-					dest_val.set_object (get_entity (prop_type, int64.parse (values[i])));
-				else if (str_val.transform (ref dest_val) == false)
-					warning ("Couldn't transform value '%s' from '%s' to '%s' for property '%s' of '%s'\n",
-							values[i], str_val.type ().name (), dest_val.type ().name (),
-							prop_name, type.name ());
-
-				entity.set_property (column_names[i], dest_val);
-			}
-
-			list.add (entity);
-			return 0;
-		});
-
-		return list;
-	}
-*/
 
 
 	private string prepare_insert_values (Entity entity, string[] props, ObjectClass obj_class) {

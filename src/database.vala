@@ -56,34 +56,6 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.Map<int, T> fetch_int64_entity_map<T> (string table, string key_field,
-			string? where = null) {
-		int key_column = -1;
-
-		/* query */
-		var sb = new StringBuilder ();
-		sb.append_printf ("SELECT * FROM %s", table);
-		if (where != null)
-			sb.append_printf (" WHERE %s", where);
-
-		var map = new Gee.HashMap<int, T> ();
-		exec_sql (sb.str, (n_columns, values, column_names) => {
-			if (key_column == -1) {
-				for (var i = 0; i < n_columns; i++)
-					if (column_names[i] == key_field)
-						key_column = i;
-				if (key_column == -1)
-					error ("Table '%s' doesn't have column '%s'", table, key_field);
-			}
-
-			var key = (int) int64.parse (values[key_column]);
-			map[key] = make_entity<T> (n_columns, column_names, values);
-			return 0;
-		});
-		return map;
-	}
-
-
 	public bool is_empty_period (int period) {
 		/* check if we've got any people */
 		if (query_count (Person.table_name,

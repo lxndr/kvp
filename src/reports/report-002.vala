@@ -65,7 +65,7 @@ public class Report002 : Report {
 			totals[j] = 0;
 
 		foreach (var account_period in account_periods) {
-			var taxes = db.fetch_int64_entity_map<Tax> (Tax.table_name, "service",
+			var taxes = db.fetch_int_entity_map<Tax> (Tax.table_name, "service",
 					("account=%" + int64.FORMAT + " AND period=%d")
 					.printf (account_period.account.id, account_period.period));
 

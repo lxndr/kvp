@@ -208,15 +208,6 @@ class MainWindow : Gtk.ApplicationWindow {
 
 
 	/*
-	 * Calc
-	 */
-	[GtkCallback]
-	private void calc_tax_totals_clicked () {
-		// taxes_table.calc ();
-	}
-
-
-	/*
 	 * 
 	 */
 	private void account_changed () {

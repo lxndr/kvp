@@ -46,7 +46,7 @@ kvp: resources $(SOURCES)
 
 
 debug: resources $(SOURCES)
-	valac $(SOURCES) src/resources.c --Xcc="-lm" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --pkg=zlib --gresources=kvartplata.gresource.xml -g --save-temps -o kvp
+	valac $(SOURCES) src/resources.c -D KVP_DEBUG --Xcc="-lm" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --pkg=zlib --gresources=kvartplata.gresource.xml -g --save-temps -o kvp
 
 
 win-launcher.exe: src/win-launcher.c
@@ -61,6 +61,13 @@ win64: win-launcher.exe resources $(SOURCES)
 
 resources: kvartplata.gresource.xml $(RESOURCES)
 	glib-compile-resources --generate-source --target=src/resources.c kvartplata.gresource.xml
+
+
+po: 
+	
+
+kvp.pot:
+	xgettext --output=kvp.pot --keyword=_ --keyword=N_ $(SOURCES) --msgid-bugs-address=lxndr87@users.sourceforge.net
 
 
 clean:

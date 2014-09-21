@@ -113,7 +113,7 @@ public abstract class TableView {
 					prop_type == typeof (double) ||
 					prop_type.is_a (Type.BOXED)) {
 				cell = new Gtk.CellRendererText ();
-				cell.set ("editable", true);
+				cell.set ("editable", (prop_spec.flags & ParamFlags.WRITABLE) > 0);
 				/* FIXME: could use Object.connect */
 				(cell as Gtk.CellRendererText).edited.connect (text_row_edited);
 			} else if (prop_type.is_a (typeof (Entity))) {
@@ -141,7 +141,7 @@ public abstract class TableView {
 			cell.set_data<int> ("property_column", i + 1);
 
 			column = new Gtk.TreeViewColumn.with_attributes (
-					prop_name, cell,
+					dgettext (null, prop_name), cell,
 					"text", i + 1);
 			list_view.insert_column (column, -1);
 		}

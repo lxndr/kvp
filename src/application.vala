@@ -59,9 +59,22 @@ public class Application : Gtk.Application
 
 
 	public static int main (string[] args) {
-//		Intl.bindtextdomain ("kvp", "/usr/share/locale/");
-//		Intl.bind_textdomain_codeset ("kvp", "UTF-8");
-//		Intl.textdomain ("kvp");
+#if KVP_DEBUG
+		var root_dir = Path.get_dirname (args[0]);
+#else
+		var root_dir = Path.get_dirname (Path.get_dirname (args[0]));
+#endif
+		var locale_path = Path.build_filename (root_dir, "share/locale");
+stdout.printf ("! %s\n", locale_path);
+		Intl.bindtextdomain ("kvp", locale_path);
+		Intl.bind_textdomain_codeset ("kvp", "UTF-8");
+		Intl.textdomain ("kvp");
+
+var sl = Intl.get_language_names ();
+foreach (var s in sl)
+	stdout.printf (">> %s\n", s);
+
+stdout.printf ("test %s\n", _("number"));
 
 		Application app = new Application ();
 		return app.run (args);
