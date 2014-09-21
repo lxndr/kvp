@@ -8,12 +8,7 @@ public class AccountTable : DB.TableView {
 	public AccountTable (Database dbase) {
 		base (dbase, typeof (AccountPeriod));
 
-		var menu_item = new Gtk.MenuItem.with_label ("Duplicate");
-		menu_item.activate.connect (duplicate_item_clicked);
-		menu_item.visible = true;
-		popup_menu.add (menu_item);
-
-		menu_item = new Gtk.MenuItem.with_label ("Duplicate for next month");
+		var menu_item = new Gtk.MenuItem.with_label ("Duplicate for next month");
 		menu_item.activate.connect (duplicate_next_month_item_clicked);
 		menu_item.visible = true;
 		popup_menu.add (menu_item);
@@ -90,19 +85,6 @@ public class AccountTable : DB.TableView {
 	}
 
 
-	public void duplicate_item_clicked () {
-		var account = get_selected_account ();
-
-		var new_account = new_entity () as AccountPeriod;
-
-		var query = "INSERT INTO tax SELECT NULL,%lld,period,service,0,0 FROM tax WHERE period=%d AND account=%lld"
-				.printf (new_account.account.id, current_period, account.id);
-		db.exec_sql (query, null);
-
-		update_view ();
-	}
-
-
 	public void duplicate_next_month_item_clicked () {
 		var account = get_selected_account ();
 
@@ -118,10 +100,8 @@ public class AccountTable : DB.TableView {
 	}
 
 
-	private void recalculate_period (AccountPeriod account_month) {
-		var taxes = db.fetch_entity_list<Tax> (Tax.table_name,
-				("account=%" + int64.FORMAT + " AND year=%d AND month=%d")
-				.printf (account_month.account.id, account_month.period / 12, account_month.period % 12 + 1));
+	private void recalculate_period (AccountPeriod account_period) {
+		var taxes = (db as Database).get_tax_list (account_period.account, account_period.period);
 
 		foreach (var tax in taxes) {
 			tax.calc_amount ();
@@ -129,9 +109,9 @@ public class AccountTable : DB.TableView {
 			tax.persist ();
 		}
 
-		account_month.calc_total ();
-		account_month.calc_balance ();
-		account_month.persist ();
+		account_period.calc_total ();
+		account_period.calc_balance ();
+		account_period.persist ();
 	}
 
 

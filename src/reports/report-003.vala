@@ -74,7 +74,7 @@ public class Report003 : Report {
 			row.get_cell (4).put_string (account_period.n_rooms.to_string ()).style = cstyles[3];
 			row.get_cell (5).put_string (Utils.format_double (account_period.area, 2)).style = cstyles[4];
 
-			int64 n_people = ac.number_of_people (period);
+			int64 n_people = account_period.number_of_people ();
 			row.get_cell (6).put_string (n_people.to_string ()).style = cstyles[5];
 
 			var taxes = db.fetch_int_int64_map (Tax.table_name, "service", "total",

@@ -49,13 +49,13 @@ public class Account : DB.SimpleEntity
 				("account=%" + int64.FORMAT).printf (id));
 	}
 
-
+/*
 	public int64 number_of_people (int period) {
 		return db.query_count ("people",
 				("account=%" + int64.FORMAT + " AND period=%d")
 				.printf (id, period));
 	}
-
+*/
 
 /*
 	public Person? tenant (int year, int month) {

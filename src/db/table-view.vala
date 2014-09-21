@@ -73,9 +73,15 @@ public abstract class TableView {
 		Type[] types = {};
 		types += typeof (Object);
 
+		var obj_class = (ObjectClass) object_type.class_ref ();
 		var props = view_properties ();
-		foreach (var prop_name in props)
+		foreach (var prop_name in props) {
+			var prop_spec = obj_class.find_property (prop_name);
+			if (prop_spec.value_type == typeof (bool))
+				types += typeof (bool);
+			else
 				types += typeof (string);
+		}
 
 		list_store = new Gtk.ListStore.newv (types);
 
@@ -116,6 +122,9 @@ public abstract class TableView {
 				cell.set ("editable", (prop_spec.flags & ParamFlags.WRITABLE) > 0);
 				/* FIXME: could use Object.connect */
 				(cell as Gtk.CellRendererText).edited.connect (text_row_edited);
+			} else if (prop_type == typeof (bool)) {
+				cell = new Gtk.CellRendererToggle ();
+				(cell as Gtk.CellRendererToggle).toggled.connect (cell_toggled);
 			} else if (prop_type.is_a (typeof (Entity))) {
 				var combo_store = new Gtk.ListStore (2, typeof (string), typeof (Entity));
 				var entity_list = db.fetch_entity_list_full (prop_type) as Gee.List<Viewable>;
@@ -140,9 +149,16 @@ public abstract class TableView {
 			cell.set_data<string> ("property_name", prop_name);
 			cell.set_data<int> ("property_column", i + 1);
 
-			column = new Gtk.TreeViewColumn.with_attributes (
-					dgettext (null, prop_name), cell,
-					"text", i + 1);
+			if (prop_type == typeof (bool)) {
+				column = new Gtk.TreeViewColumn.with_attributes (
+						dgettext (null, prop_name), cell,
+						"active", i + 1);
+			} else {
+				column = new Gtk.TreeViewColumn.with_attributes (
+						dgettext (null, prop_name), cell,
+						"text", i + 1);
+			}
+
 			list_view.insert_column (column, -1);
 		}
 	}
@@ -207,6 +223,25 @@ public abstract class TableView {
 
 		update_row (iter, entity);
 		db.persist (entity);
+		row_edited (entity, property_name);
+	}
+
+
+	private void cell_toggled (Gtk.CellRendererToggle cell, string _path) {
+		Entity entity;
+		Gtk.TreeIter iter;		var path = new Gtk.TreePath.from_string (_path);
+		list_store.get_iter (out iter, path);
+		list_store.get (iter, 0, out entity);
+
+		var property_name = cell.get_data<string> ("property_name");
+
+		var val = Value (typeof (bool));
+		entity.get_property (property_name, ref val);
+		val.set_boolean (!val.get_boolean ());
+		entity.set_property (property_name, val);
+
+		update_row (iter, entity);
+		entity.persist ();
 		row_edited (entity, property_name);
 	}
 
@@ -296,7 +331,8 @@ public abstract class TableView {
 			var val = Value (prop_spec.value_type);
 			entity.get_property (prop_name, ref val);
 
-			if (val.type () == typeof (string) || val.type () == typeof (int)) {
+			if (val.type () == typeof (string) || val.type () == typeof (int) ||
+					val.type () == typeof (bool)) {
 				/* these convert nicely */
 				list_store.set_value (iter, i + 1, val);
 			} else if (val.type ().is_a (typeof (Entity))) {

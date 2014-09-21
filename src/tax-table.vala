@@ -19,15 +19,10 @@ public class TaxTable : DB.TableView {
 	}
 
 
-	protected override DB.Entity new_entity () {
-		var service = db.fetch_entity_by_id<Service> (1);
-		return new Tax (account, period, service);
-	}
-
-
 	protected override unowned string[] view_properties () {
 		const string props[] = {
-			N_("service"),
+			N_("apply"),
+			N_("service_name"),
 			N_("amount"),
 			N_("price"),
 			N_("total")

@@ -319,6 +319,15 @@ public interface Database : Object {
 				var obj = val.get_object () as Entity;
 				val = Value (typeof (int64));
 				obj.get_property ("id", ref val);
+			} else if (val.type () == typeof (bool)) {
+				var b = (int64) val.get_boolean ();
+				val = Value (typeof (int64));
+				val.set_int64 (b);
+			} else if (val.type () == typeof (double)) {
+				char[] buf = new char[double.DTOSTR_BUF_SIZE];
+				unowned string str = val.get_double ().to_str (buf);
+				val = Value (typeof (string));
+				val.set_string (str);
 			}
 
 			var str_val = Value (typeof (string));

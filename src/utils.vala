@@ -75,6 +75,12 @@ public void transform_string_to_double (Value src_value, ref Value dest_value) {
 }
 
 
+public void transform_string_to_bool (Value src_value, ref Value dest_value) {
+	unowned string s = src_value.get_string ();
+	dest_value.set_boolean (int64.parse (s) > 0);
+}
+
+
 public void transform_string_to_money (Value src_value, ref Value dest_value) {
 	int64 n = int64.parse (src_value.get_string ());
 	var m = Money (n);

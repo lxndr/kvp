@@ -1,13 +1,19 @@
 namespace Kv {
 
 
-public class Tax : DB.SimpleEntity, DB.Viewable
+public class Tax : DB.Entity, DB.Viewable
 {
 	public Account account { get; set; }
 	public int period { get; set; }
 	public Service service { get; set; }
+	public bool apply { get; set; }
 	public double amount { get; set; }
 	public Money total {get; set; default = Money (0); }
+
+
+	public string service_name {
+		get { return service.name; }
+	}
 
 
 	public Money price {
@@ -23,22 +29,33 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 	}
 
 
-	public override string[] db_fields () {
+	public override string[] db_keys () {
 		return {
 			"account",
 			"period",
-			"service",
+			"service"
+		};
+	}
+
+
+	public override string[] db_fields () {
+		return {
+			"apply",
 			"amount",
 			"total"
 		};
 	}
 
 
-	public Tax (Account _account, int _period, Service _service) {
-		Object (account: _account,
+	public Tax (Database _db, Account _account, int _period, Service _service) {
+		Object (db: _db,
+				account: _account,
 				period: _period,
 				service: _service);
 	}
+
+
+	public override void remove () {}
 
 
 	public string display_name {
@@ -49,17 +66,22 @@ public class Tax : DB.SimpleEntity, DB.Viewable
 	public void calc_amount () {
 		var account_period = account.fetch_period (period);
 
+		if (apply == false) {
+			amount = 0.0;
+			return;
+		}
+
 		switch (service.applied_to) {
-		case 1:	/* apartment area */
+		case 1:	/* always x1 */
+			amount = 1.0;
+			break;
+		case 2:	/* area */
 			amount = account_period.area;
 			break;
-		case 2:	/* number of people */
+		case 3: /* number of people */
 			amount = (double) account_period.number_of_people ();
 			break;
-		case 3: /* amount is specified */
-			break;
-		default:
-			amount = 1.0;
+		default: /* amount is specified */
 			break;
 		}
 	}

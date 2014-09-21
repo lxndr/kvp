@@ -85,7 +85,7 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 
 	public void calc_total () {
-		total = Money (db.query_sum (Person.table_name, "total",
+		total = Money (db.query_sum (Tax.table_name, "total",
 				("account=%" + int64.FORMAT + " AND period=%d")
 				.printf (account.id, period)));
 	}

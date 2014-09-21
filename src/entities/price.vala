@@ -6,6 +6,7 @@ public class Price : DB.Entity
 	public Service service { get; set; }
 	public int period { get; set; }
 	public Money value { get; set; }
+	public int method { get; set; }
 
 
 	public static unowned string table_name = "price";
@@ -24,7 +25,8 @@ public class Price : DB.Entity
 
 	public override string[] db_fields () {
 		return {
-			"value"
+			"value",
+			"method"
 		};
 	}
 

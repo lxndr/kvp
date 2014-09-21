@@ -107,35 +107,20 @@ public class Database : DB.SQLiteDatabase {
 
 
 	public Gee.List<Tax> get_tax_list (Account account, int period) {
-		return fetch_entity_list<Tax> (Tax.table_name,
-				("account=%" + int64.FORMAT + " AND period=%d")
-				.printf (account.id, period));
+		var prices = fetch_entity_list<Price> (Price.table_name,
+				("period=%d").printf (period));
+		var list = new Gee.ArrayList<Tax> ();
+		foreach (var price in prices) {
+			var tax = fetch_entity<Tax> (Tax.table_name,
+					("account=%" + int64.FORMAT + " AND period=%d AND service=%" + int64.FORMAT)
+					.printf (account.id, period, price.service.id));
+			if (tax == null)
+				tax = new Tax (this, account, period, price.service);
+			list.add (tax);
+		}
+		return list;
 	}
 
-/*
-	public Gee.Map<uint, Tax> find_taxes_by_service_id (Period period, Account account, int64 service_id) {
-		var query = "SELECT * FROM taxes WHERE year=%u AND account=%lld AND service=%lld ORDER BY month"
-				.printf (period.year, account.id, service_id);
-		var list = get_entity_list (typeof (Tax), query) as Gee.List<Tax>;
-
-		var map = new Gee.HashMap<uint, Tax> ();
-		foreach (var t in list)
-			map[t.month] = t;
-		return map;
-	}
-
-
-	public Gee.Map<uint, AccountMonth> find_account_month_by_year (Account account, int year) {
-		var list = fetch_entity_list<AccountMonth> (AccountMonth.table_name,
-				("account=%" + int64.FORMAT + " AND period>=%d AND period<%d")
-				.printf (account.id, year * 12, (year + 1) * 12));
-
-		var map = new Gee.HashMap<uint, AccountMonth> ();
-		foreach (var t in list)
-			map[t.period % 12] = t;
-		return map;
-	}
-*/
 
 	public Gee.List<AccountPeriod> get_account_periods (Account account, int start_period, int end_period) {
 		return fetch_entity_list<AccountPeriod> (AccountPeriod.table_name,
