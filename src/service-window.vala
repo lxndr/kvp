@@ -1,8 +1,7 @@
 namespace Kv {
 
 
-[GtkTemplate (ui = "/ui/main-window.ui")]
-class MainWindow : Gtk.ApplicationWindow {
+class ServiceWindow : Gtk.ApplicationWindow {
 	/* period */
 	[GtkChild]
 	private Gtk.ToolButton current_period_button;

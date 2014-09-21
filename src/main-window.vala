@@ -190,7 +190,17 @@ class MainWindow : Gtk.ApplicationWindow {
 		}
 
 		try {
+#if WINDOWS_BUILD
+			string[] args = {
+				"win-launcher.exe",
+				tmp_file.get_path ()
+			};
+
+			Pid pid;
+			Process.spawn_async (null, args, null, 0, null, out pid);
+#else
 			AppInfo.launch_default_for_uri (tmp_file.get_uri (), null);
+#endif
 		} catch (Error e) {
 			error ("Error opening the report: %s", e.message);
 		}

@@ -49,10 +49,13 @@ debug: resources $(SOURCES)
 	valac $(SOURCES) src/resources.c --Xcc="-lm" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --pkg=zlib --gresources=kvartplata.gresource.xml -g --save-temps -o kvp
 
 
-win32: resources $(SOURCES)
-	valac --cc=i686-w64-mingw32-gcc --pkg-config=i686-w64-mingw32-pkg-config --Xcc="-w" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(SOURCES) src/resources.c --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --pkg=zlib --gresources=kvartplata.gresource.xml -o kvp-x86_32.exe
+win-launcher.exe: src/win-launcher.c
+	i686-w64-mingw32-gcc -o win-launcher.exe src/win-launcher.c
 
-win64: resources $(SOURCES)
+win32: win-launcher.exe resources $(SOURCES)
+	valac --cc=i686-w64-mingw32-gcc --pkg-config=i686-w64-mingw32-pkg-config -D WINDOWS_BUILD --Xcc="-w" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(SOURCES) src/resources.c --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --pkg=zlib --gresources=kvartplata.gresource.xml -o kvp-x86_32.exe
+
+win64: win-launcher.exe resources $(SOURCES)
 	valac --cc=x86_64-w64-mingw32-gcc --pkg-config=x86_64-w64-mingw32-pkg-config --Xcc="-w" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(SOURCES) src/resources.c --target-glib=2.38 --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=json-glib-1.0 --pkg=sqlite3 --pkg=libxml-2.0 --pkg=zlib --gresources=kvartplata.gresource.xml -o kvp-x86_64.exe
 
 
