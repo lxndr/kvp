@@ -6,12 +6,13 @@ public class PeopleTable : DB.TableView {
 	private Account? account;
 
 
-	public PeopleTable (Database dbase) {
-		base (dbase, typeof (Person));
+	public PeopleTable (Database _db) {
+		Object (db: _db,
+				object_type: typeof (Person));
 	}
 
 
-	public void setup_view (int _period, Account? _account) {
+	public void setup (Account? _account, int _period) {
 		period = _period;
 		account = _account;
 

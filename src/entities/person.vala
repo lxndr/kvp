@@ -25,8 +25,7 @@ public class Person : DB.SimpleEntity, DB.Viewable
 	public override string[] db_fields () {
 		return {
 			"account",
-			"year",
-			"month",
+			"period",
 			"name",
 			"birthday",
 			"relationship"

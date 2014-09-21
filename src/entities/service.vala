@@ -45,6 +45,12 @@ public class Service : DB.SimpleEntity, DB.Viewable
 				("period=%d AND service=%" + int64.FORMAT)
 				.printf (period, id)));
 	}
+
+	public int get_method (int period) {
+		return (int) db.fetch_int64 (Price.table_name, "method",
+				("period=%d AND service=%" + int64.FORMAT)
+				.printf (period, id));
+	}
 }
 
 

@@ -64,14 +64,15 @@ public class Tax : DB.Entity, DB.Viewable
 
 
 	public void calc_amount () {
-		var account_period = account.fetch_period (period);
-
 		if (apply == false) {
 			amount = 0.0;
 			return;
 		}
 
-		switch (service.applied_to) {
+		var account_period = account.fetch_period (period);
+		var method = service.get_method (period);
+
+		switch (method) {
 		case 1:	/* always x1 */
 			amount = 1.0;
 			break;

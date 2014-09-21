@@ -5,15 +5,8 @@ public class AccountTable : DB.TableView {
 	private int current_period;
 
 
-	public AccountTable (Database dbase) {
-		base (dbase, typeof (AccountPeriod));
-
-		var menu_item = new Gtk.MenuItem.with_label ("Duplicate for next month");
-		menu_item.activate.connect (duplicate_next_month_item_clicked);
-		menu_item.visible = true;
-		popup_menu.add (menu_item);
-
-		menu_item = new Gtk.MenuItem.with_label ("Recalculate");
+	construct {
+		var menu_item = new Gtk.MenuItem.with_label ("Recalculate");
 		menu_item.activate.connect (recalculate_clicked);
 		menu_item.visible = true;
 		popup_menu.add (menu_item);
@@ -25,16 +18,22 @@ public class AccountTable : DB.TableView {
 	}
 
 
+	public AccountTable (Database _db) {
+		Object (db: _db,
+				object_type: typeof (AccountPeriod));
+	}
+
+
 	protected override unowned string[] view_properties () {
 		const string props[] = {
 			N_("number"),
+			N_("tenant"),
 			N_("apartment"),
 			N_("n_rooms"),
 			N_("area"),
 			N_("total"),
 			N_("payment"),
-			N_("balance"),
-			N_("tenant")
+			N_("balance")
 		};
 		return props;
 	}
@@ -82,21 +81,6 @@ public class AccountTable : DB.TableView {
 			account_period.calc_balance ();
 			refresh_row (entity);
 		}
-	}
-
-
-	public void duplicate_next_month_item_clicked () {
-		var account = get_selected_account ();
-
-		/* copy taxes */
-		var query = "INSERT INTO tax SELECT NULL,%lld,%d,service,0,0 from taxes where account=%lld and period=%d"
-				.printf (account.id, current_period + 1, account.id, current_period);
-		db.exec_sql (query, null);
-
-		/* copy people */
-		query = "INSERT INTO people SELECT NULL,%lld,%d,name,birthday,relationship from people where account=%lld and period=%d"
-				.printf (account.id, current_period + 1, account.id, current_period);
-		db.exec_sql (query, null);
 	}
 
 

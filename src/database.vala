@@ -57,6 +57,11 @@ public class Database : DB.SQLiteDatabase {
 
 
 	public bool is_empty_period (int period) {
+		/* check if we've got any */
+		if (query_count (AccountPeriod.table_name,
+				"period=%d".printf (period)) > 0)
+			return false;
+
 		/* check if we've got any people */
 		if (query_count (Person.table_name,
 				"period=%d".printf (period)) > 0)
@@ -68,6 +73,19 @@ public class Database : DB.SQLiteDatabase {
 			return false;
 
 		return true;
+	}
+
+
+	public void prepare_for_period (int period) {
+		int prev_period = period - 1;
+
+		exec_sql ("INSERT INTO account_period SELECT account,%d,apartment,n_rooms,area,total,payment,balance FROM account_period WHERE period=%d".printf (period, prev_period), null);
+		exec_sql ("INSERT INTO person SELECT null,account,%d,name,birthday,relationship FROM person WHERE period=%d".printf (period, prev_period), null);
+
+		/* a little bit more tricky */
+		var price_list = get_price_list (period);
+		foreach (var price in price_list)
+			exec_sql (("INSERT INTO tax SELECT account,%d,service,apply,amount,total FROM tax WHERE period=%d AND service=%" + int64.FORMAT).printf (period, prev_period, price.service.id), null);
 	}
 
 
@@ -103,6 +121,12 @@ public class Database : DB.SQLiteDatabase {
 		return fetch_entity_list<Person> (Person.table_name,
 				("account=%" + int64.FORMAT + " AND period=%d")
 				.printf (account.id, period));
+	}
+
+
+	public Gee.List<Price> get_price_list (int period) {
+		return fetch_entity_list<Price> (Price.table_name,
+			("period=%d").printf (period));
 	}
 
 

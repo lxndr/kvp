@@ -114,6 +114,7 @@ class MainWindow : Gtk.ApplicationWindow {
 
 			switch (resp) {
 			case Gtk.ResponseType.YES:
+				db.prepare_for_period (period);
 				/* find last period and copy everything needed */
 				break;
 			case Gtk.ResponseType.NO:
@@ -213,8 +214,8 @@ class MainWindow : Gtk.ApplicationWindow {
 	private void account_changed () {
 		var account = account_table.get_selected_account ();
 
-		people_table.setup_view (current_period, account);
-		tax_table.setup_view (current_period, account);
+		people_table.setup (account, current_period);
+		tax_table.setup (account, current_period);
 	}
 }
 

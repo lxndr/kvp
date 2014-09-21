@@ -11,9 +11,11 @@ public class PropertyAdapter : Object {
 
 
 
-public abstract class TableView {
-	protected Database db;
-	private Type object_type;
+public abstract class TableView : Object {
+	public Database db { get; construct set; }
+	public Type object_type { get; construct set; }
+	public bool view_only { get; construct set; default = false; }
+
 	public Entity? selected_entity;
 
 	private Gtk.ScrolledWindow root_widget;
@@ -46,28 +48,28 @@ public abstract class TableView {
 	}
 
 
-	public TableView (Database dbase, Type type) {
-		db = dbase;
-		object_type = type;
+	construct {
 		selected_entity = null;
-
-		Gtk.MenuItem menu_item;
 
 		/* popup menu */
 		popup_menu = new Gtk.Menu ();
 
-		menu_item = new Gtk.MenuItem.with_label ("Add");
-		menu_item.activate.connect (add_item_clicked);
-		popup_menu.add (menu_item);
+		if (view_only == false) {
+			Gtk.MenuItem menu_item;
 
-		remove_menu_item = new Gtk.MenuItem.with_label ("Remove");
-		remove_menu_item.activate.connect (remove_item_clicked);
-		popup_menu.add (remove_menu_item);
+			menu_item = new Gtk.MenuItem.with_label ("Add");
+			menu_item.activate.connect (add_item_clicked);
+			popup_menu.add (menu_item);
 
-		menu_item = new Gtk.SeparatorMenuItem ();
-		popup_menu.add (menu_item);
+			remove_menu_item = new Gtk.MenuItem.with_label ("Remove");
+			remove_menu_item.activate.connect (remove_item_clicked);
+			popup_menu.add (remove_menu_item);
 
-		popup_menu.show_all ();
+			menu_item = new Gtk.SeparatorMenuItem ();
+			popup_menu.add (menu_item);
+
+			popup_menu.show_all ();
+		}
 
 		/* list store */
 		Type[] types = {};
@@ -166,7 +168,8 @@ public abstract class TableView {
 
 	private bool button_released (Gdk.EventButton event) {
 		if (event.button == 3) {
-			remove_menu_item.sensitive = list_view.get_selection ().count_selected_rows () > 0;
+			if (remove_menu_item != null)
+				remove_menu_item.sensitive = list_view.get_selection ().count_selected_rows () > 0;
 			popup_menu.popup (null, null, null, event.button, Gtk.get_current_event_time ());
 		}
 

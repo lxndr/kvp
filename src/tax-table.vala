@@ -6,12 +6,14 @@ public class TaxTable : DB.TableView {
 	private Account? account;
 
 
-	public TaxTable (Database dbase) {
-		base (dbase, typeof (Tax));
+	public TaxTable (Database _db) {
+		Object (db: _db,
+				object_type: typeof (Tax),
+				view_only: true);
 	}
 
 
-	public void setup_view (int _period, Account? _account) {
+	public void setup (Account? _account, int _period) {
 		period = _period;
 		account = _account;
 
