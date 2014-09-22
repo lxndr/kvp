@@ -1,0 +1,14 @@
+-- Calculate balance:
+
+SELECT p.balance+c.total-c.payment FROM account_period AS c JOIN account_period AS p ON c.account=p.account AND p.period=(c.period-1) WHERE c.account=1 ORDER BY c.period;
+
+-- to test
+UPDATE account_period
+	SET c.balance = p.balance+c.total-c.payment
+	FROM account_period AS c
+	JOIN account_period AS p
+		ON c.account=p.account AND p.period=c.period-1
+	WHERE c.period=?
+
+
+
