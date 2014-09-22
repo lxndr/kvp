@@ -32,6 +32,7 @@ public class AccountTable : DB.TableView {
 			N_("n_rooms"),
 			N_("area"),
 			N_("total"),
+			N_("extra"),
 			N_("payment"),
 			N_("balance")
 		};
@@ -77,9 +78,10 @@ public class AccountTable : DB.TableView {
 	public override void row_edited (DB.Entity entity, string prop_name) {
 		var account_period = entity as AccountPeriod;
 
-		if (prop_name == "payment") {
+		if (prop_name == "payment" || prop_name == "extra") {
 			account_period.calc_balance ();
 			refresh_row (entity);
+			entity.persist ();
 		}
 	}
 

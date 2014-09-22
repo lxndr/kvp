@@ -11,6 +11,8 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	public Money total { get; set; default = Money (0); }
 	public Money payment { get; set; default = Money (0); }
 	public Money balance { get; set; default = Money (0); }
+	public Money extra { get; set; default = Money (0); }
+
 
 	public string number {
 		get { return account.number; }
@@ -56,7 +58,8 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 			"area",
 			"total",
 			"payment",
-			"balance"
+			"balance",
+			"extra"
 		};
 	}
 
@@ -94,7 +97,7 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	public void calc_balance () {
 		var prev = previuos_balance ();
 		stdout.printf ("PREVIOUS BALANCE %s\n", prev.format ());
-		balance = Money (prev.val + total.val - payment.val);
+		balance = Money (prev.val + total.val + extra.val - payment.val);
 	}
 
 

@@ -79,13 +79,16 @@ public class Database : DB.SQLiteDatabase {
 	public void prepare_for_period (int period) {
 		int prev_period = period - 1;
 
-		exec_sql ("INSERT INTO account_period SELECT account,%d,apartment,n_rooms,area,total,0,balance FROM account_period WHERE period=%d".printf (period, prev_period), null);
-		exec_sql ("INSERT INTO person SELECT null,account,%d,name,birthday,relationship FROM person WHERE period=%d".printf (period, prev_period), null);
+		exec_sql ("INSERT INTO account_period SELECT account,%d,apartment,n_rooms,area,total,0,balance,0 FROM account_period WHERE period=%d"
+				.printf (period, prev_period), null);
+		exec_sql ("INSERT INTO person SELECT null,account,%d,name,birthday,relationship FROM person WHERE period=%d"
+				.printf (period, prev_period), null);
 
 		/* a little bit more tricky */
 		var price_list = get_price_list (period);
 		foreach (var price in price_list)
-			exec_sql (("INSERT INTO tax SELECT account,%d,service,apply,amount,total FROM tax WHERE period=%d AND service=%" + int64.FORMAT).printf (period, prev_period, price.service.id), null);
+			exec_sql (("INSERT INTO tax SELECT account,%d,service,apply,amount,total FROM tax WHERE period=%d AND service=%" + int64.FORMAT)
+					.printf (period, prev_period, price.service.id), null);
 	}
 
 
