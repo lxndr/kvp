@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-09-21 22:18+0400\n"
+"POT-Creation-Date: 2014-09-22 08:19+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -19,71 +19,75 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/application.vala:42
+#: src/application.vala:44
 msgid "List of the tenants"
 msgstr "Список жилцов"
 
-#: src/application.vala:43
+#: src/application.vala:45
 msgid "Account"
 msgstr "Лицевой счёт"
 
-#: src/application.vala:44
+#: src/application.vala:46
 msgid "People and taxes"
 msgstr "Жильцы и услуги"
 
-#: src/account-table.vala:35
+#: src/account-table.vala:29
 msgid "number"
 msgstr "ЛС"
 
-#: src/account-table.vala:36
-msgid "apartment"
-msgstr "Комната"
-
-#: src/account-table.vala:37
-msgid "n_rooms"
-msgstr "Кол-во комнат"
-
-#: src/account-table.vala:38
-msgid "area"
-msgstr "Площадь"
-
-#: src/account-table.vala:39 src/tax-table.vala:33
-msgid "total"
-msgstr "Начислено"
-
-#: src/account-table.vala:40
-msgid "payment"
-msgstr "Уплачено"
-
-#: src/account-table.vala:41
-msgid "balance"
-msgstr "Остаток"
-
-#: src/account-table.vala:42
+#: src/account-table.vala:30
 msgid "tenant"
 msgstr "Квартиронаниматель"
 
-#: src/people-table.vala:29
+#: src/account-table.vala:31
+msgid "apartment"
+msgstr "Комната"
+
+#: src/account-table.vala:32
+msgid "n_rooms"
+msgstr "Кол-во комнат"
+
+#: src/account-table.vala:33
+msgid "area"
+msgstr "Площадь"
+
+#: src/account-table.vala:34 src/tax-table.vala:30
+msgid "total"
+msgstr "Начислено"
+
+#: src/account-table.vala:35
+msgid "payment"
+msgstr "Уплачено"
+
+#: src/account-table.vala:36
+msgid "balance"
+msgstr "Остаток"
+
+#: src/people-table.vala:30
 msgid "name"
 msgstr "Имя"
 
-#: src/people-table.vala:30
+#: src/people-table.vala:31
 msgid "birthday"
 msgstr "Дата рождения"
 
-#: src/people-table.vala:31
+#: src/people-table.vala:32
 msgid "relationship"
 msgstr "Отношение"
 
-#: src/tax-table.vala:30
-msgid "service"
+#: src/tax-table.vala:26
+msgid "apply"
+msgstr "В"
+
+#: src/tax-table.vala:27
+msgid "service_name"
 msgstr "Услуга"
 
-#: src/tax-table.vala:31
+#: src/tax-table.vala:28
 msgid "amount"
 msgstr "Кол-во"
 
-#: src/tax-table.vala:32
+#: src/tax-table.vala:29
 msgid "price"
 msgstr "Стоимость"
 

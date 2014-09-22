@@ -79,7 +79,7 @@ public class Database : DB.SQLiteDatabase {
 	public void prepare_for_period (int period) {
 		int prev_period = period - 1;
 
-		exec_sql ("INSERT INTO account_period SELECT account,%d,apartment,n_rooms,area,total,payment,balance FROM account_period WHERE period=%d".printf (period, prev_period), null);
+		exec_sql ("INSERT INTO account_period SELECT account,%d,apartment,n_rooms,area,total,0,balance FROM account_period WHERE period=%d".printf (period, prev_period), null);
 		exec_sql ("INSERT INTO person SELECT null,account,%d,name,birthday,relationship FROM person WHERE period=%d".printf (period, prev_period), null);
 
 		/* a little bit more tricky */
