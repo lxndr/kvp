@@ -54,6 +54,14 @@ public bool parse_bool (string s) {
 }
 
 
+public unowned string format_bool (bool b) {
+	if (b == true)
+		return "1";
+	else
+		return "0";
+}
+
+
 }
 
 }

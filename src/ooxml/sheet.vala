@@ -251,10 +251,10 @@ stdout.printf (xml);
 			Xml.Node* row_node = root_node->new_child (null, "row");
 			row_node->set_prop ("r", row.number.to_string ());
 			row_node->set_prop ("s", row.style.to_string ());
-			row_node->set_prop ("customFormat", row.custom_format.to_string ());
+			row_node->set_prop ("customFormat", Utils.format_bool (row.custom_format));
 			row_node->set_prop ("ht", row.height.to_string ());
-			row_node->set_prop ("customHeight", row.custom_height.to_string ());
-			row_node->set_prop ("tickTop", row.thick_top.to_string ());
+			row_node->set_prop ("customHeight", Utils.format_bool (row.custom_height));
+			row_node->set_prop ("thickTop", Utils.format_bool (row.thick_top));
 
 			foreach (var cell in row.cells) {
 				if (cell.is_empty () == true)

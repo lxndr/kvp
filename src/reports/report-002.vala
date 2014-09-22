@@ -43,6 +43,13 @@ public class Report002 : Report {
 		sheet.put_string ("BF8", n_people.to_string ());
 		sheet.put_string ("CA4", account_period.apartment);
 
+		/* price list */
+		var price_list = db.get_price_list (period);
+		string s = "";
+		foreach (var price in price_list)
+			s += "%s: %s\n".printf (price.service.name, price.value.format ());
+		sheet.put_string ("A7", s);
+
 		/* people */
 		for (var i = 0; i < n_people; i++) {
 			var person = people[i];

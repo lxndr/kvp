@@ -119,7 +119,7 @@ public interface Database : Object {
 	}
 
 
-	public T? fetch_entity<T> (string table, string where, bool recursive = true) {
+	public T? fetch_entity<T> (string? table, string where, bool recursive = true) {
 		return fetch_entity_full (typeof (T), table, where, recursive);
 	}
 
