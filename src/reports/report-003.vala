@@ -66,6 +66,8 @@ public class Report003 : Report {
 
 		foreach (var ac in accounts) {
 			var account_period = ac.fetch_period (period);
+			if (account_period == null)
+				continue;
 
 			row = sheet.get_row (row_number);
 			row.get_cell (1).put_string (ac.number).style = cstyles[0];
