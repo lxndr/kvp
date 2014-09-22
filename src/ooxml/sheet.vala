@@ -235,7 +235,7 @@ public class Sheet : Object {
 		string xml;
 		xml_doc->dump_memory_enc_format (out xml);
 
-stdout.printf (xml);
+// stdout.printf (xml);
 
 		return xml;
 	}

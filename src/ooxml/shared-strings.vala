@@ -50,7 +50,7 @@ namespace SharedStrings {
 
 		string xml;
 		xml_doc->dump_memory_enc_format (out xml);
-stdout.printf (xml);
+//stdout.printf (xml);
 		var io = ar.add_from_stream ("xl/sharedStrings.xml");
 		io.output_stream.write (xml.data);
 	}
