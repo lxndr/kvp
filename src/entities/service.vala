@@ -4,19 +4,9 @@ namespace Kv {
 public class Service : DB.SimpleEntity, DB.Viewable
 {
 	public string name { get; set; }
-	public string? unit { get; set; }
-	public int applied_to { get; set; }
-	public string extra1 { get; set; }
 
 
-	construct {
-		name = "";
-		unit = null;
-		applied_to = 0;
-	}
-
-
-	public static unowned string table_name = "services";
+	public static unowned string table_name = "service";
 	public override unowned string db_table () {
 		return table_name;
 	}
@@ -24,10 +14,7 @@ public class Service : DB.SimpleEntity, DB.Viewable
 
 	public override string[] db_fields () {
 		return {
-			"name",
-			"unit",
-			"applied_to",
-			"extra1"
+			"name"
 		};
 	}
 
