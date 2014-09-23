@@ -192,13 +192,18 @@ class MainWindow : Gtk.ApplicationWindow {
 
 		try {
 #if WINDOWS_BUILD
-			string[] args = {
+/*			string[] args = {
 				"win-launcher.exe",
 				tmp_file.get_path ()
 			};
 
 			Pid pid;
-			Process.spawn_async (null, args, null, 0, null, out pid);
+			Process.spawn_async (null, args, null, 0, null, out pid);*/
+
+			var ai = AppInfo.get_default_for_type (".xlsx", false);
+			var l = new List<File> ();
+			l.append (tmp_file);
+			ai.launch (l, null);
 #else
 			AppInfo.launch_default_for_uri (tmp_file.get_uri (), null);
 #endif
