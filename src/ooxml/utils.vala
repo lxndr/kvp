@@ -62,6 +62,11 @@ public unowned string format_bool (bool b) {
 }
 
 
+public string convert_line_end (string s) {
+	return s.replace ("\n", "\r\n");
+}
+
+
 }
 
 }

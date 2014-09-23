@@ -6,12 +6,12 @@ public class AccountTable : DB.TableView {
 
 
 	construct {
-		var menu_item = new Gtk.MenuItem.with_label ("Recalculate");
+		var menu_item = new Gtk.MenuItem.with_label (_("Recalculate"));
 		menu_item.activate.connect (recalculate_clicked);
 		menu_item.visible = true;
 		popup_menu.add (menu_item);
 
-		menu_item = new Gtk.MenuItem.with_label ("Recalculate this period");
+		menu_item = new Gtk.MenuItem.with_label (_("Recalculate this period"));
 		menu_item.activate.connect (recalculate_period_clicked);
 		menu_item.visible = true;
 		popup_menu.add (menu_item);

@@ -197,6 +197,7 @@ public class Sheet : Object {
 
 	public string to_xml (Gee.List<StringValue> shared_strings) {
 		Xml.Doc* xml_doc = new Xml.Doc ("1.0");
+		xml_doc->standalone = 1;
 		Xml.Node* root_node = xml_doc->new_node (null, "worksheet");
 		root_node->set_prop ("xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 
@@ -233,11 +234,11 @@ public class Sheet : Object {
 
 		/* dump */
 		string xml;
-		xml_doc->dump_memory_enc_format (out xml);
+		xml_doc->dump_memory_enc (out xml);
 
 // stdout.printf (xml);
 
-		return xml;
+		return Utils.convert_line_end (xml);
 	}
 
 

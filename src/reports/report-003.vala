@@ -40,6 +40,10 @@ public class Report003 : Report {
 		for (var i = 0; i < 17; i++)
 			estyles[i] = sheet.get_row (12).get_cell (i + 1).style;
 
+		/* month */
+		sheet.put_string ("A2", _("for %s %d year")
+				.printf (Utils.month_to_string (period % 12).down (), period / 12));
+
 		/* tax prices */
 		var prices = db.fetch_int_int64_map (Price.table_name, "service", "value",
 				"period=%d".printf (period));

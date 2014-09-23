@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-09-23 18:53+0400\n"
+"POT-Creation-Date: 2014-09-23 22:51+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -29,7 +29,63 @@ msgstr "Лицевой счёт"
 
 #: src/application.vala:46
 msgid "People and taxes"
-msgstr "Жильцы и услуги"
+msgstr "Ведомость расчетов"
+
+#: src/utils.vala:125
+msgid "January"
+msgstr "Январь"
+
+#: src/utils.vala:126
+msgid "February"
+msgstr "Февраль"
+
+#: src/utils.vala:127
+msgid "March"
+msgstr "Март"
+
+#: src/utils.vala:128
+msgid "April"
+msgstr "Апрель"
+
+#: src/utils.vala:129
+msgid "May"
+msgstr "Май"
+
+#: src/utils.vala:130
+msgid "June"
+msgstr "Июнь"
+
+#: src/utils.vala:131
+msgid "July"
+msgstr "Июль"
+
+#: src/utils.vala:132
+msgid "August"
+msgstr "Август"
+
+#: src/utils.vala:133
+msgid "September"
+msgstr "Сентябрь"
+
+#: src/utils.vala:134
+msgid "October"
+msgstr "Октябрь"
+
+#: src/utils.vala:135
+msgid "November"
+msgstr "Ноябрь"
+
+#: src/utils.vala:136
+msgid "December"
+msgstr "Декабрь"
+
+#: src/account-table.vala:9
+msgid "Recalculate"
+msgstr "Пересчитать"
+
+#: src/account-table.vala:14
+msgid "Recalculate this period"
+msgstr "Пересчитать весь месяц"
 
 #: src/account-table.vala:29
 msgid "number"
@@ -106,3 +162,8 @@ msgstr "Стоимость"
 #: src/entities/person.vala:14
 msgid "A person"
 msgstr "Человек"
+
+#: src/reports/report-003.vala:44
+#, c-format
+msgid "for %s %d year"
+msgstr "за %s %d г."

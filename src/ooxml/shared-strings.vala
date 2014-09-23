@@ -49,15 +49,17 @@ namespace SharedStrings {
 		Xml.Doc* xml_doc = store_to_xml (list);
 
 		string xml;
-		xml_doc->dump_memory_enc_format (out xml);
+		xml_doc->dump_memory_enc (out xml);
 //stdout.printf (xml);
 		var io = ar.add_from_stream ("xl/sharedStrings.xml");
+		xml = Utils.convert_line_end (xml);
 		io.output_stream.write (xml.data);
 	}
 
 
 	public Xml.Doc* store_to_xml (Gee.List<StringValue> list) throws GLib.Error {
 		Xml.Doc* xml_doc = new Xml.Doc ("1.0");
+		xml_doc->standalone = 1;
 
 		Xml.Node* root_node = xml_doc->new_node (null, "sst");
 		root_node->set_prop ("xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");

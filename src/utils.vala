@@ -120,20 +120,20 @@ public void transform_property_adapter_to_money (Value src_value, ref Value dest
 
 
 
-public unowned string month_to_string (int month) {
-	const string months[] = {
-		"January",
-		"February",
-		"March",
-		"April",
-		"May",
-		"June",
-		"July",
-		"August",
-		"September",
-		"October",
-		"November",
-		"December"
+public string month_to_string (int month) {
+	string[] months = {
+		_("January"),
+		_("February"),
+		_("March"),
+		_("April"),
+		_("May"),
+		_("June"),
+		_("July"),
+		_("August"),
+		_("September"),
+		_("October"),
+		_("November"),
+		_("December")
 	};
 
 	return months[month];

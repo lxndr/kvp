@@ -92,6 +92,9 @@ public abstract class TableView : Object {
 		root_widget.shadow_type = Gtk.ShadowType.IN;
 
 		list_view = new Gtk.TreeView.with_model (list_store);
+		list_view.rules_hint = true;
+		list_view.enable_grid_lines = Gtk.TreeViewGridLines.VERTICAL;
+		list_view.headers_clickable = true;
 		list_view.get_selection ().changed.connect (list_selection_changed);
 		create_list_columns (props);
 		list_view.button_release_event.connect (button_released);
