@@ -12,6 +12,7 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	public Money payment { get; set; default = Money (0); }
 	public Money balance { get; set; default = Money (0); }
 	public Money extra { get; set; default = Money (0); }
+	public bool param1 { get; set; default = false; }
 
 
 	public string number {
@@ -26,6 +27,11 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 			_tenant = account.tenant_name (period);
 			return _tenant;
 		}
+	}
+
+
+	public int n_people {
+		get { return (int) number_of_people (); }
 	}
 
 
@@ -59,7 +65,8 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 			"total",
 			"payment",
 			"balance",
-			"extra"
+			"extra",
+			"param1"
 		};
 	}
 

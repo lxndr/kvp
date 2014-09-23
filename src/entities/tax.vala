@@ -63,6 +63,33 @@ public class Tax : DB.Entity, DB.Viewable
 	}
 
 
+	public double method_04 (AccountPeriod ap) {
+		int[,] n1 = {
+			{  0,   0,   0,   0,  0,  0},
+			{  0,  93,  58,  45, 36, 32},
+			{  0, 120,  74,  57, 47, 41},
+			{  0, 135,  84,  65, 53, 46},
+			{  0, 147,  91,  70, 57, 50}
+		};
+
+		int[,] n2 = {
+			{  0,   0,   0,   0,  0,  0},
+			{  0, 143,  89,  69, 56, 49},
+			{  0, 168, 104,  81, 66, 57},
+			{  0, 184, 114,  88, 72, 63},
+			{  0, 196, 121,  94, 76, 67}
+		};
+
+		int n_rooms = (int) ap.n_rooms.clamp (0, 4);
+		int n_people = (int) ap.n_people.clamp (0, 5);
+
+		if (ap.param1 == true)
+			return (double) (n2[n_rooms, n_people] * ap.n_people);
+		else
+			return (double) (n1[n_rooms, n_people] * ap.n_people);
+	}
+
+
 	public void calc_amount () {
 		if (apply == false) {
 			amount = 0.0;
@@ -81,6 +108,9 @@ public class Tax : DB.Entity, DB.Viewable
 			break;
 		case 3: /* number of people */
 			amount = (double) account_period.number_of_people ();
+			break;
+		case 4:
+			amount = method_04 (account_period);
 			break;
 		default: /* amount is specified */
 			break;
