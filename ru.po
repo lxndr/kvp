@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-09-22 08:19+0400\n"
+"POT-Creation-Date: 2014-09-23 18:53+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -45,21 +45,33 @@ msgstr "Комната"
 
 #: src/account-table.vala:32
 msgid "n_rooms"
-msgstr "Кол-во комнат"
+msgstr "К-во ком."
 
 #: src/account-table.vala:33
+msgid "n_people"
+msgstr "К-во чел."
+
+#: src/account-table.vala:34
 msgid "area"
 msgstr "Площадь"
 
-#: src/account-table.vala:34 src/tax-table.vala:30
+#: src/account-table.vala:35
+msgid "param1"
+msgstr "Эл."
+
+#: src/account-table.vala:36 src/tax-table.vala:30
 msgid "total"
 msgstr "Начислено"
 
-#: src/account-table.vala:35
+#: src/account-table.vala:37
+msgid "extra"
+msgstr "Доп."
+
+#: src/account-table.vala:38
 msgid "payment"
 msgstr "Уплачено"
 
-#: src/account-table.vala:36
+#: src/account-table.vala:39
 msgid "balance"
 msgstr "Остаток"
 

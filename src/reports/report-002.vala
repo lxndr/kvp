@@ -91,7 +91,7 @@ public class Report002 : Report {
 			row.get_cell (12).put_string (account_period.total.format ());
 			totals[9] += account_period.payment.val;
 			row.get_cell (13).put_string (account_period.payment.format ());
-			totals[10] += account_period.balance.val;
+			totals[10] = account_period.balance.val;
 			row.get_cell (14).put_string (account_period.balance.format ());
 		}
 
