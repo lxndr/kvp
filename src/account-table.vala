@@ -86,6 +86,10 @@ public class AccountTable : DB.TableView {
 			refresh_row (entity);
 			entity.persist ();
 		}
+
+		if (prop_name == "number" || prop_name == "comment") {
+			account_period.account.persist ();
+		}
 	}
 
 
