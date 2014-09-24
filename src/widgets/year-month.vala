@@ -115,8 +115,16 @@ public class YearMonth : Gtk.Popover {
 
 		unowned SList<Gtk.RadioButton> list = months;
 		while (list != null) {
+			unowned Gtk.Widget w = list.data;
+			unowned Gtk.StyleContext sc = w.get_style_context ();
+			sc.remove_class ("upcoming");
+
 			bool in_range = (start_period <= month && month <= end_period);
-			list.data.sensitive = in_range;
+			w.sensitive = in_range;
+
+			if (end_period == month)
+				sc.add_class ("upcoming");
+
 			month++;
 			list = list.next;
 		}
