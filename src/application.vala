@@ -39,6 +39,15 @@ public class Application : Gtk.Application
 	public override void startup () {
 		base.startup ();
 
+		try {
+			var screen = Gdk.Screen.get_default ();
+			var provider = new Gtk.CssProvider ();
+			provider.load_from_file (File.new_for_path ("./style.css"));
+			Gtk.StyleContext.add_provider_for_screen (screen, provider, 600);
+		} catch (Error e) {
+			error ("Failed to load custom styles: %s", e.message);
+		}
+
 		/* reports */
 		reports = new Gee.HashMap<string, Type> ();
 		reports.set (_("List of the tenants"), typeof (Report001));

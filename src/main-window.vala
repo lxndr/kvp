@@ -6,7 +6,7 @@ class MainWindow : Gtk.ApplicationWindow {
 	/* period */
 	[GtkChild]
 	private Gtk.ToolButton current_period_button;
-	private YearMonth current_period_popover;
+	private CentralYearMonth current_period_popover;
 
 	/* reports */
 	[GtkChild]
@@ -33,7 +33,7 @@ class MainWindow : Gtk.ApplicationWindow {
 		Object (application: app);
 
 		/* UI: period */
-		current_period_popover = new YearMonth (current_period_button);
+		current_period_popover = new CentralYearMonth (current_period_button);
 		current_period_popover.closed.connect (current_period_popover_closed);
 
 		/* UI: reports */
@@ -137,9 +137,13 @@ class MainWindow : Gtk.ApplicationWindow {
 
 	[GtkCallback]
 	private void current_period_button_clicked () {
+		var app = application as Application;
+
 		/* set up popover widges */
-		current_period_popover.start_period = 2014 * 12;
-		current_period_popover.end_period = 2014 * 12 + 7;
+		current_period_popover.set_range (
+				app.db.fetch_int (AccountPeriod.table_name, "MIN(period)"),
+				app.db.fetch_int (AccountPeriod.table_name, "MAX(period)") + 1);
+		current_period_popover.locked_period = int.parse (app.db.get_setting ("locked_period"));
 		current_period_popover.period = current_period;
 		current_period_popover.show ();
 	}

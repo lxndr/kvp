@@ -8,6 +8,7 @@ SOURCES=src/db/database.vala \
 		src/db/viewable.vala \
 		src/db/table-view.vala \
 		src/widgets/year-month.vala \
+		src/widgets/central-year-month.vala \
 		src/application.vala \
 		src/main-window.vala \
 		src/utils.vala \

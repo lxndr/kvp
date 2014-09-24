@@ -29,10 +29,10 @@ public interface Database : Object {
 	}
 
 
-	public string? fetch_string (string table, string column, string where) {
+	public string? fetch_string (string table, string column, string? where = null) {
 		string? result = null;
 
-		var query = build_select_query (table, column, where);
+		var query = build_select_query (table, column, where, null, 1);
 		exec_sql (query, (n_columns, values, column_names) => {
 			result = values[0];
 			return 0;
@@ -42,7 +42,16 @@ public interface Database : Object {
 	}
 
 
-	public int64 fetch_int64 (string table, string column, string where) {
+	public int fetch_int (string table, string column, string? where = null) {
+		int n = 0;
+		var s = fetch_string (table, column, where);
+		if (s != null)
+			n = int.parse (s);
+		return n;
+	}
+
+
+	public int64 fetch_int64 (string table, string column, string? where = null) {
 		int64 n = 0;
 		var s = fetch_string (table, column, where);
 		if (s != null)
