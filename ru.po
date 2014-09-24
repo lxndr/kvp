@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-09-23 22:51+0400\n"
+"POT-Creation-Date: 2014-09-24 14:26+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -18,6 +18,66 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/widgets/year-month.vala:28
+msgid "jan"
+msgstr "янв"
+
+#: src/widgets/year-month.vala:28
+msgid "feb"
+msgstr "фев"
+
+#: src/widgets/year-month.vala:28
+msgid "mar"
+msgstr "мар"
+
+#: src/widgets/year-month.vala:28
+msgid "apr"
+msgstr "апр"
+
+#: src/widgets/year-month.vala:29
+msgid "may"
+msgstr "май"
+
+#: src/widgets/year-month.vala:29
+msgid "jun"
+msgstr "июн"
+
+#: src/widgets/year-month.vala:29
+msgid "jul"
+msgstr "июл"
+
+#: src/widgets/year-month.vala:29
+msgid "aug"
+msgstr "авг"
+
+#: src/widgets/year-month.vala:30
+msgid "sep"
+msgstr "сен"
+
+#: src/widgets/year-month.vala:30
+msgid "oct"
+msgstr "окт"
+
+#: src/widgets/year-month.vala:30
+msgid "nov"
+msgstr "ноя"
+
+#: src/widgets/year-month.vala:30
+msgid "dec"
+msgstr "дек"
+
+#: src/widgets/year-month.vala:50
+msgid "Previous month"
+msgstr "Предыдущий месяц"
+
+#: src/widgets/year-month.vala:55
+msgid "This month"
+msgstr "Текущий месяц"
+
+#: src/widgets/year-month.vala:61
+msgid "Next month"
+msgstr "Следующий месяц"
 
 #: src/application.vala:44
 msgid "List of the tenants"

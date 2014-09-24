@@ -6,13 +6,7 @@ class MainWindow : Gtk.ApplicationWindow {
 	/* period */
 	[GtkChild]
 	private Gtk.ToolButton current_period_button;
-	[GtkChild]
-	private Gtk.Box current_period_widget;
-	[GtkChild]
-	private Gtk.ComboBoxText current_period_month;
-	[GtkChild]
-	private Gtk.SpinButton current_period_year;
-	private Gtk.Popover current_period_popover;
+	private YearMonth current_period_popover;
 
 	/* reports */
 	[GtkChild]
@@ -39,8 +33,7 @@ class MainWindow : Gtk.ApplicationWindow {
 		Object (application: app);
 
 		/* UI: period */
-		current_period_popover = new Gtk.Popover (current_period_button);
-		current_period_popover.add (current_period_widget);
+		current_period_popover = new YearMonth (current_period_button);
 		current_period_popover.closed.connect (current_period_popover_closed);
 
 		/* UI: reports */
@@ -145,17 +138,15 @@ class MainWindow : Gtk.ApplicationWindow {
 	[GtkCallback]
 	private void current_period_button_clicked () {
 		/* set up popover widges */
-		current_period_month.active_id = (current_period % 12 + 1).to_string ();
-		current_period_year.value = (double) (current_period / 12);
-
+		current_period_popover.start_period = 2014 * 12;
+		current_period_popover.end_period = 2014 * 12 + 7;
+		current_period_popover.period = current_period;
 		current_period_popover.show ();
 	}
 
 
 	private void current_period_popover_closed () {
-		int month = (int) int.parse (current_period_month.active_id);
-		int year = (int) current_period_year.value;
-		int period = year * 12 + month - 1;
+		int period = current_period_popover.period;
 		set_current_period (period);
 	}
 
@@ -192,14 +183,6 @@ class MainWindow : Gtk.ApplicationWindow {
 
 		try {
 #if WINDOWS_BUILD
-/*			string[] args = {
-				"win-launcher.exe",
-				tmp_file.get_path ()
-			};
-
-			Pid pid;
-			Process.spawn_async (null, args, null, 0, null, out pid);*/
-
 			var ai = AppInfo.get_default_for_type (".xlsx", false);
 			var l = new List<File> ();
 			l.append (tmp_file);

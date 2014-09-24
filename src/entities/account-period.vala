@@ -21,6 +21,12 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	}
 
 
+	public string comment {
+		get { return account.comment; }
+		set { account.comment = value; }
+	}
+
+
 	private string _tenant;
 	public string tenant {
 		get {

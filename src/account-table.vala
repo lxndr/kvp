@@ -36,7 +36,8 @@ public class AccountTable : DB.TableView {
 			N_("total"),
 			N_("extra"),
 			N_("payment"),
-			N_("balance")
+			N_("balance"),
+			N_("comment")
 		};
 		return props;
 	}

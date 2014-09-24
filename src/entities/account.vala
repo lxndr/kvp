@@ -6,6 +6,7 @@ public class Account : DB.SimpleEntity
 	public int building { get; set; default = 1;}
 	public string number { get; set; }
 	public int opened {get; set; default = 0; } /* FIXME gotta be now */
+	public string comment { get; set; }
 
 
 	construct {
@@ -23,7 +24,8 @@ public class Account : DB.SimpleEntity
 		return {
 			"building",
 			"number",
-			"opened"
+			"opened",
+			"comment"
 		};
 	}
 
