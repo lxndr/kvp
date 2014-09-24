@@ -371,6 +371,93 @@ public interface Database : Object {
 	}
 
 
+	private string prepare_column_list (string[] keys, string[] fields) {
+		var sb = new StringBuilder.sized (64);
+
+		foreach (unowned string key in keys)
+			sb.append (key).append (", ");
+
+		foreach (unowned string field in fields)
+			sb.append (field).append (", ");
+
+		return sb.str[0:-2];
+	}
+
+
+	private unowned string format_boolean (bool b, string _true, string _false) {
+		if (b == true)
+			return _true;
+		else
+			return _false;
+	}
+
+
+	/*
+	 * This function uses GLib Value transformator. This may not be enough.
+	 * As an option we can convert a Value to some sort of adapter type.
+	 * Or we can have internal converter.
+	 */
+	private string prepare_value (ref Value val) {
+		var type = val.type ();
+
+		if (val.type ().is_a (typeof (Entity))) {
+			var obj = val.get_object () as Entity;
+			if (obj == null)
+				return "NULL";
+			val = Value (typeof (int));
+			obj.get_property ("id", ref val);
+		} else if (type == typeof (bool)) {
+			var b = val.get_boolean ();
+			return format_boolean (b, "1", "0");
+		} else if (type == typeof (double)) {
+			var d = val.get_double ();
+			char[] buf = new char[double.DTOSTR_BUF_SIZE];
+			return d.to_str (buf);
+		} else if (type == typeof (float)) {
+			var d = (double) val.get_float ();
+			char[] buf = new char[double.DTOSTR_BUF_SIZE];
+			return d.to_str (buf);
+		} else if (type == typeof (string)) {
+			unowned string s = val.get_string ();
+			if (s == null)
+				return "NULL";
+			else
+				return "'%s'".printf (s); /* FIXME: needs escaping */
+		}
+
+		/* try to convert to a string using GLib Value transformator */
+		var str_val = Value (typeof (string));
+		if (val.transform (ref str_val) == false)
+			warning ("Couldn't prepare value of type '%s' for using in SQL query", val.type ().name ());
+
+		return str_val.get_string ();
+	}
+
+
+	private void prepare_value_list (StringBuilder sb, Entity entity, string[] props, ObjectClass obj_class) {
+		foreach (unowned string prop_name in props) {
+			unowned ParamSpec? prop_spec = obj_class.find_property (prop_name);
+			var val = Value (prop_spec.value_type);
+			entity.get_property (prop_name, ref val);
+
+			sb.append (prepare_value (ref val)).append (", ");
+		}
+	}
+
+
+	private void persist_composite_key_2 (Entity entity, string[] keys, string[] fields, ObjectClass obj_class) {
+		var columns = prepare_column_list (keys, fields);
+
+		var sb = new StringBuilder.sized (64);
+		prepare_value_list (sb, entity, keys, obj_class);
+		prepare_value_list (sb, entity, fields, obj_class);
+		var values = sb.str[0:-2];
+
+		var query = "REPLACE INTO %s (%s) VALUES (%s)".printf (entity.db_table (), columns, values);
+		exec_sql (query);
+	}
+
+
 	public void persist_2 (Entity entity, string[] fields) {
 		unowned ObjectClass obj_class = (ObjectClass) entity.get_type ().class_peek ();
 		unowned string[] keys = entity.db_keys ();
@@ -380,7 +467,7 @@ public interface Database : Object {
 		if (keys.length == 1 && keys[0] == "id")
 			persist_auto_key (entity, fields, obj_class);
 		else
-			persist_composite_key (entity, keys, fields, obj_class);
+			persist_composite_key_2 (entity, keys, fields, obj_class);
 	}
 }
 
