@@ -20,13 +20,14 @@ public class Account : DB.SimpleEntity
 	}
 
 
-	public override string[] db_fields () {
-		return {
+	public override unowned string[] db_fields () {
+		const string[] fields = {
 			"building",
 			"number",
 			"opened",
 			"comment"
 		};
+		return fields;
 	}
 
 

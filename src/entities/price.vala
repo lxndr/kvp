@@ -15,19 +15,21 @@ public class Price : DB.Entity
 	}
 
 
-	public override string[] db_keys () {
-		return {
+	public override unowned string[] db_keys () {
+		const string[] keys = {
 			"period",
 			"service"
 		};
+		return keys;
 	}
 
 
-	public override string[] db_fields () {
-		return {
+	public override unowned string[] db_fields () {
+		const string[] fields = {
 			"value",
 			"method"
 		};
+		return fields;
 	}
 
 

@@ -29,21 +29,23 @@ public class Tax : DB.Entity, DB.Viewable
 	}
 
 
-	public override string[] db_keys () {
-		return {
+	public override unowned string[] db_keys () {
+		const string[] keys = {
 			"account",
 			"period",
 			"service"
 		};
+		return keys;
 	}
 
 
-	public override string[] db_fields () {
-		return {
+	public override unowned string[] db_fields () {
+		const string[] fields = {
 			"apply",
 			"amount",
 			"total"
 		};
+		return fields;
 	}
 
 

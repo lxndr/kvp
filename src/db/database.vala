@@ -369,6 +369,19 @@ public interface Database : Object {
 		else
 			persist_composite_key (entity, keys, fields, obj_class);
 	}
+
+
+	public void persist_2 (Entity entity, string[] fields) {
+		unowned ObjectClass obj_class = (ObjectClass) entity.get_type ().class_peek ();
+		unowned string[] keys = entity.db_keys ();
+		if (fields == null)
+			fields = entity.db_fields ();
+
+		if (keys.length == 1 && keys[0] == "id")
+			persist_auto_key (entity, fields, obj_class);
+		else
+			persist_composite_key (entity, keys, fields, obj_class);
+	}
 }
 
 

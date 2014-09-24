@@ -10,10 +10,11 @@ public abstract class SimpleEntity : Entity {
 	}
 
 
-	public override string[] db_keys () {
-		return {
+	public override unowned string[] db_keys () {
+		const string keys[] = {
 			"id"
 		};
+		return keys;
 	}
 
 

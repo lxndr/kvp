@@ -22,14 +22,15 @@ public class Person : DB.SimpleEntity, DB.Viewable
 	}
 
 
-	public override string[] db_fields () {
-		return {
+	public override unowned string[] db_fields () {
+		const string[] fields = {
 			"account",
 			"period",
 			"name",
 			"birthday",
 			"relationship"
 		};
+		return fields;
 	}
 
 

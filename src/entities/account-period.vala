@@ -55,16 +55,17 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	}
 
 
-	public override string[] db_keys () {
-		return {
+	public override unowned string[] db_keys () {
+		const string[] keys = {
 			"account",
 			"period"
 		};
+		return keys;
 	}
 
 
-	public override string[] db_fields () {
-		return {
+	public override unowned string[] db_fields () {
+		const string[] fields = {
 			"apartment",
 			"n_rooms",
 			"area",
@@ -74,6 +75,7 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 			"extra",
 			"param1"
 		};
+		return fields;
 	}
 
 

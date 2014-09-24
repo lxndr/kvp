@@ -12,10 +12,11 @@ public class Service : DB.SimpleEntity, DB.Viewable
 	}
 
 
-	public override string[] db_fields () {
-		return {
+	public override unowned string[] db_fields () {
+		const string[] fields = {
 			"name"
 		};
+		return fields;
 	}
 
 
