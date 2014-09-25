@@ -295,7 +295,7 @@ public abstract class TableView : Object {
 		Entity obj;
 		list_store.get (iter, 0, out obj);
 
-		var msg = new Gtk.MessageDialog (null, Gtk.DialogFlags.MODAL,
+		var msg = new Gtk.MessageDialog (list_view.get_toplevel () as Gtk.Window, Gtk.DialogFlags.MODAL,
 				Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO,
 				"Are you sure you want to delete '%s' and all its data?",
 				(obj as Viewable).display_name);

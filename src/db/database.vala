@@ -9,12 +9,12 @@ public interface Database : Object {
 	public string build_select_query (string table, string? columns = null,
 			string? where = null, string? order_by = null, int limit = -1,
 			string? extra = null) {
-		var sb = new StringBuilder ("SELECT ");
+		var sb = new StringBuilder.sized (64);
 
 		if (columns == null)
-			sb.append_printf ("* FROM %s", table);
+			sb.append_printf ("SELECT * FROM %s", table);
 		else
-			sb.append_printf ("%s FROM %s", columns, table);
+			sb.append_printf ("SELECT %s FROM %s", columns, table);
 
 		if (where != null)
 			sb.append_printf (" WHERE %s", where);
@@ -213,182 +213,10 @@ public interface Database : Object {
 	}
 
 
-	private string prepare_insert_values (Entity entity, string[] props, ObjectClass obj_class) {
-		string values = "";
-
-		foreach (unowned string prop_name in props) {
-			var prop_spec = obj_class.find_property (prop_name);
-			var val = Value (prop_spec.value_type);
-			entity.get_property (prop_name, ref val);
-
-			/* the ID of an Entity */
-			if (val.type ().is_a (typeof (Entity))) {
-				var obj = val.get_object () as Entity;
-				val = Value (typeof (int64));
-				obj.get_property ("id", ref val);
-			}
-
-			var str_val = Value (typeof (string));
-			if (val.transform (ref str_val) == false)
-				stdout.printf ("Couldn't transform from '%s' to '%s' for property '%s' of '%s'\n",
-						val.type ().name (), str_val.type ().name (),
-						prop_name, prop_spec.value_type.name ());
-
-			if (val.type () == typeof (string))
-				values += ", '%s'".printf (str_val.get_string ());
-			else
-				values += ", %s".printf (str_val.get_string ());
-		}
-
-		return values;
-	}
-
-
-	private string prepare_update_values (Entity entity, string[] props, ObjectClass obj_class) {
-		string values = "";
-
-		foreach (unowned string prop_name in props) {
-			var prop_spec = obj_class.find_property (prop_name);
-			var val = Value (prop_spec.value_type);
-			entity.get_property (prop_name, ref val);
-
-			/* the ID of an Entity */
-			if (val.type ().is_a (typeof (Entity))) {
-				var obj = val.get_object () as Entity;
-				val = Value (typeof (int64));
-				obj.get_property ("id", ref val);
-			}
-
-			var str_val = Value (typeof (string));
-			if (val.transform (ref str_val) == false)
-				stdout.printf ("Couldn't transform from '%s' to '%s' for property '%s' of '%s'\n",
-						val.type ().name (), str_val.type ().name (),
-						prop_name, prop_spec.value_type.name ());
-
-			if (val.type () == typeof (string))
-				values += "`%s`='%s', ".printf (prop_name, str_val.get_string ());
-			else
-				values += "`%s`=%s, ".printf (prop_name, str_val.get_string ());
-		}
-
-		return values[0:-2];
-	}
-
-
-	private void persist_auto_key (Entity entity, string[] fields, ObjectClass obj_class) {
-		var id_val = Value (typeof (int64));
-		entity.get_property ("id", ref id_val);
-		var entity_id = id_val.get_int64 ();
-
-		if (entity_id == 0) {
-			var query = "INSERT INTO `%s` VALUES (NULL%s)".printf (entity.db_table (),
-					prepare_insert_values (entity, fields, obj_class));
-			exec_sql (query);
-			entity.set_property ("id", last_insert_rowid ());
-		} else {
-			var query = "UPDATE `%s` SET %s WHERE `id`=%lld".printf (entity.db_table (),
-					prepare_update_values (entity, fields, obj_class), entity_id);
-			exec_sql (query);
-		}
-	}
-
-
-	private void persist_composite_key (Entity entity, string[] keys, string[] fields, ObjectClass obj_class) {
-		var values = "";
-
-		foreach (var prop_name in keys) {
-			var prop_spec = obj_class.find_property (prop_name);
-			var val = Value (prop_spec.value_type);
-			entity.get_property (prop_name, ref val);
-
-			if (val.type ().is_a (typeof (Entity))) {
-				var obj = val.get_object () as Entity;
-				val = Value (typeof (int64));
-				obj.get_property ("id", ref val);
-			}
-
-			var str_val = Value (typeof (string));
-			if (val.transform (ref str_val) == false)
-				stdout.printf ("Couldn't transform from '%s' to '%s' for property '%s' of '%s'\n",
-						val.type ().name (), str_val.type ().name (),
-						prop_name, prop_spec.value_type.name ());
-
-			if (val.type () == typeof (string))
-				values += "'%s', ".printf (str_val.get_string ());
-			else
-				values += "%s, ".printf (str_val.get_string ());
-		}
-
-		foreach (var prop_name in fields) {
-			var prop_spec = obj_class.find_property (prop_name);
-			var val = Value (prop_spec.value_type);
-			entity.get_property (prop_name, ref val);
-
-			if (val.type ().is_a (typeof (Entity))) {
-				var obj = val.get_object () as Entity;
-				val = Value (typeof (int64));
-				obj.get_property ("id", ref val);
-			} else if (val.type () == typeof (bool)) {
-				var b = (int64) val.get_boolean ();
-				val = Value (typeof (int64));
-				val.set_int64 (b);
-			} else if (val.type () == typeof (double)) {
-				char[] buf = new char[double.DTOSTR_BUF_SIZE];
-				unowned string str = val.get_double ().to_str (buf);
-				val = Value (typeof (string));
-				val.set_string (str);
-			}
-
-			var str_val = Value (typeof (string));
-			if (val.transform (ref str_val) == false)
-				warning ("Couldn't transform from '%s' to '%s' for property '%s' of '%s'\n",
-						val.type ().name (), str_val.type ().name (),
-						prop_name, prop_spec.value_type.name ());
-
-			if (val.type () == typeof (string))
-				values += "'%s', ".printf (str_val.get_string ());
-			else
-				values += "%s, ".printf (str_val.get_string ());
-		}
-
-		values = values[0:-2];
-
-		var query = "REPLACE INTO `%s` VALUES (%s)".printf (entity.db_table (), values);
-		exec_sql (query);
-	}
-
-
-	public void persist (Entity entity) {
-		var keys = entity.db_keys ();
-		var fields = entity.db_fields ();
-
-		var obj_class = (ObjectClass) entity.get_type ().class_ref ();
-
-		if (keys.length == 1 && keys[0] == "id")
-			persist_auto_key (entity, fields, obj_class);
-		else
-			persist_composite_key (entity, keys, fields, obj_class);
-	}
-
-
-	private string prepare_column_list (string[] keys, string[] fields) {
-		var sb = new StringBuilder.sized (64);
-
-		foreach (unowned string key in keys)
-			sb.append (key).append (", ");
-
-		foreach (unowned string field in fields)
-			sb.append (field).append (", ");
-
-		return sb.str[0:-2];
-	}
-
-
-	private unowned string format_boolean (bool b, string _true, string _false) {
-		if (b == true)
-			return _true;
-		else
-			return _false;
+	private string? escape_string (string? s) {
+		if (s == null)
+			return null;
+		return s.replace ("'", "''");
 	}
 
 
@@ -397,7 +225,7 @@ public interface Database : Object {
 	 * As an option we can convert a Value to some sort of adapter type.
 	 * Or we can have internal converter.
 	 */
-	private string prepare_value (ref Value val) {
+	private string? prepare_value (ref Value val) {
 		var type = val.type ();
 
 		if (val.type ().is_a (typeof (Entity))) {
@@ -407,8 +235,9 @@ public interface Database : Object {
 			val = Value (typeof (int));
 			obj.get_property ("id", ref val);
 		} else if (type == typeof (bool)) {
-			var b = val.get_boolean ();
-			return format_boolean (b, "1", "0");
+			if (val.get_boolean () == true)
+				return "1";
+			return "0";
 		} else if (type == typeof (double)) {
 			var d = val.get_double ();
 			char[] buf = new char[double.DTOSTR_BUF_SIZE];
@@ -422,14 +251,13 @@ public interface Database : Object {
 			if (s == null)
 				return "NULL";
 			else
-				return "'%s'".printf (s); /* FIXME: needs escaping */
+				return "'%s'".printf (escape_string (s));
 		}
 
 		/* try to convert to a string using GLib Value transformator */
 		var str_val = Value (typeof (string));
 		if (val.transform (ref str_val) == false)
-			warning ("Couldn't prepare value of type '%s' for using in SQL query", val.type ().name ());
-
+			return null;
 		return str_val.get_string ();
 	}
 
@@ -440,34 +268,77 @@ public interface Database : Object {
 			var val = Value (prop_spec.value_type);
 			entity.get_property (prop_name, ref val);
 
-			sb.append (prepare_value (ref val)).append (", ");
+			var s = prepare_value (ref val);
+			if (s == null) {
+				warning ("Couldn't prepare the value of property '%s.%s' of type '%s' for using in SQL query",
+						entity.get_type ().name (), prop_name, val.type ().name ());
+				s = "NULL";
+			}
+			sb.append (s).append (", ");
 		}
 	}
 
 
-	private void persist_composite_key_2 (Entity entity, string[] keys, string[] fields, ObjectClass obj_class) {
-		var columns = prepare_column_list (keys, fields);
+	private void prepare_column_value_list (StringBuilder sb, Entity entity, string[] props, ObjectClass obj_class) {
+		foreach (unowned string prop_name in props) {
+			unowned ParamSpec? prop_spec = obj_class.find_property (prop_name);
+			var val = Value (prop_spec.value_type);
+			entity.get_property (prop_name, ref val);
 
-		var sb = new StringBuilder.sized (64);
-		prepare_value_list (sb, entity, keys, obj_class);
-		prepare_value_list (sb, entity, fields, obj_class);
-		var values = sb.str[0:-2];
+			var s = prepare_value (ref val);
+			if (s == null) {
+				warning ("Couldn't prepare the value of property '%s.%s' of type '%s' for using in SQL query",
+						entity.get_type ().name (), prop_name, val.type ().name ());
+				s = "NULL";
+			}
 
-		var query = "REPLACE INTO %s (%s) VALUES (%s)".printf (entity.db_table (), columns, values);
-		exec_sql (query);
+			sb.append_printf ("%s=%s, ", prop_name, s);
+		}
 	}
 
 
-	public void persist_2 (Entity entity, string[] fields) {
+	private void persist_auto_key (Entity entity, string[] fields, ObjectClass obj_class) {
+		var id_val = Value (typeof (int64));
+		entity.get_property ("id", ref id_val);
+		var entity_id = id_val.get_int64 ();
+
+		if (entity_id == 0) {
+			var sb = new StringBuilder.sized (64);
+			prepare_value_list (sb, entity, fields, obj_class);
+			sb.truncate (sb.len - 2);
+
+			exec_sql ("INSERT INTO %s VALUES (NULL, %s)".printf (entity.db_table (), sb.str));
+			entity.set_property ("id", last_insert_rowid ());
+		} else {
+			var sb = new StringBuilder.sized (64);
+			prepare_column_value_list (sb, entity, fields, obj_class);
+			sb.truncate (sb.len - 2);
+
+			exec_sql (("UPDATE %s SET %s WHERE id=%" + int64.FORMAT)
+					.printf (entity.db_table (), sb.str, entity_id));
+		}
+	}
+
+
+	private void persist_composite_key (Entity entity, string[] keys, string[] fields, ObjectClass obj_class) {
+		var sb = new StringBuilder.sized (64);
+		prepare_value_list (sb, entity, keys, obj_class);
+		prepare_value_list (sb, entity, fields, obj_class);
+		sb.truncate (sb.len - 2);
+
+		exec_sql ("REPLACE INTO %s VALUES (%s)".printf (entity.db_table (), sb.str));
+	}
+
+
+	public void persist (Entity entity) {
 		unowned ObjectClass obj_class = (ObjectClass) entity.get_type ().class_peek ();
 		unowned string[] keys = entity.db_keys ();
-		if (fields == null)
-			fields = entity.db_fields ();
+		unowned string[] fields = entity.db_fields ();
 
 		if (keys.length == 1 && keys[0] == "id")
 			persist_auto_key (entity, fields, obj_class);
 		else
-			persist_composite_key_2 (entity, keys, fields, obj_class);
+			persist_composite_key (entity, keys, fields, obj_class);
 	}
 }
 
