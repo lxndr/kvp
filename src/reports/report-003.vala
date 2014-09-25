@@ -73,6 +73,9 @@ public class Report003 : Report {
 			if (account_period == null)
 				continue;
 
+			if (account_period.total.val == 0 && account_period.balance.val == 0)
+				continue;
+
 			row = sheet.get_row (row_number);
 			row.get_cell (1).put_string (ac.number).style = cstyles[0];
 			row.get_cell (2).put_string (make_name (ac.tenant_name (period))).style = cstyles[1];
