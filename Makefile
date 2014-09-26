@@ -22,14 +22,6 @@ SOURCES=\
 		src/entities/service.vala \
 		src/entities/price.vala \
 		src/entities/relationship.vala \
-		src/archive/zip.vala \
-		src/ooxml/cell-value.vala \
-		src/ooxml/shared-strings.vala \
-		src/ooxml/cell.vala \
-		src/ooxml/sheet.vala \
-		src/ooxml/spreadsheet.vala \
-		src/ooxml/utils.vala \
-		src/ooxml/error.vala \
 		src/report.vala \
 		src/reports/report-001.vala \
 		src/reports/report-002.vala \
@@ -41,13 +33,16 @@ PACKAGES= \
 		--pkg=gee-0.8 \
 		--pkg=sqlite3 \
 		--pkg=libxml-2.0 \
-		--pkg=zlib \
 		--pkg=db \
-		--pkg=db-gtk
+		--pkg=db-gtk \
+		--pkg=ooxml
 
 LIBS= \
-	--Xcc="libs/lib/libdb.a" \
-	--Xcc="libs/lib/libdb-gtk.a"
+	--Xcc="libs/lib/db.a" \
+	--Xcc="libs/lib/db-gtk.a" \
+	--Xcc="libs/lib/ooxml.a" \
+	--Xcc="libs/lib/archive.a" \
+	--Xcc="-lz"
 
 
 all: kvp
@@ -88,9 +83,7 @@ kvp.pot: $(SOURCES)
 
 clean:
 	rm -f src/*.c
-	rm -f src/archive/*.c
 	rm -f src/widgets/*.c
 	rm -f src/entities/*.c
-	rm -f src/ooxml/*.c
 	rm -f src/reports/*.c
 	rm -f kvp kvp-x86_32.exe kvp-x86_64.exe

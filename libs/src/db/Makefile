@@ -19,34 +19,38 @@ DB_GTK_PACKAGES= \
 		--pkg=db
 
 
-all: ../../lib/libdb.a ../../lib/libdb-gtk.a
+all: ../../lib/db.a ../../lib/db-gtk.a
 	
 
 
-../../lib/libdb.a: $(DB_SOURCES)
-	echo -e "\e[0;32mCompiling 'libdb.a'\e[0m"
+../../lib/db.a: $(DB_SOURCES)
+	echo -e "\e[0;32mCompiling 'db.a'\e[0m"
 	valac $(DB_PACKAGES) --library=db --use-header --header=db.h --compile --Xcc="-w" $(DB_SOURCES)
-	ar rcs ../../lib/libdb.a *.o
-	mv db.h ../../include
-	mv db.vapi ../../vapi
+	ar rcs "../../lib/db.a" *.o
+	mv db.h "../../include"
+	mv db.vapi "../../vapi"
 	rm -f *.o
 
 
-../../lib/libdb-gtk.a: $(DB_GTK_SOURCES)
-	echo -e "\e[0;32mCompiling 'libdb-gtk.a'\e[0m"
+../../lib/db-gtk.a: $(DB_GTK_SOURCES)
+	echo -e "\e[0;32mCompiling 'db-gtk.a'\e[0m"
 	valac $(DB_GTK_PACKAGES) --library=db-gtk --use-header --header=db-gtk.h --compile --Xcc="-I../../include" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(DB_GTK_SOURCES)
-	ar rcs ../../lib/libdb-gtk.a *.o
-	mv db-gtk.h ../../include
-	mv db-gtk.vapi ../../vapi
+	ar rcs "../../lib/db-gtk.a" *.o
+	mv db-gtk.h "../../include"
+	mv db-gtk.vapi "../../vapi"
 	rm -f *.o
 
 
 clean:
 	rm -f *.c
 	rm -f *.o
+	rm -f "db.vapi"
+	rm -f "db-gtk.vapi"
+	rm -f "db.h"
+	rm -f "db-gtk.h"
 	rm -f "../../include/db.h"
 	rm -f "../../include/db-gtk.h"
-	rm -f "../../lib/libdb.a"
-	rm -f "../../lib/libdb-gtk.a"
+	rm -f "../../lib/db.a"
+	rm -f "../../lib/db-gtk.a"
 	rm -f "../../vapi/db.vapi"
 	rm -f "../../vapi/db-gtk.vapi"

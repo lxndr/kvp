@@ -2,7 +2,7 @@ namespace OOXML {
 
 
 namespace SharedStrings {
-	public Gee.List<StringValue> load_from_xlsx (Archive.Zip ar) throws GLib.Error {
+	private Gee.List<StringValue> load_from_xlsx (Archive.Zip ar) throws GLib.Error {
 		string xml;
 
 		var file = ar.extract ("xl/sharedStrings.xml");
@@ -13,7 +13,7 @@ namespace SharedStrings {
 	}
 
 
-	public Gee.List<StringValue> load_from_xml (Xml.Doc* xml_doc) throws GLib.Error {
+	private Gee.List<StringValue> load_from_xml (Xml.Doc* xml_doc) throws GLib.Error {
 		var list = new Gee.ArrayList<StringValue> ();
 
 		var sst_node = xml_doc->get_root_element ();
@@ -45,7 +45,7 @@ namespace SharedStrings {
 	}
 
 
-	public void store_to_xlsx (Gee.List<StringValue> list, Archive.Zip ar) throws GLib.Error {
+	private void store_to_xlsx (Gee.List<StringValue> list, Archive.Zip ar) throws GLib.Error {
 		Xml.Doc* xml_doc = store_to_xml (list);
 
 		string xml;
@@ -57,7 +57,7 @@ namespace SharedStrings {
 	}
 
 
-	public Xml.Doc* store_to_xml (Gee.List<StringValue> list) throws GLib.Error {
+	private Xml.Doc* store_to_xml (Gee.List<StringValue> list) throws GLib.Error {
 		Xml.Doc* xml_doc = new Xml.Doc ("1.0");
 		xml_doc->standalone = 1;
 
