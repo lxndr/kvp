@@ -12,6 +12,10 @@ class MainWindow : Gtk.ApplicationWindow {
 	[GtkChild]
 	private Gtk.Menu report_menu;
 
+	/* references */
+	[GtkChild]
+	private Gtk.Menu reference_menu;
+
 	/*  */
 	[GtkChild]
 	private Gtk.Paned paned1;
@@ -208,6 +212,20 @@ class MainWindow : Gtk.ApplicationWindow {
 
 		people_table.setup (account, current_period);
 		tax_table.setup (account, current_period);
+	}
+
+
+	[GtkCallback]
+	private void references_clicked () {
+	}
+
+	[GtkCallback]
+	private void buildings_clicked () {
+		static BuildingWindow win = null;
+
+		if (win == null) {
+			var w = new BuildingWindow (this, (application as Application).db);
+		w.show ();
 	}
 }
 

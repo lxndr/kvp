@@ -44,7 +44,8 @@ public class AccountTable : DB.TableView {
 
 
 	protected override DB.Entity new_entity () {
-		var account = new Account (db);
+		var default_building = db.fetch_entity_by_id<Building> (1);
+		var account = new Account (db, default_building);
 		db.persist (account);
 
 		var account_period = new AccountPeriod (db, account, current_period);

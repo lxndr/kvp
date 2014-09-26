@@ -16,7 +16,10 @@ SOURCES=src/db/database.vala \
 		src/account-table.vala \
 		src/people-table.vala \
 		src/tax-table.vala \
+		src/building-table.vala \
+		src/building-window.vala \
 		src/database.vala \
+		src/entities/building.vala \
 		src/entities/tax.vala \
 		src/entities/person.vala \
 		src/entities/account.vala \

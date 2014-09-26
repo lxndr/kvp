@@ -3,7 +3,7 @@ namespace Kv {
 
 public class Account : DB.SimpleEntity
 {
-	public int building { get; set; default = 1;}
+	public Building building { get; construct set; }
 	public string number { get; set; }
 	public int opened {get; set; default = 0; } /* FIXME gotta be now */
 	public string comment { get; set; }
@@ -36,8 +36,9 @@ public class Account : DB.SimpleEntity
 	}
 
 
-	public Account (DB.Database _db) {
-		Object (db: _db);
+	public Account (DB.Database _db, Building _building) {
+		Object (db: _db,
+				building: _building);
 	}
 
 

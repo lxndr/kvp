@@ -78,7 +78,12 @@ public abstract class TableView : Object {
 		var obj_class = (ObjectClass) object_type.class_ref ();
 		var props = view_properties ();
 		foreach (var prop_name in props) {
-			var prop_spec = obj_class.find_property (prop_name);
+			unowned ParamSpec? prop_spec = obj_class.find_property (prop_name);
+			if (prop_spec == null) {
+				warning ("Couldn't find property '%s' in '%s'", prop_name, object_type.name ());
+				continue;
+			}
+
 			if (prop_spec.value_type == typeof (bool))
 				types += typeof (bool);
 			else
