@@ -76,6 +76,44 @@ class MainWindow : Gtk.ApplicationWindow {
 
 
 	/*
+	 * Utils
+	 */
+	private void default_popup_menu_position (Gtk.Widget widget, out int x, out int y, out bool push_in) {
+		Gtk.Allocation alloc;
+		widget.get_toplevel ().get_window ().get_origin (out x, out y);
+		widget.get_allocation (out alloc);
+		x += alloc.x;
+		y += alloc.y;
+		y += alloc.height;
+		push_in = false;
+	}
+
+
+	/*
+	 * Buildings
+	 */
+	[GtkCallback]
+	private void buildings_clicked (Gtk.ToolButton button) {
+		var menu = new Gtk.Menu ();
+		menu.visible = true;
+
+		unowned Database db = (application as Application).db;
+		var buildings = db.fetch_entity_list<Building> (Building.table_name);
+		foreach (var building in buildings) {
+			var mi = new Gtk.MenuItem.with_label (
+					"%s, %s".printf (building.street, building.number));
+			mi.visible = true;
+			menu.append (mi);
+		}
+
+		menu.attach_to_widget (button, null);
+		menu.popup (null, null, (menu, out x, out y, out push_in) => {
+			default_popup_menu_position (button, out x, out y, out push_in);
+		}, 0, Gtk.get_current_event_time ());
+	}
+
+
+	/*
 	 * Current period
 	 */
 	private void init_current_period () {
@@ -165,6 +203,14 @@ class MainWindow : Gtk.ApplicationWindow {
 	/*
 	 * Reports
 	 */
+	[GtkCallback]
+	private void reports_clicked (Gtk.ToolButton button) {
+		report_menu.popup (null, null, (menu, out x, out y, out push_in) => {
+			default_popup_menu_position (button, out x, out y, out push_in);
+		}, 0, Gtk.get_current_event_time ());
+	}
+
+
 	private void report_menu_clicked (Gtk.MenuItem mi) {
 		var type = mi.get_data<Type> ("report-type");
 		if (type == Type.INVALID)
@@ -221,19 +267,13 @@ class MainWindow : Gtk.ApplicationWindow {
 	[GtkCallback]
 	private void references_clicked (Gtk.ToolButton button) {
 		reference_menu.popup (null, null, (menu, out x, out y, out push_in) => {
-			Gtk.Allocation alloc;
-			button.get_toplevel ().get_window ().get_origin (out x, out y);
-			button.get_allocation (out alloc);
-			x += alloc.x;
-			y += alloc.y;
-			y += alloc.height;
-			push_in = false;
+			default_popup_menu_position (button, out x, out y, out push_in);
 		}, 0, Gtk.get_current_event_time ());
 	}
 
 
 	[GtkCallback]
-	private void buildings_clicked () {
+	private void ref_buildings_clicked () {
 		if (building_window == null) {
 			building_window = new BuildingWindow (this, (application as Application).db);
 			building_window.destroy.connect (() => {

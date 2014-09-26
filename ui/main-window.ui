@@ -17,12 +17,13 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkToolButton" id="toolbutton2">
+              <object class="GtkToolButton" id="building_button">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="is_important">True</property>
                 <property name="label" translatable="yes">Buildings</property>
                 <property name="icon_name">emblem-photos</property>
+                <signal name="clicked" handler="buildings_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -66,19 +67,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkMenuToolButton" id="toolbutton1">
+              <object class="GtkToolButton" id="report_button">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="is_important">True</property>
                 <property name="label" translatable="yes">Reports</property>
                 <property name="use_underline">True</property>
                 <property name="icon_name">x-office-document</property>
-                <child type="menu">
-                  <object class="GtkMenu" id="report_menu">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                </child>
+                <signal name="clicked" handler="reports_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -96,7 +92,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToolButton" id="toolbutton6">
+              <object class="GtkToolButton" id="reference_button">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="is_important">True</property>
@@ -174,8 +170,12 @@
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Buildings</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="buildings_clicked" swapped="no"/>
+        <signal name="activate" handler="ref_buildings_clicked" swapped="no"/>
       </object>
     </child>
+  </object>
+  <object class="GtkMenu" id="report_menu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
   </object>
 </interface>
