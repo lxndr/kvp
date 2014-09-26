@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-09-24 14:26+0400\n"
+"POT-Creation-Date: 2014-09-26 20:19+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -19,75 +19,75 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/widgets/year-month.vala:28
+#: src/widgets/year-month.vala:29
 msgid "jan"
 msgstr "янв"
 
-#: src/widgets/year-month.vala:28
+#: src/widgets/year-month.vala:29
 msgid "feb"
 msgstr "фев"
 
-#: src/widgets/year-month.vala:28
+#: src/widgets/year-month.vala:29
 msgid "mar"
 msgstr "мар"
 
-#: src/widgets/year-month.vala:28
+#: src/widgets/year-month.vala:29
 msgid "apr"
 msgstr "апр"
 
-#: src/widgets/year-month.vala:29
+#: src/widgets/year-month.vala:30
 msgid "may"
 msgstr "май"
 
-#: src/widgets/year-month.vala:29
+#: src/widgets/year-month.vala:30
 msgid "jun"
 msgstr "июн"
 
-#: src/widgets/year-month.vala:29
+#: src/widgets/year-month.vala:30
 msgid "jul"
 msgstr "июл"
 
-#: src/widgets/year-month.vala:29
+#: src/widgets/year-month.vala:30
 msgid "aug"
 msgstr "авг"
 
-#: src/widgets/year-month.vala:30
+#: src/widgets/year-month.vala:31
 msgid "sep"
 msgstr "сен"
 
-#: src/widgets/year-month.vala:30
+#: src/widgets/year-month.vala:31
 msgid "oct"
 msgstr "окт"
 
-#: src/widgets/year-month.vala:30
+#: src/widgets/year-month.vala:31
 msgid "nov"
 msgstr "ноя"
 
-#: src/widgets/year-month.vala:30
+#: src/widgets/year-month.vala:31
 msgid "dec"
 msgstr "дек"
 
-#: src/widgets/year-month.vala:50
+#: src/widgets/year-month.vala:52
 msgid "Previous month"
 msgstr "Предыдущий месяц"
 
-#: src/widgets/year-month.vala:55
+#: src/widgets/year-month.vala:57
 msgid "This month"
 msgstr "Текущий месяц"
 
-#: src/widgets/year-month.vala:61
+#: src/widgets/year-month.vala:63
 msgid "Next month"
 msgstr "Следующий месяц"
 
-#: src/application.vala:44
+#: src/application.vala:53
 msgid "List of the tenants"
 msgstr "Список жилцов"
 
-#: src/application.vala:45
+#: src/application.vala:54
 msgid "Account"
 msgstr "Лицевой счёт"
 
-#: src/application.vala:46
+#: src/application.vala:55
 msgid "People and taxes"
 msgstr "Ведомость расчетов"
 
@@ -147,7 +147,7 @@ msgstr "Пересчитать"
 msgid "Recalculate this period"
 msgstr "Пересчитать весь месяц"
 
-#: src/account-table.vala:29
+#: src/account-table.vala:29 src/building-table.vala:9
 msgid "number"
 msgstr "ЛС"
 
@@ -191,6 +191,10 @@ msgstr "Уплачено"
 msgid "balance"
 msgstr "Остаток"
 
+#: src/account-table.vala:40
+msgid "comment"
+msgstr "Примечание"
+
 #: src/people-table.vala:30
 msgid "name"
 msgstr "Имя"
@@ -219,6 +223,19 @@ msgstr "Кол-во"
 msgid "price"
 msgstr "Стоимость"
 
+#: src/building-table.vala:7
+#, fuzzy
+msgid "location"
+msgstr "Отношение"
+
+#: src/building-table.vala:8
+msgid "street"
+msgstr "Улица"
+
+#: src/building-window.vala:10
+msgid "Reference - Buildings"
+msgstr "Справочник - Здания"
+
 #: src/entities/person.vala:14
 msgid "A person"
 msgstr "Человек"
@@ -227,3 +244,23 @@ msgstr "Человек"
 #, c-format
 msgid "for %s %d year"
 msgstr "за %s %d г."
+
+#: ui/main-window.ui:7
+msgid "Kvartplata"
+msgstr "Квартплата"
+
+#: ui/main-window.ui:24 ui/main-window.ui:175
+msgid "Buildings"
+msgstr "Здания"
+
+#: ui/main-window.ui:47
+msgid "Current period"
+msgstr ""
+
+#: ui/main-window.ui:73
+msgid "Reports"
+msgstr "Отчеты"
+
+#: ui/main-window.ui:103
+msgid "References"
+msgstr "Справочники"

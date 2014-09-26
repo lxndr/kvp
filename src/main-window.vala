@@ -30,6 +30,9 @@ class MainWindow : Gtk.ApplicationWindow {
 	private TaxTable tax_table;
 
 	/*  */
+	private BuildingWindow? building_window = null;
+
+	/*  */
 	private int current_period;
 
 
@@ -216,16 +219,29 @@ class MainWindow : Gtk.ApplicationWindow {
 
 
 	[GtkCallback]
-	private void references_clicked () {
+	private void references_clicked (Gtk.ToolButton button) {
+		reference_menu.popup (null, null, (menu, out x, out y, out push_in) => {
+			Gtk.Allocation alloc;
+			button.get_toplevel ().get_window ().get_origin (out x, out y);
+			button.get_allocation (out alloc);
+			x += alloc.x;
+			y += alloc.y;
+			y += alloc.height;
+			push_in = false;
+		}, 0, Gtk.get_current_event_time ());
 	}
+
 
 	[GtkCallback]
 	private void buildings_clicked () {
-		static BuildingWindow win = null;
+		if (building_window == null) {
+			building_window = new BuildingWindow (this, (application as Application).db);
+			building_window.destroy.connect (() => {
+				building_window = null;
+			});
+		}
 
-		if (win == null) {
-			var w = new BuildingWindow (this, (application as Application).db);
-		w.show ();
+		building_window.present ();
 	}
 }
 
