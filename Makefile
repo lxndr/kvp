@@ -54,7 +54,7 @@ kvp: resources $(SOURCES)
 
 
 debug: resources $(SOURCES)
-	valac $(SOURCES) src/resources.c -D KVP_DEBUG --Xcc="-lm" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --target-glib=2.38 $(PACKAGES) --gresources=kvartplata.gresource.xml -g --save-temps -o kvp
+	valac $(SOURCES) src/resources.c -D KVP_DEBUG --Xcc="-lm" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --Xcc="-Ilibs/include" $(LIBS) --target-glib=2.38 $(PACKAGES) --gresources=kvartplata.gresource.xml -g --save-temps -o kvp
 
 
 win32: resources $(SOURCES)

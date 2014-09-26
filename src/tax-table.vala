@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class TaxTable : DB.TableView {
+public class TaxTable : DB.ViewTable {
 	private int period;
 	private Account? account;
 

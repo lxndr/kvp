@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class BuildingTable : DB.TableView {
+public class BuildingTable : DB.ViewTable {
 	protected override unowned string[] view_properties () {
 		const string props[] = {
 			N_("location"),

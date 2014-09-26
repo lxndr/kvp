@@ -87,7 +87,7 @@ public class Database : DB.SQLiteDatabase {
 		/* a little bit more tricky */
 		var price_list = get_price_list (period);
 		foreach (var price in price_list)
-			exec_sql (("INSERT INTO tax SELECT account,%d,service,apply,amount,total FROM tax WHERE period=%d AND service=%" + int64.FORMAT)
+			exec_sql (("INSERT INTO tax SELECT account,%d,service,apply,amount,total FROM tax WHERE period=%d AND service=%d")
 					.printf (period, prev_period, price.service.id), null);
 	}
 
@@ -108,7 +108,7 @@ public class Database : DB.SQLiteDatabase {
 
 		foreach (var account in accounts) {
 			var list = fetch_entity_list<AccountPeriod> (AccountPeriod.table_name,
-					("account=%" + int64.FORMAT + " AND period=%d")
+					("account=%d AND period=%d")
 					.printf (account.id, period));
 			if (list.size == 0)
 				months.add (new AccountPeriod (this, account, period));
@@ -122,7 +122,7 @@ public class Database : DB.SQLiteDatabase {
 
 	public Gee.List<Person> get_people_list (Account account, int period) {
 		return fetch_entity_list<Person> (Person.table_name,
-				("account=%" + int64.FORMAT + " AND period=%d")
+				("account=%d AND period=%d")
 				.printf (account.id, period));
 	}
 
@@ -139,7 +139,7 @@ public class Database : DB.SQLiteDatabase {
 		var list = new Gee.ArrayList<Tax> ();
 		foreach (var price in prices) {
 			var tax = fetch_entity<Tax> (Tax.table_name,
-					("account=%" + int64.FORMAT + " AND period=%d AND service=%" + int64.FORMAT)
+					("account=%d AND period=%d AND service=%d")
 					.printf (account.id, period, price.service.id));
 			if (tax == null)
 				tax = new Tax (this, account, period, price.service);
@@ -151,7 +151,7 @@ public class Database : DB.SQLiteDatabase {
 
 	public Gee.List<AccountPeriod> get_account_periods (Account account, int start_period, int end_period) {
 		return fetch_entity_list<AccountPeriod> (AccountPeriod.table_name,
-				("account=%" + int64.FORMAT + " AND period>=%d AND period<=%d")
+				("account=%d AND period>=%d AND period<=%d")
 				.printf (account.id, start_period, end_period));
 	}
 }

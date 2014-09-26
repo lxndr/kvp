@@ -11,7 +11,11 @@ public class BuildingWindow : Gtk.Window {
 
 		view_table = new BuildingTable (db);
 		view_table.update_view ();
-		add (view_table.get_root_widget ());
+
+		var scrolled = new Gtk.ScrolledWindow (null, null);
+		scrolled.add (view_table);
+		
+		add (scrolled);
 	}
 
 

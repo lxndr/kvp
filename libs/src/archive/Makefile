@@ -15,7 +15,7 @@ all: ../../lib/$(NAME).a
 
 ../../lib/$(NAME).a: $(SOURCES)
 	echo -e "\e[0;32mCompiling '$(NAME).a'\e[0m"
-	valac $(PACKAGES) --library=$(NAME) --use-header --header=$(NAME).h --Xcc="-w" --compile $(SOURCES)
+	valac --cc=$(CC) $(PACKAGES) --library=$(NAME) --use-header --header=$(NAME).h --Xcc="-w" --compile $(SOURCES)
 	ar rcs ../../lib/$(NAME).a *.o
 	mv $(NAME).h ../../include
 	mv $(NAME).vapi ../../vapi

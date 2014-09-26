@@ -3,7 +3,7 @@ namespace DB {
 
 public interface Database : Object {
 	public abstract void exec_sql (string sql, Sqlite.Callback? callback = null);
-	public abstract int64 last_insert_rowid ();
+	public abstract int last_insert_rowid ();
 
 
 	public string build_select_query (string table, string? columns = null,
@@ -60,8 +60,8 @@ public interface Database : Object {
 	}
 
 
-	public int64 query_count (string table, string? where) {
-		return fetch_int64 (table, "COUNT(*)", where);
+	public int query_count (string table, string? where) {
+		return fetch_int (table, "COUNT(*)", where);
 	}
 
 
@@ -92,10 +92,9 @@ public interface Database : Object {
 			if (prop_type.is_a (typeof (DB.Entity))) {
 				Entity? obj = null;
 				if (recursive == true) {
-					var obj_id = int64.parse (values[i]);
+					var obj_id = int.parse (values[i]);
 					if (obj_id > 0)
-						obj = fetch_entity_full (prop_type, null,
-								("id=%" + int64.FORMAT).printf (obj_id));
+						obj = fetch_entity_full (prop_type, null, "id=%d".printf (obj_id));
 				}
 				dest_val.set_object (obj);
 			} else if (str_val.transform (ref dest_val) == false) {
@@ -133,8 +132,8 @@ public interface Database : Object {
 	}
 
 
-	public T? fetch_entity_by_id<T> (int64 id, string? table = null, bool recursive = true) {
-		return fetch_entity<T> (table, ("id=%" + int64.FORMAT).printf (id));
+	public T? fetch_entity_by_id<T> (int id, string? table = null, bool recursive = true) {
+		return fetch_entity<T> (table, "id=%d".printf (id));
 	}
 
 
@@ -200,7 +199,7 @@ public interface Database : Object {
 					error ("Table '%s' doesn't have column '%s'", table, key_field);
 			}
 
-			var key = (int) int64.parse (values[key_column]);
+			var key = int.parse (values[key_column]);
 			map[key] = make_entity<T> (n_columns, column_names, values);
 			return 0;
 		});
@@ -298,9 +297,9 @@ public interface Database : Object {
 
 
 	private void persist_auto_key (Entity entity, string[] fields, ObjectClass obj_class) {
-		var id_val = Value (typeof (int64));
+		var id_val = Value (typeof (int));
 		entity.get_property ("id", ref id_val);
-		var entity_id = id_val.get_int64 ();
+		var entity_id = id_val.get_int ();
 
 		if (entity_id == 0) {
 			var sb = new StringBuilder.sized (64);
@@ -314,7 +313,7 @@ public interface Database : Object {
 			prepare_column_value_list (sb, entity, fields, obj_class);
 			sb.truncate (sb.len - 2);
 
-			exec_sql (("UPDATE %s SET %s WHERE id=%" + int64.FORMAT)
+			exec_sql ("UPDATE %s SET %s WHERE id=%d"
 					.printf (entity.db_table (), sb.str, entity_id));
 		}
 	}

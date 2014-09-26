@@ -3,7 +3,7 @@ namespace OOXML {
 
 public class Sheet : Object {
 	public Gee.List<Row> rows;
-	public Gee.HashMap<string, Xml.Node*> extra_xml_nodes;
+	private Gee.HashMap<string, Xml.Node*> extra_xml_nodes;
 
 
 	public Sheet () {

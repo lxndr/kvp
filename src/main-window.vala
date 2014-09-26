@@ -16,15 +16,14 @@ class MainWindow : Gtk.ApplicationWindow {
 	[GtkChild]
 	private Gtk.Menu reference_menu;
 
-	/*  */
-	[GtkChild]
-	private Gtk.Paned paned1;
-	[GtkChild]
-	private Gtk.Paned paned2;
-	[GtkChild]
-	private Gtk.Box box2;	/* a work around */
-
 	/* tables */
+	[GtkChild]
+	private Gtk.ScrolledWindow account_scroller;
+	[GtkChild]
+	private Gtk.ScrolledWindow people_scroller;
+	[GtkChild]
+	private Gtk.ScrolledWindow tax_scroller;
+
 	private AccountTable account_table;
 	private PeopleTable people_table;
 	private TaxTable tax_table;
@@ -58,17 +57,19 @@ class MainWindow : Gtk.ApplicationWindow {
 
 		/* UI: account list */
 		account_table = new AccountTable (app.db);
+		account_table.visible = true;
 		account_table.selection_changed.connect (account_changed);
-		box2.destroy ();	/* a work around */
-		paned1.pack1 (account_table.get_root_widget (), true, false);
+		account_scroller.add (account_table);
 
 		/* UI: people list */
 		people_table = new PeopleTable (app.db);
-		paned2.pack1 (people_table.get_root_widget (), false, false);
+		people_table.visible = true;
+		people_scroller.add (people_table);
 
 		/* UI: tax list */
 		tax_table = new TaxTable (app.db);
-		paned2.pack2 (tax_table.get_root_widget (), false, false);
+		tax_table.visible = true;
+		tax_scroller.add (tax_table);
 
 		/*  */
 		init_current_period ();
@@ -103,6 +104,7 @@ class MainWindow : Gtk.ApplicationWindow {
 			var mi = new Gtk.MenuItem.with_label (
 					"%s, %s".printf (building.street, building.number));
 			mi.visible = true;
+			mi.activate.connect (building_clicked);
 			menu.append (mi);
 		}
 
@@ -110,6 +112,12 @@ class MainWindow : Gtk.ApplicationWindow {
 		menu.popup (null, null, (menu, out x, out y, out push_in) => {
 			default_popup_menu_position (button, out x, out y, out push_in);
 		}, 0, Gtk.get_current_event_time ());
+	}
+
+
+	private void building_clicked (Gtk.MenuItem mi) {
+		var id = mi.get_data<int> ("building_id");
+//		account_table.set_building_by_id (id);
 	}
 
 

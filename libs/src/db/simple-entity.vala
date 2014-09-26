@@ -2,7 +2,7 @@ namespace DB {
 
 
 public abstract class SimpleEntity : Entity {
-	public int64 id { get; set; default = 0; }
+	public int id { get; set; default = 0; }
 
 
 	construct {
@@ -22,8 +22,7 @@ public abstract class SimpleEntity : Entity {
 		if (id == 0)
 			error ("The entity being removed is not present in the database.");
 
-		db.delete_entity (db_table (),
-				("id=%" + int64.FORMAT).printf (id));
+		db.delete_entity (db_table (), "id=%d".printf (id));
 	}
 }
 

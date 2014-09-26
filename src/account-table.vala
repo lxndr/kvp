@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class AccountTable : DB.TableView {
+public class AccountTable : DB.ViewTable {
 	private int current_period;
 
 
@@ -9,12 +9,12 @@ public class AccountTable : DB.TableView {
 		var menu_item = new Gtk.MenuItem.with_label (_("Recalculate"));
 		menu_item.activate.connect (recalculate_clicked);
 		menu_item.visible = true;
-		popup_menu.add (menu_item);
+		menu.add (menu_item);
 
 		menu_item = new Gtk.MenuItem.with_label (_("Recalculate this period"));
 		menu_item.activate.connect (recalculate_period_clicked);
 		menu_item.visible = true;
-		popup_menu.add (menu_item);
+		menu.add (menu_item);
 	}
 
 

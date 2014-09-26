@@ -29,8 +29,8 @@ public class SQLiteDatabase : Object, Database {
 	}
 
 
-	public int64 last_insert_rowid () {
-		return db.last_insert_rowid ();
+	public int last_insert_rowid () {
+		return (int) db.last_insert_rowid ();
 	}
 }
 

@@ -11,17 +11,15 @@ public class PropertyAdapter : Object {
 
 
 
-public abstract class TableView : Object {
+public abstract class ViewTable : Gtk.TreeView {
 	public Database db { get; construct set; }
 	public Type object_type { get; construct set; }
 	public bool view_only { get; construct set; default = false; }
 
 	public Entity? selected_entity;
 
-	private Gtk.ScrolledWindow root_widget;
-	protected Gtk.TreeView list_view;
 	protected Gtk.ListStore list_store;
-	protected Gtk.Menu popup_menu;
+	protected Gtk.Menu menu;
 	private Gtk.MenuItem remove_menu_item;
 
 
@@ -52,23 +50,23 @@ public abstract class TableView : Object {
 		selected_entity = null;
 
 		/* popup menu */
-		popup_menu = new Gtk.Menu ();
+		menu = new Gtk.Menu ();
 
 		if (view_only == false) {
 			Gtk.MenuItem menu_item;
 
 			menu_item = new Gtk.MenuItem.with_label ("Add");
 			menu_item.activate.connect (add_item_clicked);
-			popup_menu.add (menu_item);
+			menu.add (menu_item);
 
 			remove_menu_item = new Gtk.MenuItem.with_label ("Remove");
 			remove_menu_item.activate.connect (remove_item_clicked);
-			popup_menu.add (remove_menu_item);
+			menu.add (remove_menu_item);
 
 			menu_item = new Gtk.SeparatorMenuItem ();
-			popup_menu.add (menu_item);
+			menu.add (menu_item);
 
-			popup_menu.show_all ();
+			menu.show_all ();
 		}
 
 		/* list store */
@@ -93,23 +91,12 @@ public abstract class TableView : Object {
 		list_store = new Gtk.ListStore.newv (types);
 
 		/* list view */
-		root_widget = new Gtk.ScrolledWindow (null, null);
-		root_widget.shadow_type = Gtk.ShadowType.IN;
-
-		list_view = new Gtk.TreeView.with_model (list_store);
-		list_view.enable_grid_lines = Gtk.TreeViewGridLines.VERTICAL;
-		list_view.headers_clickable = true;
-		list_view.get_selection ().changed.connect (list_selection_changed);
+		this.model = list_store;
+		this.enable_grid_lines = Gtk.TreeViewGridLines.VERTICAL;
+		this.headers_clickable = true;
+		this.get_selection ().changed.connect (list_selection_changed);
 		create_list_columns (props);
-		list_view.button_release_event.connect (button_released);
-		root_widget.add (list_view);
-
-		root_widget.show_all ();
-	}
-
-
-	public Gtk.Widget get_root_widget () {
-		return root_widget;
+		this.button_release_event.connect (button_released);
 	}
 
 
@@ -168,7 +155,7 @@ public abstract class TableView : Object {
 						"text", i + 1);
 			}
 
-			list_view.insert_column (column, -1);
+			this.insert_column (column, -1);
 		}
 	}
 
@@ -176,8 +163,8 @@ public abstract class TableView : Object {
 	private bool button_released (Gdk.EventButton event) {
 		if (event.button == 3) {
 			if (remove_menu_item != null)
-				remove_menu_item.sensitive = list_view.get_selection ().count_selected_rows () > 0;
-			popup_menu.popup (null, null, null, event.button, Gtk.get_current_event_time ());
+				remove_menu_item.sensitive = this.get_selection ().count_selected_rows () > 0;
+			menu.popup (null, null, null, event.button, Gtk.get_current_event_time ());
 		}
 
 		return false;
@@ -293,13 +280,13 @@ public abstract class TableView : Object {
 
 	public void remove_item_clicked () {
 		Gtk.TreeIter iter;
-		if (list_view.get_selection ().get_selected (null, out iter) == false)
+		if (this.get_selection ().get_selected (null, out iter) == false)
 			return;
 
 		Entity obj;
 		list_store.get (iter, 0, out obj);
 
-		var msg = new Gtk.MessageDialog (list_view.get_toplevel () as Gtk.Window, Gtk.DialogFlags.MODAL,
+		var msg = new Gtk.MessageDialog (this.get_toplevel () as Gtk.Window, Gtk.DialogFlags.MODAL,
 				Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO,
 				"Are you sure you want to delete '%s' and all its data?",
 				(obj as Viewable).display_name);
@@ -326,7 +313,7 @@ public abstract class TableView : Object {
 		}
 
 		if (list_store.get_iter_first (out iter) == true)
-			list_view.get_selection ().select_iter (iter);
+			this.get_selection ().select_iter (iter);
 	}
 
 
