@@ -1,12 +1,7 @@
 RESOURCES=ui/main-window.ui \
 	data/init.sql
 
-SOURCES=src/db/database.vala \
-		src/db/sqlite-database.vala \
-		src/db/entity.vala \
-		src/db/simple-entity.vala \
-		src/db/viewable.vala \
-		src/db/table-view.vala \
+SOURCES=\
 		src/widgets/year-month.vala \
 		src/widgets/central-year-month.vala \
 		src/application.vala \
@@ -40,12 +35,19 @@ SOURCES=src/db/database.vala \
 		src/reports/report-002.vala \
 		src/reports/report-003.vala
 
-PACKAGES=--pkg=gtk+-3.0 \
+PACKAGES= \
+		--vapidir="libs/vapi" \
+		--pkg=gtk+-3.0 \
 		--pkg=gee-0.8 \
-		--pkg=json-glib-1.0 \
 		--pkg=sqlite3 \
 		--pkg=libxml-2.0 \
-		--pkg=zlib
+		--pkg=zlib \
+		--pkg=db \
+		--pkg=db-gtk
+
+LIBS= \
+	--Xcc="libs/lib/libdb.a" \
+	--Xcc="libs/lib/libdb-gtk.a"
 
 
 all: kvp
@@ -53,7 +55,7 @@ all: kvp
 
 
 kvp: resources $(SOURCES)
-	valac $(SOURCES) src/resources.c --Xcc="-w" --Xcc="-lm" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --target-glib=2.38 $(PACKAGES) --gresources=kvartplata.gresource.xml -o kvp
+	valac $(SOURCES) src/resources.c --Xcc="-w" --Xcc="-lm" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --Xcc="-Ilibs/include" $(LIBS) --target-glib=2.38 $(PACKAGES) --gresources=kvartplata.gresource.xml -o kvp
 
 
 debug: resources $(SOURCES)
@@ -86,7 +88,6 @@ kvp.pot: $(SOURCES)
 
 clean:
 	rm -f src/*.c
-	rm -f src/db/*.c
 	rm -f src/archive/*.c
 	rm -f src/widgets/*.c
 	rm -f src/entities/*.c
