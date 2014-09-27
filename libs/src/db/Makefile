@@ -15,7 +15,7 @@ DB_SOURCES = \
 		simple-entity.vala \
 
 DB_GTK_SOURCES = \
-		table-view.vala \
+		view-table.vala \
 		viewable.vala
 
 DB_FLAGS = \

@@ -1,12 +1,9 @@
 namespace DB {
 
 
-public class PropertyAdapter : Object {
+[Compact]
+public struct PropertyAdapter {
 	public string val;
-
-	public PropertyAdapter (string _val) {
-		val = _val;
-	}
 }
 
 
@@ -215,7 +212,8 @@ public abstract class ViewTable : Gtk.TreeView {
 			// list_store.set_value (iter, property_column, val);
 		} else {
 			var ad_val = Value (typeof (PropertyAdapter));
-			ad_val.set_object (new PropertyAdapter (new_text));
+			PropertyAdapter ad = {new_text };
+			ad_val.set_boxed (&ad);
 
 			/* transform string to property value */
 			var val = Value (prop_type);
@@ -353,7 +351,7 @@ public abstract class ViewTable : Gtk.TreeView {
 				if (val.transform (ref ad_val) == true) {
 					val.unset ();
 					val.init (typeof (string));
-					val.set_string ((ad_val.get_object () as PropertyAdapter).val);
+					val.set_string (((PropertyAdapter*) ad_val.get_boxed ())->val);
 				} else {
 					warning ("Could not transform %s to %s",
 							val.type ().name (), ad_val.type ().name ());
