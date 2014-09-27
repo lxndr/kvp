@@ -2,7 +2,7 @@ namespace Kv {
 
 
 public class BuildingTable : DB.ViewTable {
-	protected override unowned string[] view_properties () {
+	protected override unowned string[] viewable_props () {
 		const string props[] = {
 			N_("location"),
 			N_("street"),

@@ -10,7 +10,7 @@ public class BuildingWindow : Gtk.Window {
 		title = _("Reference - Buildings");
 
 		view_table = new BuildingTable (db);
-		view_table.update_view ();
+		view_table.refresh_view ();
 
 		var scrolled = new Gtk.ScrolledWindow (null, null);
 		scrolled.add (view_table);

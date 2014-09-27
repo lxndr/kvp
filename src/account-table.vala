@@ -11,7 +11,7 @@ public class AccountTable : DB.ViewTable {
 	}
 
 
-	protected override unowned string[] view_properties () {
+	protected override unowned string[] viewable_props () {
 		const string props[] = {
 			N_("number"),
 			N_("tenant"),
@@ -47,6 +47,15 @@ public class AccountTable : DB.ViewTable {
 		menu.append (mi);
 
 		return menu;
+	}
+
+
+	protected override void create_list_column (Gtk.TreeViewColumn column, out Gtk.CellRenderer cell,
+			ParamSpec prop, int model_column) {
+		base.create_list_column (column, out cell, prop, model_column);
+
+		if (prop.value_type == typeof (Money))
+			cell.set ("xalign", 1.0f);
 	}
 
 
@@ -91,7 +100,7 @@ public class AccountTable : DB.ViewTable {
 
 		if (prop_name == "payment" || prop_name == "extra") {
 			account_period.calc_balance ();
-			refresh_row (entity);
+			find_and_refresh_row (entity);
 			entity.persist ();
 		}
 
@@ -119,7 +128,7 @@ public class AccountTable : DB.ViewTable {
 	public void recalculate_clicked () {
 		var account_period = get_selected_entity () as AccountPeriod;
 		recalculate_period (account_period);
-		refresh_row (account_period);
+		find_and_refresh_row (account_period);
 	}
 
 
@@ -128,7 +137,7 @@ public class AccountTable : DB.ViewTable {
 				("period=%d").printf (current_period));
 		foreach (var account_period in periods)
 			recalculate_period (account_period);
-		update_view ();
+		refresh_all ();
 	}
 }
 

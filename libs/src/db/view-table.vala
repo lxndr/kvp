@@ -20,10 +20,11 @@ public abstract class ViewTable : Gtk.TreeView {
 	private Gtk.MenuItem remove_menu_item;
 
 
-	protected abstract unowned string[] view_properties ();
+	protected abstract unowned string[] viewable_props ();
 	protected abstract Gee.List<Entity> get_entity_list ();
 
 
+	public virtual signal void row_refreshed (Gtk.TreeIter tree_iter, Entity entity) {}
 	public signal void selection_changed ();
 	public virtual signal void row_edited (Entity entity, string prop_name) {}
 
@@ -50,7 +51,7 @@ public abstract class ViewTable : Gtk.TreeView {
 		/* properties */
 		var obj_class = (ObjectClass) object_type.class_ref ();
 		var props = new Gee.ArrayList<unowned ParamSpec> ();
-		foreach (unowned string prop_name in view_properties ()) {
+		foreach (unowned string prop_name in viewable_props ()) {
 			unowned ParamSpec? spec = obj_class.find_property (prop_name);
 			if (spec == null) {
 				warning ("Couldn't find property '%s' in '%s'", prop_name, object_type.name ());
@@ -226,7 +227,7 @@ public abstract class ViewTable : Gtk.TreeView {
 			// list_store.set_value (iter, property_column, val);
 		}
 
-		update_row (iter, entity);
+		refresh_row (iter, entity);
 		db.persist (entity);
 		row_edited (entity, property_name);
 	}
@@ -245,7 +246,7 @@ public abstract class ViewTable : Gtk.TreeView {
 		val.set_boolean (!val.get_boolean ());
 		entity.set_property (property_name, val);
 
-		update_row (iter, entity);
+		refresh_row (iter, entity);
 		entity.persist ();
 		row_edited (entity, property_name);
 	}
@@ -280,7 +281,7 @@ public abstract class ViewTable : Gtk.TreeView {
 
 		Gtk.TreeIter iter;
 		list_store.append (out iter);
-		update_row (iter, entity);
+		refresh_row (iter, entity);
 
 		db.persist (entity);
 	}
@@ -310,56 +311,82 @@ public abstract class ViewTable : Gtk.TreeView {
 	}
 
 
-	public void update_view () {
+	/*
+	 * This function clears table and requests new entity list to display.
+	 */
+	public void refresh_view () {
 		Gtk.TreeIter iter;
 		list_store.clear ();
-		var list = get_entity_list ();
 
+		var list = get_entity_list ();
 		foreach (var entity in list) {
 			list_store.append (out iter);
-			update_row (iter, entity);
+			refresh_row (iter, entity);
 		}
 
 		if (list_store.get_iter_first (out iter) == true)
-			this.get_selection ().select_iter (iter);
+			get_selection ().select_iter (iter);
 	}
 
 
-	private void update_row (Gtk.TreeIter iter, Entity entity) {
-		var obj_class = (ObjectClass) entity.get_type ().class_ref ();
-		var props = view_properties ();
+	/*
+	 * This function refershes every row without requesting new entity list.
+	 */
+	public void refresh_all () {
+		Gtk.TreeIter iter;
+
+		if (list_store.get_iter_first (out iter) == true) {
+			do {
+				Entity entity;
+				list_store.get (iter, 0, out entity);
+				refresh_row (iter, entity);
+			} while (list_store.iter_next (ref iter) == true);
+		}
+	}
+
+
+	private void refresh_row (Gtk.TreeIter iter, Entity entity) {
+		unowned ObjectClass obj_class = (ObjectClass) entity.get_type ().class_peek ();
 		list_store.set (iter, 0, entity);
 
-		for (var i = 0; i < props.length; i++) {
-			var prop_name = props[i];
-			var prop_spec = obj_class.find_property (prop_name);
-			var val = Value (prop_spec.value_type);
+		unowned string[] props = viewable_props ();
+		var count = props.length;
+		for (var i = 0; i < count; i++) {
+			unowned string prop_name = props[i];
+			unowned ParamSpec? prop_spec = obj_class.find_property (prop_name);
+			var prop_type = prop_spec.value_type;
+			var model_column = i + 1;
+
+			var val = Value (prop_type);
 			entity.get_property (prop_name, ref val);
 
-			if (val.type () == typeof (string) || val.type () == typeof (int) ||
-					val.type () == typeof (bool)) {
+			if (prop_type == typeof (string) || prop_type == typeof (int) ||
+					prop_type == typeof (bool)) {
 				/* these convert nicely */
-				list_store.set_value (iter, i + 1, val);
-			} else if (val.type ().is_a (typeof (Entity))) {
+				list_store.set_value (iter, model_column, val);
+			} else if (prop_type.is_a (typeof (Entity))) {
 				/* entity, a special case */
-				var obj = val.get_object () as Viewable;
-				if (obj != null)
-					list_store.set (iter, i + 1, obj.display_name);
+				unowned Object? obj = val.get_object ();
+				if (obj != null && obj is Viewable)
+					list_store.set (iter, model_column, ((Viewable) obj).display_name);
+				else
+					list_store.set (iter, model_column, null);
 			} else {
 				/* first, try usng an adaptor */
 				var ad_val = Value (typeof (PropertyAdapter));
 				if (val.transform (ref ad_val) == true) {
-					val.unset ();
-					val.init (typeof (string));
+					val = Value (typeof (string));
 					val.set_string (((PropertyAdapter*) ad_val.get_boxed ())->val);
 				} else {
 					warning ("Could not transform %s to %s",
-							val.type ().name (), ad_val.type ().name ());
+							prop_type.name (), ad_val.type ().name ());
 				}
 
-				list_store.set_value (iter, i + 1, val);
+				list_store.set_value (iter, model_column, val);
 			}
 		}
+
+		row_refreshed (iter, entity);
 	}
 
 
@@ -377,10 +404,10 @@ public abstract class ViewTable : Gtk.TreeView {
 	}
 
 
-	public void refresh_row (DB.Entity entity) {
+	public void find_and_refresh_row (DB.Entity entity) {
 		Gtk.TreeIter iter;
 		if (find_row (out iter, entity) == true)
-			update_row (iter, entity);
+			refresh_row (iter, entity);
 	}
 }
 

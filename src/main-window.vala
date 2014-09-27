@@ -183,7 +183,7 @@ class MainWindow : Gtk.ApplicationWindow {
 
 		/* update table views */
 		account_table.set_period (current_period);
-		account_table.update_view ();
+		account_table.refresh_view ();
 		account_changed ();
 	}
 

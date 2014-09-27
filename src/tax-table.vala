@@ -20,11 +20,11 @@ public class TaxTable : DB.ViewTable {
 		period = _period;
 		account = _account;
 
-		update_view ();
+		refresh_view ();
 	}
 
 
-	protected override unowned string[] view_properties () {
+	protected override unowned string[] viewable_props () {
 		const string props[] = {
 			N_("apply"),
 			N_("service_name"),
@@ -55,8 +55,6 @@ public class TaxTable : DB.ViewTable {
 			ParamSpec prop, int model_column) {
 		base.create_list_column (column, out cell, prop, model_column);
 
-stdout.printf (">> %s\n", prop.value_type.name ());
-
 		if (prop.value_type == typeof (Money))
 			cell.set ("xalign", 1.0f);
 		if (cell is Gtk.CellRendererText)
@@ -73,21 +71,17 @@ stdout.printf (">> %s\n", prop.value_type.name ());
 	}
 
 
-	public override void row_edited (DB.Entity entity, string prop_name) {
-		var tax = entity as Tax;
+	protected override void row_refreshed (Gtk.TreeIter tree_iter, DB.Entity entity) {
+		unowned Tax tax = entity as Tax;
 
-		if (prop_name == "apply") {
-			unowned string? color = null;
-			var apply = tax.apply;
-			if (apply == false)
-				color = "grey";
+		unowned string? color = null;
+		var apply = tax.apply;
+		if (apply == false)
+			color = "grey";
 
-			Gtk.TreeIter iter;
-			find_row (out iter, entity);
-			list_store.set (iter,
-					foreground_model_column, color,
-					strikethrough_model_column, !apply);
-		}
+		list_store.set (tree_iter,
+				foreground_model_column, color,
+				strikethrough_model_column, !apply);
 	}
 }
 

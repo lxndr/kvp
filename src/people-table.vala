@@ -16,7 +16,7 @@ public class PeopleTable : DB.ViewTable {
 		period = _period;
 		account = _account;
 
-		update_view ();
+		refresh_view ();
 	}
 
 
@@ -25,7 +25,7 @@ public class PeopleTable : DB.ViewTable {
 	}
 
 
-	protected override unowned string[] view_properties () {
+	protected override unowned string[] viewable_props () {
 		const string props[] = {
 			N_("name"),
 			N_("birthday"),
