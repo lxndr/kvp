@@ -19,7 +19,7 @@ public abstract class ViewTable : Gtk.TreeView {
 	public Entity? selected_entity;
 
 	protected Gtk.ListStore list_store;
-	protected Gtk.Menu menu;
+	protected Gtk.Menu? menu;
 	private Gtk.MenuItem remove_menu_item;
 
 
@@ -47,121 +47,131 @@ public abstract class ViewTable : Gtk.TreeView {
 
 
 	construct {
-		selected_entity = null;
-
 		/* popup menu */
-		menu = new Gtk.Menu ();
+		menu = create_menu (true);
 
-		if (view_only == false) {
-			Gtk.MenuItem menu_item;
-
-			menu_item = new Gtk.MenuItem.with_label ("Add");
-			menu_item.activate.connect (add_item_clicked);
-			menu.add (menu_item);
-
-			remove_menu_item = new Gtk.MenuItem.with_label ("Remove");
-			remove_menu_item.activate.connect (remove_item_clicked);
-			menu.add (remove_menu_item);
-
-			menu_item = new Gtk.SeparatorMenuItem ();
-			menu.add (menu_item);
-
-			menu.show_all ();
-		}
-
-		/* list store */
-		Type[] types = {};
-		types += typeof (Object);
-
+		/* properties */
 		var obj_class = (ObjectClass) object_type.class_ref ();
-		var props = view_properties ();
-		foreach (var prop_name in props) {
-			unowned ParamSpec? prop_spec = obj_class.find_property (prop_name);
-			if (prop_spec == null) {
+		var props = new Gee.ArrayList<unowned ParamSpec> ();
+		foreach (unowned string prop_name in view_properties ()) {
+			unowned ParamSpec? spec = obj_class.find_property (prop_name);
+			if (spec == null) {
 				warning ("Couldn't find property '%s' in '%s'", prop_name, object_type.name ());
 				continue;
 			}
 
-			if (prop_spec.value_type == typeof (bool))
-				types += typeof (bool);
-			else
-				types += typeof (string);
+			props.add (spec);
 		}
 
-		list_store = new Gtk.ListStore.newv (types);
+		/* list store */
+		var types = new Gee.ArrayList<Type> ();
+		types.add (typeof (Entity));
+		create_list_store (types, props);
+		list_store = new Gtk.ListStore.newv (types.to_array ());
+
+		/* columns */
+		create_list_columns (props);
 
 		/* list view */
 		this.model = list_store;
 		this.enable_grid_lines = Gtk.TreeViewGridLines.VERTICAL;
 		this.headers_clickable = true;
 		this.get_selection ().changed.connect (list_selection_changed);
-		create_list_columns (props);
 		this.button_release_event.connect (button_released);
 	}
 
 
-	private void create_list_columns (string[] props) {
-		var obj_class = (ObjectClass) object_type.class_ref ();
-		Gtk.TreeViewColumn column;
+	protected virtual Gtk.Menu? create_menu (bool add_remove = true) {
+		menu = new Gtk.Menu ();
 
-		for (var i = 0; i < props.length; i++) {
-			Gtk.CellRenderer cell;
-			var prop_name = props[i];
-			var prop_spec = obj_class.find_property (prop_name);
-			var prop_type = prop_spec.value_type;
+		if (add_remove == true) {
+			Gtk.MenuItem menu_item;
 
-			if (prop_type == typeof (string) ||
-					prop_type == typeof (int) ||
-					prop_type == typeof (double) ||
-					prop_type.is_a (Type.BOXED)) {
-				cell = new Gtk.CellRendererText ();
-				cell.set ("editable", (prop_spec.flags & ParamFlags.WRITABLE) > 0);
-				/* FIXME: could use Object.connect */
-				(cell as Gtk.CellRendererText).edited.connect (text_row_edited);
-			} else if (prop_type == typeof (bool)) {
-				cell = new Gtk.CellRendererToggle ();
-				(cell as Gtk.CellRendererToggle).toggled.connect (cell_toggled);
-			} else if (prop_type.is_a (typeof (Entity))) {
-				var combo_store = new Gtk.ListStore (2, typeof (string), typeof (Entity));
-				var entity_list = db.fetch_entity_list_full (prop_type) as Gee.List<Viewable>;
+			menu_item = new Gtk.MenuItem.with_label (_("Add"));
+			menu_item.activate.connect (add_item_clicked);
+			menu.add (menu_item);
 
-				foreach (var entity in entity_list) {
-					Gtk.TreeIter iter;
-					combo_store.append (out iter);
-					combo_store.set (iter, 0, entity.display_name, 1, entity);
-				}
+			remove_menu_item = new Gtk.MenuItem.with_label (_("Remove"));
+			remove_menu_item.activate.connect (remove_item_clicked);
+			menu.add (remove_menu_item);
 
-				cell = new Gtk.CellRendererCombo ();
-				cell.set ("editable", true);
-				cell.set ("has-entry", false);
-				cell.set ("model", combo_store);
-				cell.set ("text-column", 0);
-				(cell as Gtk.CellRendererCombo).changed.connect (combo_row_changed);
-			} else {
-				error ("Unsupported property type '%s' for table column '%s'",
-						prop_spec.value_type.name (), prop_name);
+			menu.show_all ();
+		}
+
+		return menu;
+	}
+
+
+	protected virtual void create_list_store (Gee.List<Type> types, Gee.List<unowned ParamSpec> props) {
+		foreach (unowned ParamSpec prop in props) {
+			var prop_type = prop.value_type;
+			if (prop_type == typeof (bool))
+				types.add (typeof (bool));
+			else
+				types.add (typeof (string));
+		}
+	}
+
+
+	protected virtual void create_list_column (Gtk.TreeViewColumn column, out Gtk.CellRenderer cell,
+			ParamSpec prop, int model_column) {
+		var prop_type = prop.value_type;
+
+		if (prop_type.is_a (typeof (Entity))) {
+			var combo_store = new Gtk.ListStore (2, typeof (string), typeof (Entity));
+			var entity_list = db.fetch_entity_list_full (prop_type) as Gee.List<Viewable>;
+
+			foreach (var entity in entity_list) {
+				Gtk.TreeIter iter;
+				combo_store.append (out iter);
+				combo_store.set (iter, 0, entity.display_name, 1, entity);
 			}
 
-			cell.set_data<string> ("property_name", prop_name);
-			cell.set_data<int> ("property_column", i + 1);
+			var combo_cell = new Gtk.CellRendererCombo ();
+			combo_cell.set ("editable", true,
+							"has-entry", false,
+							"model", combo_store,
+							"text-column", 0);
+			combo_cell.changed.connect (combo_cell_changed);
+			column.pack_start (combo_cell, true);
+			column.add_attribute (combo_cell, "text", model_column);
+			cell = combo_cell;
+		} else if (prop_type == typeof (bool)) {
+			var toggle_cell = new Gtk.CellRendererToggle ();
+			toggle_cell.toggled.connect (toggle_cell_toggled);
+			column.pack_start (toggle_cell, false);
+			column.add_attribute (toggle_cell, "active", model_column);
+			cell = toggle_cell;
+		} else {
+			var text_cell = new Gtk.CellRendererText ();
+			text_cell.set ("editable", (prop.flags & ParamFlags.WRITABLE) > 0);
+			text_cell.edited.connect (text_cell_edited);
+			column.pack_start (text_cell, true);
+			column.add_attribute (text_cell, "text", model_column);
+			cell = text_cell;
+		}
 
-			if (prop_type == typeof (bool)) {
-				column = new Gtk.TreeViewColumn.with_attributes (
-						dgettext (null, prop_name), cell,
-						"active", i + 1);
-			} else {
-				column = new Gtk.TreeViewColumn.with_attributes (
-						dgettext (null, prop_name), cell,
-						"text", i + 1);
-			}
+		cell.set_data<string> ("property_name", prop.name);
+		cell.set_data<int> ("property_column", model_column);
+	}
 
-			this.insert_column (column, -1);
+
+	private void create_list_columns (Gee.List<unowned ParamSpec> props) {
+		Gtk.CellRenderer cell;
+
+		var count = props.size;
+		for (var i = 0; i < count; i++) {
+			unowned ParamSpec prop = props[i];
+			var column = new Gtk.TreeViewColumn ();
+			column.title = dgettext (null, prop.name);
+			create_list_column (column, out cell, prop, i + 1);
+			insert_column (column, -1);
 		}
 	}
 
 
 	private bool button_released (Gdk.EventButton event) {
-		if (event.button == 3) {
+		if (menu != null && event.button == 3) {
 			if (remove_menu_item != null)
 				remove_menu_item.sensitive = this.get_selection ().count_selected_rows () > 0;
 			menu.popup (null, null, null, event.button, Gtk.get_current_event_time ());
@@ -182,7 +192,7 @@ public abstract class ViewTable : Gtk.TreeView {
 	}
 
 
-	private void text_row_edited (Gtk.CellRendererText cell, string _path,
+	private void text_cell_edited (Gtk.CellRendererText cell, string _path,
 			string new_text) {
 		Entity entity;
 		Gtk.TreeIter iter;
@@ -224,7 +234,7 @@ public abstract class ViewTable : Gtk.TreeView {
 	}
 
 
-	private void cell_toggled (Gtk.CellRendererToggle cell, string _path) {
+	private void toggle_cell_toggled (Gtk.CellRendererToggle cell, string _path) {
 		Entity entity;
 		Gtk.TreeIter iter;		var path = new Gtk.TreePath.from_string (_path);
 		list_store.get_iter (out iter, path);
@@ -243,7 +253,7 @@ public abstract class ViewTable : Gtk.TreeView {
 	}
 
 
-	private void combo_row_changed (Gtk.CellRendererCombo cell, string _path,
+	private void combo_cell_changed (Gtk.CellRendererCombo cell, string _path,
 			Gtk.TreeIter prop_iter) {
 		Entity entity;
 		Gtk.TreeIter iter;
@@ -355,7 +365,7 @@ public abstract class ViewTable : Gtk.TreeView {
 	}
 
 
-	private bool find_row (out Gtk.TreeIter iter, DB.Entity entity) {
+	protected bool find_row (out Gtk.TreeIter iter, DB.Entity entity) {
 		if (list_store.get_iter_first (out iter) == true) {
 			do {
 				DB.Entity ent;

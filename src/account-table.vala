@@ -5,19 +5,6 @@ public class AccountTable : DB.ViewTable {
 	private int current_period;
 
 
-	construct {
-		var menu_item = new Gtk.MenuItem.with_label (_("Recalculate"));
-		menu_item.activate.connect (recalculate_clicked);
-		menu_item.visible = true;
-		menu.add (menu_item);
-
-		menu_item = new Gtk.MenuItem.with_label (_("Recalculate this period"));
-		menu_item.activate.connect (recalculate_period_clicked);
-		menu_item.visible = true;
-		menu.add (menu_item);
-	}
-
-
 	public AccountTable (Database _db) {
 		Object (db: _db,
 				object_type: typeof (AccountPeriod));
@@ -40,6 +27,26 @@ public class AccountTable : DB.ViewTable {
 			N_("comment")
 		};
 		return props;
+	}
+
+
+	protected override Gtk.Menu? create_menu (bool add_remove = true) {
+		var menu = base.create_menu (add_remove);
+
+		Gtk.MenuItem mi = new Gtk.SeparatorMenuItem ();
+		menu.append (mi);
+
+		mi = new Gtk.MenuItem.with_label (_("Recalculate"));
+		mi.activate.connect (recalculate_clicked);
+		mi.visible = true;
+		menu.append (mi);
+
+		mi = new Gtk.MenuItem.with_label (_("Recalculate this period"));
+		mi.activate.connect (recalculate_period_clicked);
+		mi.visible = true;
+		menu.append (mi);
+
+		return menu;
 	}
 
 
