@@ -60,7 +60,7 @@ public class Report003 : Report {
 		sheet.put_string ("J5", Money (prices[9]).format ());
 
 
-		var accounts = db.get_account_list ();
+		var accounts = db.get_account_list (building);
 		OOXML.Row row = sheet.get_row(1);
 		int row_number = 10;
 

@@ -79,6 +79,7 @@ public class Database : DB.SQLiteDatabase {
 	public void prepare_for_period (int period) {
 		int prev_period = period - 1;
 
+		begin_transaction ();
 		exec_sql ("INSERT INTO account_period SELECT account,%d,apartment,n_rooms,area,total,0,balance,0 FROM account_period WHERE period=%d"
 				.printf (period, prev_period), null);
 		exec_sql ("INSERT INTO person SELECT null,account,%d,name,birthday,relationship FROM person WHERE period=%d"
@@ -89,6 +90,7 @@ public class Database : DB.SQLiteDatabase {
 		foreach (var price in price_list)
 			exec_sql (("INSERT INTO tax SELECT account,%d,service,apply,amount,total FROM tax WHERE period=%d AND service=%d")
 					.printf (period, prev_period, price.service.id), null);
+		commit_transaction ();
 	}
 
 
@@ -97,26 +99,28 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.List<Account> get_account_list () {
-		return fetch_entity_list<Account> (Account.table_name);
+	public Gee.List<Account> get_account_list (Building building) {
+		return fetch_entity_list<Account> (Account.table_name,
+				"building=%d".printf (building.id));
 	}
 
 
-	public Gee.List<AccountPeriod> get_account_month_list (int period) {
-		var months = new Gee.ArrayList<AccountPeriod> ();
-		var accounts = get_account_list ();
+	public Gee.List<AccountPeriod> get_account_period_list (Building building, int period) {
+		var accounts = get_account_list (building);
+		var account_periods = fetch_int_entity_map<AccountPeriod> (
+				"account_period JOIN account ON account.building=%d".printf (building.id),
+				"account", "account_period.*", "period=%d".printf (period));
+
+		var result = new Gee.ArrayList<AccountPeriod> ();
 
 		foreach (var account in accounts) {
-			var list = fetch_entity_list<AccountPeriod> (AccountPeriod.table_name,
-					("account=%d AND period=%d")
-					.printf (account.id, period));
-			if (list.size == 0)
-				months.add (new AccountPeriod (this, account, period));
-			else
-				months.add (list[0]);
+			var account_period = account_periods[account.id];
+			if (account_period == null)
+				account_period = new AccountPeriod (this, account, period);
+			result.add (account_period);
 		}
 
-		return months;
+		return result;
 	}
 
 

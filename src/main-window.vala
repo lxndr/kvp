@@ -30,6 +30,7 @@ class MainWindow : Gtk.ApplicationWindow {
 
 	/*  */
 	private BuildingWindow? building_window = null;
+	private Building? current_building = null;
 
 	/*  */
 	private int current_period;
@@ -103,10 +104,20 @@ class MainWindow : Gtk.ApplicationWindow {
 		foreach (var building in buildings) {
 			var mi = new Gtk.MenuItem.with_label (
 					"%s, %s".printf (building.street, building.number));
+			mi.set_data<Building> ("building", building);
 			mi.visible = true;
 			mi.activate.connect (building_clicked);
 			menu.append (mi);
 		}
+
+		Gtk.MenuItem mi = new Gtk.SeparatorMenuItem ();
+		mi.visible = true;
+		menu.append (mi);
+
+		mi = new Gtk.MenuItem.with_label (_("Edit..."));
+		mi.visible = true;
+		mi.activate.connect (ref_buildings_clicked);
+		menu.append (mi);
 
 		menu.attach_to_widget (button, null);
 		menu.popup (null, null, (menu, out x, out y, out push_in) => {
@@ -116,8 +127,9 @@ class MainWindow : Gtk.ApplicationWindow {
 
 
 	private void building_clicked (Gtk.MenuItem mi) {
-		var id = mi.get_data<int> ("building_id");
-//		account_table.set_building_by_id (id);
+		current_building = mi.get_data<Building> ("building");
+		account_table.set_building (current_building);
+		account_table.refresh_view ();
 	}
 
 

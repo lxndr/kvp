@@ -11,6 +11,7 @@ endif
 DB_SOURCES = \
 		database.vala \
 		sqlite-database.vala \
+		query-builder.vala \
 		entity.vala \
 		simple-entity.vala \
 

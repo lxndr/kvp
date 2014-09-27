@@ -14,7 +14,8 @@ public class BuildingWindow : Gtk.Window {
 
 		var scrolled = new Gtk.ScrolledWindow (null, null);
 		scrolled.add (view_table);
-		
+		scrolled.show_all ();
+
 		add (scrolled);
 	}
 

@@ -29,6 +29,11 @@ public interface Database : Object {
 	}
 
 
+	public QueryBuilder build () {
+		return new QueryBuilder ();
+	}
+
+
 	public string? fetch_string (string table, string column, string? where = null) {
 		string? result = null;
 
@@ -180,17 +185,12 @@ public interface Database : Object {
 
 
 	public Gee.Map<int, T> fetch_int_entity_map<T> (string table, string key_field,
-			string? where = null) {
+			string? columns = null, string? where = null) {
 		int key_column = -1;
-
-		/* query */
-		var sb = new StringBuilder ();
-		sb.append_printf ("SELECT * FROM %s", table);
-		if (where != null)
-			sb.append_printf (" WHERE %s", where);
+		var query = build ().select (columns).from (table).where (where).get_query ();
 
 		var map = new Gee.HashMap<int, T> ();
-		exec_sql (sb.str, (n_columns, values, column_names) => {
+		exec_sql (query, (n_columns, values, column_names) => {
 			if (key_column == -1) {
 				for (var i = 0; i < n_columns; i++)
 					if (column_names[i] == key_field)
@@ -338,6 +338,21 @@ public interface Database : Object {
 			persist_auto_key (entity, fields, obj_class);
 		else
 			persist_composite_key (entity, keys, fields, obj_class);
+	}
+
+
+	public void begin_transaction () {
+		exec_sql ("BEGIN TRANSACTION");
+	}
+
+
+	public void commit_transaction () {
+		exec_sql ("COMMIT TRANSACTION");
+	}
+
+
+	public void rollback_transaction () {
+		exec_sql ("ROLLBACK TRANSACTION");
 	}
 }
 

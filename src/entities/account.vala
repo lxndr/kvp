@@ -6,7 +6,7 @@ public class Account : DB.SimpleEntity
 	public Building building { get; construct set; }
 	public string number { get; set; }
 	public int opened {get; set; default = 0; } /* FIXME gotta be now */
-	public string comment { get; set; }
+	public string comment { get; set; default = ""; }
 
 
 	construct {
@@ -43,14 +43,12 @@ public class Account : DB.SimpleEntity
 
 
 	public override void remove () {
+		db.begin_transaction ();
 		base.remove ();
-
-		db.delete_entity (AccountPeriod.table_name,
-				("account=%" + int64.FORMAT).printf (id));
-		db.delete_entity ("people",
-				("account=%" + int64.FORMAT).printf (id));
-		db.delete_entity ("taxes",
-				("account=%" + int64.FORMAT).printf (id));
+		db.delete_entity (AccountPeriod.table_name, "account=%d".printf (id));
+		db.delete_entity (Person.table_name, "account=%d".printf (id));
+		db.delete_entity (Tax.table_name, "account=%d".printf (id));
+		db.commit_transaction ();
 	}
 
 /*

@@ -2,7 +2,10 @@ namespace Kv {
 
 
 public class AccountTable : DB.ViewTable {
+	private Building? building;
 	private int current_period;
+
+	private int balance_foreground_model_column;
 
 
 	public AccountTable (Database _db) {
@@ -50,18 +53,28 @@ public class AccountTable : DB.ViewTable {
 	}
 
 
+	protected override void create_list_store (Gee.List<Type> types, Gee.List<unowned ParamSpec> props) {
+		base.create_list_store (types, props);
+
+		var last_model_column = types.size;
+		balance_foreground_model_column = last_model_column++;
+		types.add (typeof (string));
+	}
+
+
 	protected override void create_list_column (Gtk.TreeViewColumn column, out Gtk.CellRenderer cell,
 			ParamSpec prop, int model_column) {
 		base.create_list_column (column, out cell, prop, model_column);
 
 		if (prop.value_type == typeof (Money))
 			cell.set ("xalign", 1.0f);
+		if (prop.name == "balance")
+			column.add_attribute (cell, "foreground", balance_foreground_model_column);
 	}
 
 
 	protected override DB.Entity new_entity () {
-		var default_building = db.fetch_entity_by_id<Building> (1);
-		var account = new Account (db, default_building);
+		var account = new Account (db, building);
 		db.persist (account);
 
 		var account_period = new AccountPeriod (db, account, current_period);
@@ -77,7 +90,9 @@ public class AccountTable : DB.ViewTable {
 
 
 	protected override Gee.List<DB.Entity> get_entity_list () {
-		return (db as Database).get_account_month_list (current_period) as Gee.List<AccountPeriod>;
+		if (building == null)
+			return new Gee.ArrayList<AccountPeriod> ();
+		return (db as Database).get_account_period_list (building, current_period);
 	}
 
 
@@ -92,6 +107,28 @@ public class AccountTable : DB.ViewTable {
 
 	public void set_period (int period) {
 		current_period = period;
+	}
+
+
+	public void set_building (Building _building) {
+		building = _building;
+	}
+
+
+	protected override void row_refreshed (Gtk.TreeIter tree_iter, DB.Entity entity) {
+		unowned AccountPeriod account_period = entity as AccountPeriod;
+
+		unowned string? color = null;
+		var balance = account_period.balance;
+		if (balance.val < 0)
+			color = "green";
+		else if (balance.val == 0)
+			color = "blue";
+		else if (account_period.total.val == 0 && balance.val > 0)
+			color = "red";
+
+		list_store.set (tree_iter,
+				balance_foreground_model_column, color);
 	}
 
 
@@ -133,11 +170,15 @@ public class AccountTable : DB.ViewTable {
 
 
 	public void recalculate_period_clicked () {
+		db.begin_transaction ();
+
 		var periods = db.fetch_entity_list<AccountPeriod> (AccountPeriod.table_name,
 				("period=%d").printf (current_period));
 		foreach (var account_period in periods)
 			recalculate_period (account_period);
 		refresh_all ();
+
+		db.commit_transaction ();
 	}
 }
 
