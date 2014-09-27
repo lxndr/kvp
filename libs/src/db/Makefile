@@ -1,3 +1,14 @@
+ifeq ($(WIN32), yes)
+	AR=i686-w64-mingw32-ar
+	PLATFORM_FLAGS = \
+		--cc=i686-w64-mingw32-gcc \
+		--pkg-config=i686-w64-mingw32-pkg-config \
+		-D WINDOWS_BUILD
+else
+	AR=ar
+endif
+
+
 ifeq ($(DEBUG), yes)
 	FLAGS = \
 			-g \
@@ -40,8 +51,8 @@ all: ../../lib/db.a ../../lib/db-gtk.a
 
 ../../lib/db.a: $(DB_SOURCES)
 	echo -e "\e[0;32mCompiling 'db.a'\e[0m"
-	valac $(DB_PACKAGES) $(FLAGS) --library=db --use-header --header=db.h --compile $(DB_SOURCES)
-	ar rcs "../../lib/db.a" *.o
+	valac $(PLATFORM_FLAGS) $(DB_PACKAGES) $(FLAGS) --library=db --use-header --header=db.h --compile $(DB_SOURCES)
+	$(AR) rcs "../../lib/db.a" *.o
 	mv db.h "../../include"
 	mv db.vapi "../../vapi"
 	rm -f *.o
@@ -49,8 +60,8 @@ all: ../../lib/db.a ../../lib/db-gtk.a
 
 ../../lib/db-gtk.a: ../../lib/db.a $(DB_GTK_SOURCES)
 	echo -e "\e[0;32mCompiling 'db-gtk.a'\e[0m"
-	valac $(DB_GTK_PACKAGES) $(FLAGS) --library=db-gtk --use-header --header=db-gtk.h --compile --Xcc="-I../../include" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(DB_GTK_SOURCES)
-	ar rcs "../../lib/db-gtk.a" *.o
+	valac $(PLATFORM_FLAGS) $(DB_GTK_PACKAGES) $(FLAGS) --library=db-gtk --use-header --header=db-gtk.h --compile --Xcc="-I../../include" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(DB_GTK_SOURCES)
+	$(AR) rcs "../../lib/db-gtk.a" *.o
 	mv db-gtk.h "../../include"
 	mv db-gtk.vapi "../../vapi"
 	rm -f *.o
