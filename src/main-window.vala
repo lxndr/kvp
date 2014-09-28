@@ -60,7 +60,7 @@ class MainWindow : Gtk.ApplicationWindow {
 		/* UI: account list */
 		account_table = new AccountTable (app.db);
 		account_table.visible = true;
-		account_table.selection_changed.connect (account_changed);
+		account_table.selection_changed.connect (on_account_selection_changed);
 		account_scroller.add (account_table);
 
 		/* UI: people list */
@@ -100,40 +100,38 @@ class MainWindow : Gtk.ApplicationWindow {
 	 */
 	[GtkCallback]
 	private void buildings_clicked (Gtk.ToolButton button) {
-		Gtk.MenuItem mi;
-		var menu = new Gtk.Menu ();
-		menu.visible = true;
-
-		mi = new Gtk.MenuItem.with_label (_("All buildings"));
-		mi.set_data<Building?> ("building", null);
-		mi.visible = true;
-		mi.activate.connect (building_clicked);
-		menu.append (mi);
-
-		mi = new Gtk.SeparatorMenuItem ();
-		mi.visible = true;
-		menu.append (mi);
-
 		unowned Database db = (application as Application).db;
+
+		var menu = new Gtk.Menu ();
+
+		var mi = new Gtk.RadioMenuItem.with_label (null, _("All buildings"));
+		mi.set_data<Building?> ("building", null);
+		mi.active = (current_building == null);
+		mi.toggled.connect (building_clicked);
+		menu.append (mi);
+
+		var mi_sep = new Gtk.SeparatorMenuItem ();
+		mi_sep.visible = true;
+		menu.append (mi_sep);
+
 		var buildings = db.fetch_entity_list<Building> (Building.table_name);
 		foreach (var building in buildings) {
-			mi = new Gtk.MenuItem.with_label (
+			mi = new Gtk.RadioMenuItem.with_label_from_widget ((Gtk.RadioMenuItem) mi,
 					"%s, %s".printf (building.street, building.number));
 			mi.set_data<Building?> ("building", building);
-			mi.visible = true;
-			mi.activate.connect (building_clicked);
+			mi.active = (current_building != null && current_building.id == building.id);
+			mi.toggled.connect (building_clicked);
 			menu.append (mi);
 		}
 
-		mi = new Gtk.SeparatorMenuItem ();
-		mi.visible = true;
-		menu.append (mi);
+		mi_sep = new Gtk.SeparatorMenuItem ();
+		menu.append (mi_sep);
 
-		mi = new Gtk.MenuItem.with_label (_("Edit..."));
-		mi.visible = true;
-		mi.activate.connect (ref_buildings_clicked);
-		menu.append (mi);
+		var mi_edit = new Gtk.MenuItem.with_label (_("Edit..."));
+		mi_edit.activate.connect (ref_buildings_clicked);
+		menu.append (mi_edit);
 
+		menu.show_all ();
 		menu.attach_to_widget (button, null);
 		menu.popup (null, null, (menu, out x, out y, out push_in) => {
 			default_popup_menu_position (button, out x, out y, out push_in);
@@ -141,9 +139,11 @@ class MainWindow : Gtk.ApplicationWindow {
 	}
 
 
-	private void building_clicked (Gtk.MenuItem mi) {
-		current_building = mi.get_data<Building> ("building");
-		on_building_selection_changed ();
+	private void building_clicked (Gtk.CheckMenuItem mi) {
+		if (mi.active == true) {
+			current_building = mi.get_data<Building> ("building");
+			on_building_selection_changed ();
+		}
 	}
 
 
@@ -202,14 +202,12 @@ class MainWindow : Gtk.ApplicationWindow {
 
 		/* the button label */
 		current_period_button.label = label;
+		bool changed = current_period != period;
 		current_period = period;
-
-		/* store current period */
-		db.set_setting ("current_period", period.to_string ());
-
-		/* update table views */
-		account_table.setup (current_building, current_period);
-		account_changed ();
+		if (changed) {
+			db.set_setting ("current_period", period.to_string ());
+			on_period_changed ();
+		}
 	}
 
 
@@ -253,7 +251,7 @@ class MainWindow : Gtk.ApplicationWindow {
 		var db = (application as Application).db;
 		var report = Object.new (type,
 				"db", db,
-				"account", account_table.get_selected_account (),
+				"account", account_table.get_selected ().account,
 				"period", current_period) as Report;
 
 		try {
@@ -289,14 +287,6 @@ class MainWindow : Gtk.ApplicationWindow {
 	/*
 	 * 
 	 */
-	private void account_changed () {
-		var account = account_table.get_selected_account ();
-
-		people_table.setup (account, current_period);
-		tax_table.setup (account_table.get_selected_entity () as AccountPeriod);
-	}
-
-
 	[GtkCallback]
 	private void references_clicked (Gtk.ToolButton button) {
 		reference_menu.popup (null, null, (menu, out x, out y, out push_in) => {
@@ -341,10 +331,14 @@ class MainWindow : Gtk.ApplicationWindow {
 
 	private void on_period_changed () {
 		account_table.setup (current_building, current_period);
+		on_account_selection_changed ();
 	}
 
 
 	private void on_account_selection_changed () {
+		unowned AccountPeriod periodic = account_table.get_selected ();
+		people_table.setup (periodic);
+		tax_table.setup (periodic);
 	}
 
 

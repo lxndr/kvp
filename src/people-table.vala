@@ -2,8 +2,7 @@ namespace Kv {
 
 
 public class PeopleTable : DB.ViewTable {
-	private int period;
-	private Account? account;
+	private AccountPeriod? current_periodic;
 
 
 	public PeopleTable (Database _db) {
@@ -12,16 +11,14 @@ public class PeopleTable : DB.ViewTable {
 	}
 
 
-	public void setup (Account? _account, int _period) {
-		period = _period;
-		account = _account;
-
+	public void setup (AccountPeriod? periodic) {
+		current_periodic = periodic;
 		refresh_view ();
 	}
 
 
 	protected override DB.Entity? new_entity () {
-		return new Person (db as Database, account, period);
+		return new Person (db as Database, current_periodic.account, current_periodic.period);
 	}
 
 
@@ -36,10 +33,9 @@ public class PeopleTable : DB.ViewTable {
 
 
 	protected override Gee.List<DB.Entity> get_entity_list () {
-		if (account == null)
+		if (current_periodic == null)
 			return new Gee.ArrayList<DB.Entity> ();
-
-		return (db as Database).get_people_list (account, period);
+		return (db as Database).get_people_list (current_periodic.account, current_periodic.period);
 	}
 }
 

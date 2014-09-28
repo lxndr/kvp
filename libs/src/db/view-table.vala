@@ -50,7 +50,7 @@ public abstract class ViewTable : Gtk.TreeView {
 	}
 
 
-	public Entity? get_selected_entity () {
+	public unowned Entity? get_selected_entity () {
 		return selected_entity;
 	}
 

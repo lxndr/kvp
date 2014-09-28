@@ -105,6 +105,12 @@ public class AccountTable : DB.ViewTable {
 	}
 
 
+	public unowned AccountPeriod? get_selected () {
+		return (AccountPeriod?) get_selected_entity ();
+	}
+
+
+/*
 	public Account? get_selected_account () {
 		var periodic = get_selected_entity ();
 		if (periodic == null)
@@ -112,6 +118,7 @@ public class AccountTable : DB.ViewTable {
 
 		return ((AccountPeriod) periodic).account;
 	}
+*/
 
 
 	public void setup (Building? building, int period) {
@@ -122,9 +129,9 @@ public class AccountTable : DB.ViewTable {
 		/* refresh lock state */
 		var locked_period = int.parse (dbase.get_setting ("locked_period"));
 		var locked = period <= locked_period;
-		read_only = locked;
-		recalc_menu_item.sensitive = !locked;
-		recalc_period_menu_item.sensitive = !locked;
+//		read_only = locked;
+//		recalc_menu_item.sensitive = !locked;
+//		recalc_period_menu_item.sensitive = !locked;
 
 		refresh_view ();
 	}
@@ -190,8 +197,11 @@ public class AccountTable : DB.ViewTable {
 	public void recalculate_period_clicked () {
 		db.begin_transaction ();
 
-		var periods = db.fetch_entity_list<AccountPeriod> (AccountPeriod.table_name,
-				("period=%d").printf (current_period));
+		var where = "period=%d".printf (current_period);
+		if (current_building != null)
+			where += " AND building=%d".printf (current_building.id);
+
+		var periods = db.fetch_entity_list<AccountPeriod> (AccountPeriod.table_name, where);
 		foreach (var account_period in periods)
 			recalculate_period (account_period);
 		refresh_all ();
