@@ -36,7 +36,7 @@ public abstract class ViewTable : Gtk.TreeView {
 	public signal void selection_changed ();
 
 
-	protected virtual Entity new_entity () {
+	protected virtual Entity? new_entity () {
 		return Object.new (object_type, db: this.db) as Entity;
 	}
 
@@ -52,6 +52,10 @@ public abstract class ViewTable : Gtk.TreeView {
 
 
 	construct {
+		/* check if we are working with Entity object */
+		if (object_type.is_a (typeof (Entity)) == false)
+			error ("Object type '%s' is not Entity object", object_type.name ());
+
 		/* popup menu */
 		menu = create_menu (true);
 
@@ -315,12 +319,13 @@ public abstract class ViewTable : Gtk.TreeView {
 
 	public void add_item_clicked () {
 		var entity = new_entity ();
+		if (entity == null)
+			return;
 
 		Gtk.TreeIter iter;
 		list_store.append (out iter);
 		refresh_row (iter, entity);
-
-		db.persist (entity);
+		entity.persist ();
 	}
 
 

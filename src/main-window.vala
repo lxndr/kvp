@@ -96,21 +96,32 @@ class MainWindow : Gtk.ApplicationWindow {
 	 */
 	[GtkCallback]
 	private void buildings_clicked (Gtk.ToolButton button) {
+		Gtk.MenuItem mi;
 		var menu = new Gtk.Menu ();
 		menu.visible = true;
+
+		mi = new Gtk.MenuItem.with_label (_("All buildings"));
+		mi.set_data<Building?> ("building", null);
+		mi.visible = true;
+		mi.activate.connect (building_clicked);
+		menu.append (mi);
+
+		mi = new Gtk.SeparatorMenuItem ();
+		mi.visible = true;
+		menu.append (mi);
 
 		unowned Database db = (application as Application).db;
 		var buildings = db.fetch_entity_list<Building> (Building.table_name);
 		foreach (var building in buildings) {
-			var mi = new Gtk.MenuItem.with_label (
+			mi = new Gtk.MenuItem.with_label (
 					"%s, %s".printf (building.street, building.number));
-			mi.set_data<Building> ("building", building);
+			mi.set_data<Building?> ("building", building);
 			mi.visible = true;
 			mi.activate.connect (building_clicked);
 			menu.append (mi);
 		}
 
-		Gtk.MenuItem mi = new Gtk.SeparatorMenuItem ();
+		mi = new Gtk.SeparatorMenuItem ();
 		mi.visible = true;
 		menu.append (mi);
 
@@ -128,8 +139,7 @@ class MainWindow : Gtk.ApplicationWindow {
 
 	private void building_clicked (Gtk.MenuItem mi) {
 		current_building = mi.get_data<Building> ("building");
-		account_table.set_building (current_building);
-		account_table.refresh_view ();
+		account_table.setup (current_building, current_period);
 	}
 
 
@@ -194,8 +204,7 @@ class MainWindow : Gtk.ApplicationWindow {
 		db.set_setting ("current_period", period.to_string ());
 
 		/* update table views */
-		account_table.set_period (current_period);
-		account_table.refresh_view ();
+		account_table.setup (current_building, current_period);
 		account_changed ();
 	}
 
@@ -280,7 +289,7 @@ class MainWindow : Gtk.ApplicationWindow {
 		var account = account_table.get_selected_account ();
 
 		people_table.setup (account, current_period);
-		tax_table.setup (account, current_period);
+		tax_table.setup (account_table.get_selected_entity () as AccountPeriod);
 	}
 
 

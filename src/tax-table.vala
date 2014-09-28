@@ -2,11 +2,11 @@ namespace Kv {
 
 
 public class TaxTable : DB.ViewTable {
-	private int period;
-	private Account? account;
+	private AccountPeriod? current_periodic;
 
 	private int strikethrough_model_column;
 	private int foreground_model_column;
+	private int editable_model_column;
 
 
 	public TaxTable (Database _db) {
@@ -15,16 +15,14 @@ public class TaxTable : DB.ViewTable {
 	}
 
 
-	public void setup (Account? _account, int _period) {
-		period = _period;
-		account = _account;
-
+	public void setup (AccountPeriod? periodic) {
+		current_periodic = periodic;
 		refresh_view ();
 	}
 
 
 	protected override unowned string[] viewable_props () {
-		const string props[] = {
+		const string[] props = {
 			N_("apply"),
 			N_("service_name"),
 			N_("amount"),
@@ -43,9 +41,12 @@ public class TaxTable : DB.ViewTable {
 	protected override void create_list_store (Gee.List<Type> types, Gee.List<unowned ParamSpec> props) {
 		base.create_list_store (types, props);
 
-		foreground_model_column = types.size;
+		var last_model_column = types.size;
+		foreground_model_column = last_model_column++;
 		types.add (typeof (string));
-		strikethrough_model_column = foreground_model_column + 1;
+		strikethrough_model_column = last_model_column++;
+		types.add (typeof (bool));
+		editable_model_column = last_model_column++;
 		types.add (typeof (bool));
 	}
 
@@ -60,13 +61,15 @@ public class TaxTable : DB.ViewTable {
 			column.add_attribute (cell, "foreground", foreground_model_column);
 		if (prop.name == "service-name")
 			column.add_attribute (cell, "strikethrough", strikethrough_model_column);
+		if (prop.name == "amount")
+			column.add_attribute (cell, "editable", editable_model_column);
 	}
 
 
 	protected override Gee.List<DB.Entity> get_entity_list () {
-		if (account == null)
+		if (current_periodic == null)
 			return new Gee.ArrayList<DB.Entity> ();
-		return (db as Database).get_tax_list (account, period);
+		return (db as Database).get_tax_list (current_periodic);
 	}
 
 

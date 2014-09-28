@@ -3,6 +3,7 @@ namespace Kv {
 
 public class Price : DB.Entity
 {
+	public Building building { get; set; }
 	public Service service { get; set; }
 	public int period { get; set; }
 	public Money value { get; set; }

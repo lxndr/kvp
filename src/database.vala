@@ -93,14 +93,17 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.List<Account> get_account_list (Building building) {
-		return fetch_entity_list<Account> (Account.table_name,
-				"building=%d".printf (building.id));
+	public Gee.List<Account> get_account_list (Building? building) {
+		string? where = null;
+		if (building != null)
+			where = "building=%d".printf (building.id);
+
+		return fetch_entity_list<Account> (Account.table_name, where);
 	}
 
 
-	public Gee.List<AccountPeriod> get_account_period_list (Building building, int period) {
-		var accounts = get_account_list (building);
+	public Gee.List<AccountPeriod> get_account_period_list (Building? building, int period) {
+/*		var accounts = get_account_list (building);
 		var account_periods = fetch_int_entity_map<AccountPeriod> (
 				"account_period JOIN account ON account.building=%d".printf (building.id),
 				"account", "account_period.*", "period=%d".printf (period));
@@ -114,7 +117,22 @@ public class Database : DB.SQLiteDatabase {
 			result.add (account_period);
 		}
 
-		return result;
+		return result;*/
+
+		/*
+		 * SELECT account_period.*, account.id AS account, ? AS period
+		 * FROM account LEFT JOIN account_period
+		 * ON account.id=account_period.account AND period=?
+		 * WHERE account.building=? AND opened>=?;
+		 */
+
+		var query = new DB.QueryBuilder ();
+		query.select ("account_period.*, account.id AS account, %d AS period".printf (period))
+			.from ("account LEFT JOIN account_period")
+			.on ("account.id=account_period.account AND period=%d".printf (period));
+		if (building != null)
+			query.where ("account.building=%d".printf (building.id));
+		return fetch_entity_list_ex (typeof (AccountPeriod), query) as Gee.List<AccountPeriod>;
 	}
 
 
@@ -131,9 +149,13 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.List<Tax> get_tax_list (Account account, int period) {
+	public Gee.List<Tax> get_tax_list (AccountPeriod periodic) {
+		unowned Account account = periodic.account;
+		unowned Building building = account.building;
+		int period = periodic.period;
+
 		var prices = fetch_entity_list<Price> (Price.table_name,
-				("period=%d").printf (period));
+				("building=%d AND period=%d").printf (building.id, period));
 		var list = new Gee.ArrayList<Tax> ();
 		foreach (var price in prices) {
 			var tax = fetch_entity<Tax> (Tax.table_name,

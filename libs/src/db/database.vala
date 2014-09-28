@@ -75,6 +75,14 @@ public interface Database : Object {
 	}
 
 
+	/**
+	 * One of most important functions in DB library.
+	 * What does it do?
+	 *     - if value is null, leaves property untouched;
+	 *     - if property is an Entity, tries to fetch this entity from the database;
+	 *     - if property is string, copies it;
+	 *     - if property is something else, tries to convert it via g_value_transform.
+	 */
 	private void prepare_entity (Entity ent, int n_fields,
 			[CCode (array_length = false)] string[] fields,
 			[CCode (array_length = false)] string[] values,
@@ -85,26 +93,31 @@ public interface Database : Object {
 		var str_val = Value (typeof (string));
 
 		for (var i = 0; i < n_fields; i++) {
+			unowned string? val = values[i];
+			if (val == null)
+				continue;
+
 			unowned string prop_name = fields[i];
 			var prop = obj_class.find_property (prop_name);
 			if (prop == null)
 				error ("Could not find propery '%s' in '%s'", prop_name, type.name ());
 			var prop_type = prop.value_type;
 
-			str_val.set_string (values[i]);
 			var dest_val = Value (prop_type);
 
-			if (prop_type.is_a (typeof (DB.Entity))) {
+			if (prop_type.is_a (typeof (Entity))) {
 				Entity? obj = null;
-				if (recursive == true) {
-					var obj_id = int.parse (values[i]);
+				if (val != null && recursive == true) {
+					var obj_id = int.parse (val);
 					if (obj_id > 0)
 						obj = fetch_entity_full (prop_type, null, "id=%d".printf (obj_id));
 				}
 				dest_val.set_object (obj);
-			} else if (str_val.transform (ref dest_val) == false) {
-				warning ("Couldn't transform value '%s' from '%s' to '%s' for property '%s' of '%s'\n",
-						values[i], str_val.type ().name (), dest_val.type ().name (), prop_name, type.name ());
+			} else {
+				str_val.set_string (val);
+				if (str_val.transform (ref dest_val) == false)
+					warning ("Couldn't transform value '%s' from '%s' to '%s' for property '%s' of '%s'\n",
+							values[i], str_val.type ().name (), dest_val.type ().name (), prop_name, type.name ());
 			}
 
 			ent.set_property (prop_name, dest_val);
@@ -157,6 +170,16 @@ public interface Database : Object {
 			[CCode (array_length = false)] string[] values,
 			bool recursive = true) {
 		return make_entity_full (typeof (T), n_fields, fields, values, recursive);
+	}
+
+
+	public Gee.List<Entity> fetch_entity_list_ex (Type type, QueryBuilder q) {
+		var list = new Gee.ArrayList<Entity> ();
+		exec_sql (q.get_query (), (n_columns, values, column_names) => {
+			list.add (make_entity_full (type, n_columns, column_names, values, true));
+			return 0;
+		});
+		return list;
 	}
 
 

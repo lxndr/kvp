@@ -20,7 +20,7 @@ public class PeopleTable : DB.ViewTable {
 	}
 
 
-	protected override DB.Entity new_entity () {
+	protected override DB.Entity? new_entity () {
 		return new Person (db as Database, account, period);
 	}
 

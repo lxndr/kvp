@@ -2,7 +2,7 @@ namespace Kv {
 
 
 public class AccountTable : DB.ViewTable {
-	private Building? building;
+	private Building? current_building;
 	private int current_period;
 
 	private int balance_foreground_model_column;
@@ -75,14 +75,22 @@ public class AccountTable : DB.ViewTable {
 	}
 
 
-	protected override DB.Entity new_entity () {
-		var account = new Account (db, building);
-		db.persist (account);
+	protected override DB.Entity? new_entity () {
+		if (current_building == null) {
+			var msg = new Gtk.MessageDialog (get_toplevel () as Gtk.Window, Gtk.DialogFlags.MODAL,
+					Gtk.MessageType.WARNING, Gtk.ButtonsType.OK,
+					_("Every account has to be related to a building. Only one building has to be currently selected " +
+						"to add a new account. You have selected either all of them or none. Create a building if needed."));
+			msg.response.connect ((response_id) => {
+				msg.destroy ();
+			});
+			msg.show ();
+			return null;
+		}
 
-		var account_period = new AccountPeriod (db, account, current_period);
-		db.persist (account_period);
-
-		return account_period;
+		var account = new Account (db, current_building);
+		account.persist ();
+		return new AccountPeriod (db, account, current_period);
 	}
 
 
@@ -92,47 +100,47 @@ public class AccountTable : DB.ViewTable {
 
 
 	protected override Gee.List<DB.Entity> get_entity_list () {
-		if (building == null)
-			return new Gee.ArrayList<AccountPeriod> ();
-		return (db as Database).get_account_period_list (building, current_period);
+		unowned Database dbase = db as Database;
+		return dbase.get_account_period_list (current_building, current_period);
 	}
 
 
 	public Account? get_selected_account () {
-		var account_month = get_selected_entity ();
-		if (account_month == null)
+		var periodic = get_selected_entity ();
+		if (periodic == null)
 			return null;
 
-		return (account_month as AccountPeriod).account;
+		return ((AccountPeriod) periodic).account;
 	}
 
 
-	public void set_period (int period) {
+	public void setup (Building? building, int period) {
+		unowned Database dbase = (Database) db;
+		current_building = building;
 		current_period = period;
-		var locked_period = int.parse ((db as Database).get_setting ("locked_period"));
 
+		/* refresh lock state */
+		var locked_period = int.parse (dbase.get_setting ("locked_period"));
 		var locked = period <= locked_period;
 		read_only = locked;
 		recalc_menu_item.sensitive = !locked;
 		recalc_period_menu_item.sensitive = !locked;
-	}
 
-
-	public void set_building (Building _building) {
-		building = _building;
+		refresh_view ();
 	}
 
 
 	protected override void row_refreshed (Gtk.TreeIter tree_iter, DB.Entity entity) {
-		unowned AccountPeriod account_period = entity as AccountPeriod;
+		unowned AccountPeriod periodic = (AccountPeriod) entity;
+		var total = periodic.total.val;
+		var balance = periodic.balance.val;
 
 		unowned string? color = null;
-		var balance = account_period.balance;
-		if (balance.val < 0)
+		if (balance < 0)
 			color = "green";
-		else if (balance.val == 0)
+		else if (balance == 0)
 			color = "blue";
-		else if (account_period.total.val == 0 && balance.val > 0)
+		else if (total == 0 && balance > 0)
 			color = "red";
 
 		list_store.set (tree_iter,
@@ -141,22 +149,22 @@ public class AccountTable : DB.ViewTable {
 
 
 	public override void row_edited (DB.Entity entity, string prop_name) {
-		var account_period = entity as AccountPeriod;
+		unowned AccountPeriod periodic = (AccountPeriod) entity;
 
 		if (prop_name == "payment" || prop_name == "extra") {
-			account_period.calc_balance ();
+			periodic.calc_balance ();
 			find_and_refresh_row (entity);
 			entity.persist ();
 		}
 
 		if (prop_name == "number" || prop_name == "comment") {
-			account_period.account.persist ();
+			periodic.account.persist ();
 		}
 	}
 
 
 	private void recalculate_period (AccountPeriod account_period) {
-		var taxes = (db as Database).get_tax_list (account_period.account, account_period.period);
+		var taxes = (db as Database).get_tax_list (account_period);
 
 		foreach (var tax in taxes) {
 			tax.calc_amount ();
