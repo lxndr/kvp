@@ -187,6 +187,15 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
+      <object class="GtkMenuItem" id="menuitem2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Prices</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="ref_prices_clicked" swapped="no"/>
+      </object>
+    </child>
+    <child>
       <object class="GtkMenuItem" id="menuitem1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>

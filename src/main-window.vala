@@ -29,6 +29,7 @@ class MainWindow : Gtk.ApplicationWindow {
 	private TaxTable tax_table;
 
 	/*  */
+	private PriceWindow? price_window = null;
 	private BuildingWindow? building_window = null;
 	private Building? current_building = null;
 
@@ -298,6 +299,19 @@ class MainWindow : Gtk.ApplicationWindow {
 		reference_menu.popup (null, null, (menu, out x, out y, out push_in) => {
 			default_popup_menu_position (button, out x, out y, out push_in);
 		}, 0, Gtk.get_current_event_time ());
+	}
+
+
+	[GtkCallback]
+	private void ref_prices_clicked () {
+		if (price_window == null) {
+			price_window = new PriceWindow (this, (application as Application).db);
+			price_window.destroy.connect (() => {
+				price_window = null;
+			});
+		}
+
+		price_window.present ();
 	}
 
 

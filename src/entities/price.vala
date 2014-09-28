@@ -9,6 +9,8 @@ public class Price : DB.Entity
 	public Money value { get; set; }
 	public int method { get; set; }
 
+	public unowned string service_name { get { return service.name; } }
+
 
 	public static unowned string table_name = "price";
 	public override unowned string db_table () {
