@@ -148,7 +148,7 @@ public class AccountTable : DB.ViewTable {
 	}
 
 
-	public override void row_edited (DB.Entity entity, string prop_name) {
+	public override void row_edited (Gtk.TreeIter tree_iter, DB.Entity entity, string prop_name) {
 		unowned AccountPeriod periodic = (AccountPeriod) entity;
 
 		if (prop_name == "payment" || prop_name == "extra") {

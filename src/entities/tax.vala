@@ -18,7 +18,7 @@ public class Tax : DB.Entity, DB.Viewable
 
 	public Money price {
 		get {
-			return service.get_price (period);
+			return service.get_price (account.building, period);
 		}
 	}
 
@@ -99,7 +99,7 @@ public class Tax : DB.Entity, DB.Viewable
 		}
 
 		var account_period = account.fetch_period (period);
-		var method = service.get_method (period);
+		var method = service.get_method (account.building, period);
 
 		switch (method) {
 		case 1:	/* always x1 */

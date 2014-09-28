@@ -71,6 +71,7 @@ class MainWindow : Gtk.ApplicationWindow {
 		/* UI: tax list */
 		tax_table = new TaxTable (app.db);
 		tax_table.visible = true;
+		tax_table.total_changed.connect (on_tax_total_changed);
 		tax_scroller.add (tax_table);
 
 		/*  */
@@ -140,7 +141,7 @@ class MainWindow : Gtk.ApplicationWindow {
 
 	private void building_clicked (Gtk.MenuItem mi) {
 		current_building = mi.get_data<Building> ("building");
-		account_table.setup (current_building, current_period);
+		on_building_selection_changed ();
 	}
 
 
@@ -325,6 +326,28 @@ class MainWindow : Gtk.ApplicationWindow {
 		}
 
 		building_window.present ();
+	}
+
+
+	/*
+	 * Events and actions
+	 */
+	private void on_building_selection_changed () {
+		account_table.setup (current_building, current_period);
+	}
+
+
+	private void on_period_changed () {
+		account_table.setup (current_building, current_period);
+	}
+
+
+	private void on_account_selection_changed () {
+	}
+
+
+	private void on_tax_total_changed (Tax tax) {
+		
 	}
 }
 

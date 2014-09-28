@@ -31,9 +31,13 @@ public abstract class ViewTable : Gtk.TreeView {
 	protected abstract Gee.List<Entity> get_entity_list ();
 
 
-	public virtual signal void row_refreshed (Gtk.TreeIter tree_iter, Entity entity) {}
-	public virtual signal void row_edited (Entity entity, string prop_name) {}
 	public signal void selection_changed ();
+	public virtual signal void row_refreshed (Gtk.TreeIter tree_iter, Entity entity) {}
+
+
+	public virtual signal void row_edited (Gtk.TreeIter tree_iter, Entity entity, string prop_name) {
+		entity.persist ();
+	}
 
 
 	protected virtual Entity? new_entity () {
@@ -268,9 +272,10 @@ public abstract class ViewTable : Gtk.TreeView {
 			// list_store.set_value (iter, property_column, val);
 		}
 
+		/* Signal handler may chagne entity so we call it before refreshing.
+			Same goes for other kinds of cells. */
+		row_edited (iter, entity, property_name);
 		refresh_row (iter, entity);
-		db.persist (entity);
-		row_edited (entity, property_name);
 	}
 
 
@@ -287,9 +292,8 @@ public abstract class ViewTable : Gtk.TreeView {
 		val.set_boolean (!val.get_boolean ());
 		entity.set_property (property_name, val);
 
+		row_edited (iter, entity, property_name);
 		refresh_row (iter, entity);
-		entity.persist ();
-		row_edited (entity, property_name);
 	}
 
 

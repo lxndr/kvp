@@ -9,6 +9,9 @@ public class TaxTable : DB.ViewTable {
 	private int editable_model_column;
 
 
+	public signal void total_changed (Tax tax);
+
+
 	public TaxTable (Database _db) {
 		Object (db: _db,
 				object_type: typeof (Tax));
@@ -84,6 +87,24 @@ public class TaxTable : DB.ViewTable {
 		list_store.set (tree_iter,
 				foreground_model_column, color,
 				strikethrough_model_column, !apply);
+	}
+
+
+	public override void row_edited (Gtk.TreeIter tree_iter, DB.Entity entity, string prop_name) {
+		unowned Tax tax = (Tax) entity;
+
+		switch (prop_name) {
+		case "apply":
+			tax.calc_amount ();
+			tax.calc_amount ();
+			break;
+		case "amount":
+			tax.calc_total ();
+			break;
+		}
+
+		/* persiste after calculations */
+		base.row_edited (tree_iter, entity, prop_name);
 	}
 }
 
