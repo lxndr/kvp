@@ -159,6 +159,8 @@ public class AccountTable : DB.ViewTable {
 
 		if (prop_name == "number" || prop_name == "comment") {
 			periodic.account.persist ();
+		} else {
+			base.row_edited (tree_iter, entity, prop_name);
 		}
 	}
 

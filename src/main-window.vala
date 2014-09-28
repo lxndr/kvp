@@ -66,6 +66,8 @@ class MainWindow : Gtk.ApplicationWindow {
 		/* UI: people list */
 		people_table = new PeopleTable (app.db);
 		people_table.visible = true;
+//		people_table.entity_inserted.connect (on_people_list_changed);
+//		people_table.entity_deleted.connect (on_people_list_changed);
 		people_scroller.add (people_table);
 
 		/* UI: tax list */
@@ -343,6 +345,11 @@ class MainWindow : Gtk.ApplicationWindow {
 
 
 	private void on_account_selection_changed () {
+	}
+
+
+	private void on_people_list_changed () {
+		
 	}
 
 
