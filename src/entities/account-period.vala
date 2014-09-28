@@ -36,6 +36,12 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	}
 
 
+	public DateTime opened {
+		get { return account.opened; }
+		set { account.opened = value; }
+	}
+
+
 	public int n_people {
 		get { return (int) number_of_people (); }
 	}

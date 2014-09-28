@@ -94,6 +94,18 @@ public void transform_money_to_string (Value src_value, ref Value dest_value) {
 }
 
 
+public void transform_string_to_datetime (Value src_value, ref Value dest_value) {
+	int64 n = int64.parse (src_value.get_string ());
+	var dt = new DateTime.from_unix_local (n);
+	dest_value.set_boxed (dt);
+}
+
+public void transform_datetime_to_string (Value src_value, ref Value dest_value) {
+	DateTime dt = (DateTime) src_value.get_boxed ();
+	dest_value.set_string (dt.to_unix ().to_string ());
+}
+
+
 public void transform_double_to_property_adapter (Value src_value, ref Value dest_value) {
 	double d = src_value.get_double ();
 	DB.PropertyAdapter ad = { format_double (d, 2) };
@@ -113,11 +125,17 @@ public void transform_money_to_property_adapter (Value src_value, ref Value dest
 	dest_value.set_boxed (&ad);
 }
 
-
 public void transform_property_adapter_to_money (Value src_value, ref Value dest_value) {
 	var ad = (DB.PropertyAdapter*) src_value.get_boxed ();
 	var m = Money.from_formatted (ad.val);
 	dest_value.set_boxed (&m);
+}
+
+
+public void transform_datetime_to_property_adapter (Value src_value, ref Value dest_value) {
+	DateTime dt = (DateTime) src_value.get_boxed ();
+	DB.PropertyAdapter ad = { dt.format ("%e.%m.%Y") };
+	dest_value.set_boxed (&ad);
 }
 
 

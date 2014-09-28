@@ -19,6 +19,7 @@ public class AccountTable : DB.ViewTable {
 	protected override unowned string[] viewable_props () {
 		const string props[] = {
 			N_("number"),
+			N_("opened"),
 			N_("tenant"),
 			N_("apartment"),
 			N_("n_rooms"),

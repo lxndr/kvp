@@ -4,13 +4,13 @@ namespace Kv {
 public class Account : DB.SimpleEntity
 {
 	public Building building { get; construct set; }
-	public string number { get; set; }
-	public int opened {get; set; default = 0; } /* FIXME gotta be now */
+	public string number { get; set; default = "000"; }
+	public DateTime opened {get; set; } /* FIXME gotta be now */
 	public string comment { get; set; default = ""; }
 
 
 	construct {
-		number = "000";
+		opened = new DateTime.now_local ();
 	}
 
 

@@ -2,60 +2,32 @@ using Gdk;
 using Gtk;
 
 
-namespace Kv {
-
-
-
-private class EditableCalendar : Calendar, CellEditable {
-	public void start_editing (Event event) {
-	}
-}
-
+namespace DB {
 
 
 public class CellRendererCalendar : CellRendererText {
 	public DateTime time { get; set; }
 
-	private EditableCalendar? calendar;
 
+	public void icon_pressed (Gtk.Entry entry, EntryIconPosition icon_pos, Event event) {
+		var cal = new Gtk.Calendar ();
+		cal.visible = true;
 
-	construct {
-	}
-
-
-	private void editing_done (CellEditable ed) {
-		var canceled = ed.editing_canceled;
-		stop_editing (canceled);
-		if (canceled) {
-			calendar = null;
-			return;
-		}
-
-		// edited (path, new_text);
-	}
-
-
-	private void day_selected () {
-	}
-
-
-	private bool focus_out_event (EventFocus event) {
-		return false;
+		var popover = new Gtk.Popover (entry);
+		popover.add (cal);
+		popover.show ();
 	}
 
 
 	public override unowned CellEditable start_editing (Event event, Widget widget,
 			string path, Rectangle background_area, Rectangle cell_area, CellRendererState flags) {
-		if (editable == false)
-			return null;
+		unowned CellEditable ed = base.start_editing (event, widget, path, background_area, cell_area, flags);
 
-		calendar = new EditableCalendar ();
-		calendar.show ();
-		calendar.editing_done.connect (editing_done);
-		calendar.day_selected.connect (day_selected);
-		calendar.focus_out_event.connect (focus_out_event);
+		unowned Gtk.Entry entry = (Gtk.Entry) ed;
+		entry.secondary_icon_name = "x-office-calendar";
+		entry.icon_press.connect (icon_pressed);
 
-		return calendar;
+		return ed;
 	}
 }
 
