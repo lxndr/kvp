@@ -30,14 +30,12 @@ public class Service : DB.SimpleEntity, DB.Viewable
 
 	public Money get_price (int period) {
 		return Money (db.fetch_int64 (Price.table_name, "value",
-				("period=%d AND service=%" + int64.FORMAT)
-				.printf (period, id)));
+				"period=%d AND service=%d".printf (period, id)));
 	}
 
 	public int get_method (int period) {
 		return (int) db.fetch_int64 (Price.table_name, "method",
-				("period=%d AND service=%" + int64.FORMAT)
-				.printf (period, id));
+				"period=%d AND service=%d".printf (period, id));
 	}
 }
 

@@ -89,23 +89,20 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 	public int64 number_of_people () {
 		return db.query_count (Person.table_name,
-				("account=%" + int64.FORMAT + " AND period=%d")
-				.printf (account.id, period));
+				"account=%d AND period=%d".printf (account.id, period));
 	}
 
 
 	public Money previuos_balance () {
 		var n = db.fetch_int64 (AccountPeriod.table_name, "balance",
-				("account=%" + int64.FORMAT + " AND period=%d")
-				.printf (account.id, period - 1));
+				"account=%d AND period=%d".printf (account.id, period - 1));
 		return Money (n);
 	}
 
 
 	public void calc_total () {
 		total = Money (db.query_sum (Tax.table_name, "total",
-				("account=%" + int64.FORMAT + " AND period=%d")
-				.printf (account.id, period)));
+				"account=%d AND period=%d".printf (account.id, period)));
 	}
 
 
@@ -117,23 +114,21 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 
 	public string? tenant_name () {
-		return db.fetch_string (Person.table_name, "name", ("account=%" +
-				int64.FORMAT + " AND period=%d AND relationship=1")
-				.printf (account.id, period));
+		return db.fetch_string (Person.table_name, "name",
+			"account=%d AND period=%d AND relationship=1"
+			.printf (account.id, period));
 	}
 
 
 	public Gee.List<Person> get_people () {
 		return db.fetch_entity_list<Person> (Person.table_name,
-				("account=%" + int64.FORMAT + " AND period=%d")
-				.printf (account.id, period));
+				"account=%d AND period=%d".printf (account.id, period));
 	}
 
 
 	public Gee.List<Tax> get_taxes () {
 		return db.fetch_entity_list<Tax> (Tax.table_name,
-				("account=%" + int64.FORMAT + " AND period=%d")
-				.printf (account.id, period));
+				"account=%d AND period=%d".printf (account.id, period));
 	}
 }
 

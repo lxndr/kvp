@@ -6,6 +6,8 @@ public class AccountTable : DB.ViewTable {
 	private int current_period;
 
 	private int balance_foreground_model_column;
+	private Gtk.MenuItem recalc_menu_item;
+	private Gtk.MenuItem recalc_period_menu_item;
 
 
 	public AccountTable (Database _db) {
@@ -39,15 +41,15 @@ public class AccountTable : DB.ViewTable {
 		Gtk.MenuItem mi = new Gtk.SeparatorMenuItem ();
 		menu.append (mi);
 
-		mi = new Gtk.MenuItem.with_label (_("Recalculate"));
-		mi.activate.connect (recalculate_clicked);
-		mi.visible = true;
-		menu.append (mi);
+		recalc_menu_item = new Gtk.MenuItem.with_label (_("Recalculate"));
+		recalc_menu_item.activate.connect (recalculate_clicked);
+		recalc_menu_item.visible = true;
+		menu.append (recalc_menu_item);
 
-		mi = new Gtk.MenuItem.with_label (_("Recalculate this period"));
-		mi.activate.connect (recalculate_period_clicked);
-		mi.visible = true;
-		menu.append (mi);
+		recalc_period_menu_item = new Gtk.MenuItem.with_label (_("Recalculate this period"));
+		recalc_period_menu_item.activate.connect (recalculate_period_clicked);
+		recalc_period_menu_item.visible = true;
+		menu.append (recalc_period_menu_item);
 
 		return menu;
 	}
@@ -107,6 +109,12 @@ public class AccountTable : DB.ViewTable {
 
 	public void set_period (int period) {
 		current_period = period;
+		var locked_period = int.parse ((db as Database).get_setting ("locked_period"));
+
+		var locked = period <= locked_period;
+		read_only = locked;
+		recalc_menu_item.sensitive = !locked;
+		recalc_period_menu_item.sensitive = !locked;
 	}
 
 

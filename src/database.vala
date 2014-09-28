@@ -1,12 +1,6 @@
 namespace Kv {
 
 
-public errordomain DatabaseError {
-	OPENING_FAILED,
-	EXEC_FAILED
-}
-
-
 public class Database : DB.SQLiteDatabase {
 	public Database () throws Error {
 		Object (path: "./kvartplata.db");

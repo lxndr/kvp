@@ -11,8 +11,7 @@ public class TaxTable : DB.ViewTable {
 
 	public TaxTable (Database _db) {
 		Object (db: _db,
-				object_type: typeof (Tax),
-				view_only: true);
+				object_type: typeof (Tax));
 	}
 
 

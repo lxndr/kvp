@@ -11,13 +11,20 @@ public struct PropertyAdapter {
 public abstract class ViewTable : Gtk.TreeView {
 	public Database db { get; construct set; }
 	public Type object_type { get; construct set; }
-	public bool view_only { get; construct set; default = false; }
+
+	private bool _read_only;
+	public bool read_only {
+		get { return _read_only; }
+		set { _set_read_only (value); }
+		default = false;
+	}
+	
 
 	public Entity? selected_entity;
 
 	protected Gtk.ListStore list_store;
 	protected Gtk.Menu? menu;
-	private Gtk.MenuItem remove_menu_item;
+	private Gtk.MenuItem? remove_menu_item;
 
 
 	protected abstract unowned string[] viewable_props ();
@@ -25,12 +32,12 @@ public abstract class ViewTable : Gtk.TreeView {
 
 
 	public virtual signal void row_refreshed (Gtk.TreeIter tree_iter, Entity entity) {}
-	public signal void selection_changed ();
 	public virtual signal void row_edited (Entity entity, string prop_name) {}
+	public signal void selection_changed ();
 
 
 	protected virtual Entity new_entity () {
-		return Object.new (object_type) as Entity;
+		return Object.new (object_type, db: this.db) as Entity;
 	}
 
 
@@ -164,6 +171,36 @@ public abstract class ViewTable : Gtk.TreeView {
 			column.title = dgettext (null, prop.name);
 			create_list_column (column, out cell, prop, i + 1);
 			insert_column (column, -1);
+		}
+	}
+
+
+	private void _set_read_only (bool ro) {
+		_read_only = ro;
+
+		var columns = get_columns ();
+		unowned List<unowned Gtk.TreeViewColumn> icolumn = columns;
+		while (icolumn != null) {
+			var cells = icolumn.data.get_cells ();
+			unowned List<unowned Gtk.CellRenderer> icell = cells;
+
+			while (icell != null) {
+				unowned Gtk.CellRenderer cell = icell.data;
+
+				if (_read_only == true) {
+					cell.mode = Gtk.CellRendererMode.INERT;
+				} else {
+					if ((cell is Gtk.CellRendererText || cell is Gtk.CellRendererCombo ) &&
+							(cell as Gtk.CellRendererText).editable == true)
+						cell.mode = Gtk.CellRendererMode.EDITABLE;
+					if (cell is Gtk.CellRendererToggle && (cell as Gtk.CellRendererToggle).activatable == true)
+						cell.mode = Gtk.CellRendererMode.ACTIVATABLE;
+				}
+
+				icell = icell.next;
+			}
+
+			icolumn = icolumn.next;
 		}
 	}
 

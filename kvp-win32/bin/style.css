@@ -1,0 +1,8 @@
+KvCentralYearMonth GtkButton.new-month {
+	border-bottom-color: green;
+}
+
+
+KvCentralYearMonth GtkButton.locked-month {
+	border-bottom-color: red;
+}

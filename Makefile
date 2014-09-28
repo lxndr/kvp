@@ -4,6 +4,7 @@ RESOURCES=ui/main-window.ui \
 SOURCES=\
 		src/widgets/year-month.vala \
 		src/widgets/central-year-month.vala \
+		src/widgets/cellrenderer-calendar.vala \
 		src/application.vala \
 		src/main-window.vala \
 		src/utils.vala \
