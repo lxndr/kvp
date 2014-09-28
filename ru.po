@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-09-26 20:19+0400\n"
+"POT-Creation-Date: 2014-09-28 20:08+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -91,109 +91,124 @@ msgstr "Лицевой счёт"
 msgid "People and taxes"
 msgstr "Ведомость расчетов"
 
-#: src/utils.vala:125
+#: src/main-window.vala:107
+msgid "All buildings"
+msgstr "Все здания"
+
+#: src/main-window.vala:132
+msgid "Edit..."
+msgstr "Редактировать..."
+
+#: src/utils.vala:127
 msgid "January"
 msgstr "Январь"
 
-#: src/utils.vala:126
+#: src/utils.vala:128
 msgid "February"
 msgstr "Февраль"
 
-#: src/utils.vala:127
+#: src/utils.vala:129
 msgid "March"
 msgstr "Март"
 
-#: src/utils.vala:128
+#: src/utils.vala:130
 msgid "April"
 msgstr "Апрель"
 
-#: src/utils.vala:129
+#: src/utils.vala:131
 msgid "May"
 msgstr "Май"
 
-#: src/utils.vala:130
+#: src/utils.vala:132
 msgid "June"
 msgstr "Июнь"
 
-#: src/utils.vala:131
+#: src/utils.vala:133
 msgid "July"
 msgstr "Июль"
 
-#: src/utils.vala:132
+#: src/utils.vala:134
 msgid "August"
 msgstr "Август"
 
-#: src/utils.vala:133
+#: src/utils.vala:135
 msgid "September"
 msgstr "Сентябрь"
 
-#: src/utils.vala:134
+#: src/utils.vala:136
 msgid "October"
 msgstr "Октябрь"
 
-#: src/utils.vala:135
+#: src/utils.vala:137
 msgid "November"
 msgstr "Ноябрь"
 
-#: src/utils.vala:136
+#: src/utils.vala:138
 msgid "December"
 msgstr "Декабрь"
 
-#: src/account-table.vala:9
-msgid "Recalculate"
-msgstr "Пересчитать"
-
-#: src/account-table.vala:14
-msgid "Recalculate this period"
-msgstr "Пересчитать весь месяц"
-
-#: src/account-table.vala:29 src/building-table.vala:9
+#: src/account-table.vala:21 src/building-table.vala:9
 msgid "number"
 msgstr "ЛС"
 
-#: src/account-table.vala:30
+#: src/account-table.vala:22
 msgid "tenant"
 msgstr "Квартиронаниматель"
 
-#: src/account-table.vala:31
+#: src/account-table.vala:23
 msgid "apartment"
 msgstr "Комната"
 
-#: src/account-table.vala:32
+#: src/account-table.vala:24
 msgid "n_rooms"
 msgstr "К-во ком."
 
-#: src/account-table.vala:33
+#: src/account-table.vala:25
 msgid "n_people"
 msgstr "К-во чел."
 
-#: src/account-table.vala:34
+#: src/account-table.vala:26
 msgid "area"
 msgstr "Площадь"
 
-#: src/account-table.vala:35
+#: src/account-table.vala:27
 msgid "param1"
 msgstr "Эл."
 
-#: src/account-table.vala:36 src/tax-table.vala:30
+#: src/account-table.vala:28 src/tax-table.vala:33
 msgid "total"
 msgstr "Начислено"
 
-#: src/account-table.vala:37
+#: src/account-table.vala:29
 msgid "extra"
 msgstr "Доп."
 
-#: src/account-table.vala:38
+#: src/account-table.vala:30
 msgid "payment"
 msgstr "Уплачено"
 
-#: src/account-table.vala:39
+#: src/account-table.vala:31
 msgid "balance"
 msgstr "Остаток"
 
-#: src/account-table.vala:40
+#: src/account-table.vala:32
 msgid "comment"
 msgstr "Примечание"
+
+#: src/account-table.vala:44
+msgid "Recalculate"
+msgstr "Пересчитать"
+
+#: src/account-table.vala:49
+msgid "Recalculate this period"
+msgstr "Пересчитать весь месяц"
+
+#: src/account-table.vala:82
+msgid ""
+"Every account has to be related to a building. Only one building has to be "
+"currently selected to add a new account. You have selected either all of "
+"them or none. Create a building if needed."
+msgstr ""
 
 #: src/people-table.vala:30
 msgid "name"
@@ -207,34 +222,45 @@ msgstr "Дата рождения"
 msgid "relationship"
 msgstr "Отношение"
 
-#: src/tax-table.vala:26
+#: src/tax-table.vala:29
 msgid "apply"
 msgstr "В"
 
-#: src/tax-table.vala:27
+#: src/tax-table.vala:30 src/price-table.vala:7
 msgid "service_name"
 msgstr "Услуга"
 
-#: src/tax-table.vala:28
+#: src/tax-table.vala:31
 msgid "amount"
 msgstr "Кол-во"
 
-#: src/tax-table.vala:29
+#: src/tax-table.vala:32
 msgid "price"
 msgstr "Стоимость"
 
+#: src/price-table.vala:8
+msgid "value"
+msgstr ""
+
+#: src/price-table.vala:9
+msgid "method"
+msgstr ""
+
+#: src/price-window.vala:10
+msgid "Reference - Buildings"
+msgstr "Справочник - Здания"
+
 #: src/building-table.vala:7
-#, fuzzy
 msgid "location"
-msgstr "Отношение"
+msgstr "Местоположение"
 
 #: src/building-table.vala:8
 msgid "street"
 msgstr "Улица"
 
 #: src/building-window.vala:10
-msgid "Reference - Buildings"
-msgstr "Справочник - Здания"
+msgid "Reference - Prices"
+msgstr "Справочник - Тарифы"
 
 #: src/entities/person.vala:14
 msgid "A person"
@@ -249,18 +275,22 @@ msgstr "за %s %d г."
 msgid "Kvartplata"
 msgstr "Квартплата"
 
-#: ui/main-window.ui:24 ui/main-window.ui:175
+#: ui/main-window.ui:24 ui/main-window.ui:202
 msgid "Buildings"
 msgstr "Здания"
 
-#: ui/main-window.ui:47
+#: ui/main-window.ui:48
 msgid "Current period"
-msgstr ""
+msgstr "Текущий период"
 
-#: ui/main-window.ui:73
+#: ui/main-window.ui:74
 msgid "Reports"
 msgstr "Отчеты"
 
-#: ui/main-window.ui:103
+#: ui/main-window.ui:99
 msgid "References"
 msgstr "Справочники"
+
+#: ui/main-window.ui:193
+msgid "Prices"
+msgstr "Тарифы"

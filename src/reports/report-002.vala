@@ -37,6 +37,8 @@ public class Report002 : Report {
 
 		sheet.put_string ("BZ1", account_number);
 		sheet.put_string ("R3", account_tenant);
+		sheet.put_string ("K4", account.building.street);
+		sheet.put_string ("AK4", account.building.number);
 		sheet.put_string ("T12", account_period.n_rooms.to_string ());
 		sheet.put_string ("AD12", Utils.format_double (account_period.area, 2));
 		sheet.put_string ("AZ8", n_people.to_string ());

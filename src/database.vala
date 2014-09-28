@@ -74,7 +74,7 @@ public class Database : DB.SQLiteDatabase {
 		int prev_period = period - 1;
 
 		begin_transaction ();
-		exec_sql ("INSERT INTO account_period SELECT account,%d,apartment,n_rooms,area,total,0,balance,0 FROM account_period WHERE period=%d"
+		exec_sql ("INSERT INTO account_period SELECT account,%d,apartment,n_rooms,area,total,0,balance,0,param1 FROM account_period WHERE period=%d"
 				.printf (period, prev_period), null);
 		exec_sql ("INSERT INTO person SELECT null,account,%d,name,birthday,relationship FROM person WHERE period=%d"
 				.printf (period, prev_period), null);

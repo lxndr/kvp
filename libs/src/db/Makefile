@@ -27,6 +27,7 @@ DB_SOURCES = \
 		simple-entity.vala \
 
 DB_GTK_SOURCES = \
+		cellrenderer-calendar.vala \
 		view-table.vala \
 		viewable.vala
 
