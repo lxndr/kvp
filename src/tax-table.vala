@@ -96,12 +96,14 @@ public class TaxTable : DB.ViewTable {
 		switch (prop_name) {
 		case "apply":
 			tax.calc_amount ();
-			tax.calc_amount ();
+			tax.calc_total ();
 			break;
 		case "amount":
 			tax.calc_total ();
 			break;
 		}
+
+		total_changed (tax);
 
 		/* persiste after calculations */
 		base.row_edited (tree_iter, entity, prop_name);

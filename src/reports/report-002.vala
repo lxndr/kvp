@@ -73,7 +73,7 @@ public class Report002 : Report {
 
 		foreach (var account_period in account_periods) {
 			var taxes = db.fetch_int_entity_map<Tax> (Tax.table_name, "service",
-					("account=%" + int64.FORMAT + " AND period=%d")
+					null, "account=%d AND period=%d"
 					.printf (account_period.account.id, account_period.period));
 
 			var month = account_period.period % 12;

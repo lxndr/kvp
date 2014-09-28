@@ -210,10 +210,14 @@ public interface Database : Object {
 	public Gee.Map<int, T> fetch_int_entity_map<T> (string table, string key_field,
 			string? columns = null, string? where = null) {
 		int key_column = -1;
-		var query = build ().select (columns).from (table).where (where).get_query ();
+
+		var qb = build ();
+		qb.select (columns).from (table);
+		if (where != null)
+			qb.where (where);
 
 		var map = new Gee.HashMap<int, T> ();
-		exec_sql (query, (n_columns, values, column_names) => {
+		exec_sql (qb.get_query (), (n_columns, values, column_names) => {
 			if (key_column == -1) {
 				for (var i = 0; i < n_columns; i++)
 					if (column_names[i] == key_field)
