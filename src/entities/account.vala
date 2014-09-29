@@ -70,16 +70,15 @@ public class Account : DB.SimpleEntity
 
 
 	public string? tenant_name (int period) {
-		return db.fetch_string (Person.table_name, "name", ("account=%" +
-				int64.FORMAT + " AND period=%d AND relationship=1")
+		return db.fetch_string (Person.table_name, "name",
+				"account=%d AND period=%d AND relationship=1"
 				.printf (id, period));
 	}
 
 
 	public AccountPeriod? fetch_period (int period) {
 		return db.fetch_entity<AccountPeriod> (AccountPeriod.table_name,
-				("account=%" + int64.FORMAT + " AND period=%d").
-				printf (id, period));
+				"account=%d AND period=%d".printf (id, period));
 	}
 }
 

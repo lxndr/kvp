@@ -18,7 +18,7 @@ public class Tax : DB.Entity, DB.Viewable
 
 	public Money price {
 		get {
-			return service.get_price (account.building, period);
+			return service.get_price (account.building, period).value;
 		}
 	}
 
@@ -65,7 +65,7 @@ public class Tax : DB.Entity, DB.Viewable
 	}
 
 
-	public double method_04 (AccountPeriod ap) {
+	public double method_05 (AccountPeriod ap) {
 		int[,] n1 = {
 			{  0,   0,   0,   0,  0,  0},
 			{  0, 143,  89,  69, 56, 49},
@@ -99,9 +99,9 @@ public class Tax : DB.Entity, DB.Viewable
 		}
 
 		var account_period = account.fetch_period (period);
-		var method = service.get_method (account.building, period);
+		var price = service.get_price (account.building, period);
 
-		switch (method) {
+		switch (price.method) {
 		case 1:	/* always x1 */
 			amount = 1.0;
 			break;
@@ -111,8 +111,8 @@ public class Tax : DB.Entity, DB.Viewable
 		case 3: /* number of people */
 			amount = (double) account_period.number_of_people ();
 			break;
-		case 4:
-			amount = method_04 (account_period);
+		case 5:
+			amount = method_05 (account_period);
 			break;
 		default: /* amount is specified */
 			break;
@@ -121,7 +121,10 @@ public class Tax : DB.Entity, DB.Viewable
 
 
 	public void calc_total () {
-		total = Money (Math.llround (amount * (double) price.val));
+		var price = service.get_price (account.building, period);
+		if (price.method == 0)
+			return;
+		total = Money (Math.llround (amount * (double) price.value.val));
 	}
 }
 

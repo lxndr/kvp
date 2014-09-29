@@ -130,9 +130,9 @@ public class AccountTable : DB.ViewTable {
 		/* refresh lock state */
 		var locked_period = int.parse (dbase.get_setting ("locked_period"));
 		var locked = period <= locked_period;
-//		read_only = locked;
-//		recalc_menu_item.sensitive = !locked;
-//		recalc_period_menu_item.sensitive = !locked;
+		read_only = locked;
+		recalc_menu_item.sensitive = !locked;
+		recalc_period_menu_item.sensitive = !locked;
 
 		refresh_view ();
 	}

@@ -28,14 +28,8 @@ public class Service : DB.SimpleEntity, DB.Viewable
 	public override void remove () {}
 
 
-	public Money get_price (Building building, int period) {
-		return Money (db.fetch_int64 (Price.table_name, "value",
-				"building=%d AND period=%d AND service=%d".printf (building.id, period, id)));
-	}
-
-
-	public int get_method (Building building, int period) {
-		return (int) db.fetch_int64 (Price.table_name, "method",
+	public Price get_price (Building building, int period) {
+		return db.fetch_entity<Price> (Price.table_name,
 				"building=%d AND period=%d AND service=%d".printf (building.id, period, id));
 	}
 }

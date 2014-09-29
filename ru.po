@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-09-28 20:08+0400\n"
+"POT-Creation-Date: 2014-09-29 12:13+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -79,15 +79,15 @@ msgstr "Текущий месяц"
 msgid "Next month"
 msgstr "Следующий месяц"
 
-#: src/application.vala:53
+#: src/application.vala:60
 msgid "List of the tenants"
 msgstr "Список жилцов"
 
-#: src/application.vala:54
+#: src/application.vala:61
 msgid "Account"
 msgstr "Лицевой счёт"
 
-#: src/application.vala:55
+#: src/application.vala:62
 msgid "People and taxes"
 msgstr "Ведомость расчетов"
 
@@ -95,55 +95,55 @@ msgstr "Ведомость расчетов"
 msgid "All buildings"
 msgstr "Все здания"
 
-#: src/main-window.vala:132
+#: src/main-window.vala:130
 msgid "Edit..."
 msgstr "Редактировать..."
 
-#: src/utils.vala:127
+#: src/utils.vala:145
 msgid "January"
 msgstr "Январь"
 
-#: src/utils.vala:128
+#: src/utils.vala:146
 msgid "February"
 msgstr "Февраль"
 
-#: src/utils.vala:129
+#: src/utils.vala:147
 msgid "March"
 msgstr "Март"
 
-#: src/utils.vala:130
+#: src/utils.vala:148
 msgid "April"
 msgstr "Апрель"
 
-#: src/utils.vala:131
+#: src/utils.vala:149
 msgid "May"
 msgstr "Май"
 
-#: src/utils.vala:132
+#: src/utils.vala:150
 msgid "June"
 msgstr "Июнь"
 
-#: src/utils.vala:133
+#: src/utils.vala:151
 msgid "July"
 msgstr "Июль"
 
-#: src/utils.vala:134
+#: src/utils.vala:152
 msgid "August"
 msgstr "Август"
 
-#: src/utils.vala:135
+#: src/utils.vala:153
 msgid "September"
 msgstr "Сентябрь"
 
-#: src/utils.vala:136
+#: src/utils.vala:154
 msgid "October"
 msgstr "Октябрь"
 
-#: src/utils.vala:137
+#: src/utils.vala:155
 msgid "November"
 msgstr "Ноябрь"
 
-#: src/utils.vala:138
+#: src/utils.vala:156
 msgid "December"
 msgstr "Декабрь"
 
@@ -152,73 +152,77 @@ msgid "number"
 msgstr "ЛС"
 
 #: src/account-table.vala:22
+msgid "opened"
+msgstr ""
+
+#: src/account-table.vala:23
 msgid "tenant"
 msgstr "Квартиронаниматель"
 
-#: src/account-table.vala:23
+#: src/account-table.vala:24
 msgid "apartment"
 msgstr "Комната"
 
-#: src/account-table.vala:24
+#: src/account-table.vala:25
 msgid "n_rooms"
 msgstr "К-во ком."
 
-#: src/account-table.vala:25
+#: src/account-table.vala:26
 msgid "n_people"
 msgstr "К-во чел."
 
-#: src/account-table.vala:26
+#: src/account-table.vala:27
 msgid "area"
 msgstr "Площадь"
 
-#: src/account-table.vala:27
+#: src/account-table.vala:28
 msgid "param1"
 msgstr "Эл."
 
-#: src/account-table.vala:28 src/tax-table.vala:33
+#: src/account-table.vala:29 src/tax-table.vala:33
 msgid "total"
 msgstr "Начислено"
 
-#: src/account-table.vala:29
+#: src/account-table.vala:30
 msgid "extra"
 msgstr "Доп."
 
-#: src/account-table.vala:30
+#: src/account-table.vala:31
 msgid "payment"
 msgstr "Уплачено"
 
-#: src/account-table.vala:31
+#: src/account-table.vala:32
 msgid "balance"
 msgstr "Остаток"
 
-#: src/account-table.vala:32
+#: src/account-table.vala:33
 msgid "comment"
 msgstr "Примечание"
 
-#: src/account-table.vala:44
+#: src/account-table.vala:45
 msgid "Recalculate"
 msgstr "Пересчитать"
 
-#: src/account-table.vala:49
+#: src/account-table.vala:50
 msgid "Recalculate this period"
 msgstr "Пересчитать весь месяц"
 
-#: src/account-table.vala:82
+#: src/account-table.vala:83
 msgid ""
 "Every account has to be related to a building. Only one building has to be "
 "currently selected to add a new account. You have selected either all of "
 "them or none. Create a building if needed."
 msgstr ""
 
-#: src/people-table.vala:30
+#: src/people-table.vala:27
 msgid "name"
 msgstr "Имя"
 
-#: src/people-table.vala:31
+#: src/people-table.vala:28
 msgid "birthday"
 msgstr "Дата рождения"
 
-#: src/people-table.vala:32
+#: src/people-table.vala:29
 msgid "relationship"
 msgstr "Отношение"
 
