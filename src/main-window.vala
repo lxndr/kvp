@@ -250,9 +250,13 @@ class MainWindow : Gtk.ApplicationWindow {
 		
 		var db = (application as Application).db;
 		var report = Object.new (type,
+				"toplevel_window", this,
 				"db", db,
-				"account", account_table.get_selected ().account,
-				"period", current_period) as Report;
+				"building", current_building,
+				"periodic", account_table.get_selected ()) as Report;
+
+		if (report.prepare () == false)
+			return;
 
 		try {
 			report.make ();

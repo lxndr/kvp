@@ -1,6 +1,29 @@
 namespace Kv {
 
 
+[GtkTemplate (ui = "/ui/account-report-parameters.ui")]
+public class AccountReportParameters : Gtk.Dialog {
+	[GtkChild]
+	private Gtk.Button from_month;
+	[GtkChild]
+	private Gtk.Button to_month;
+
+	private YearMonth from_popover;
+	private YearMonth to_popover;
+
+	construct {
+		from_popover = new YearMonth (from_month);
+		to_popover = new YearMonth (to_month);
+	}
+
+
+	public AccountReportParameters (Gtk.Window _parent) {
+		Object (transient_for: _parent);
+	}
+}
+
+
+
 public class Report002 : Report {
 	const int service_ids[] = {
 		5, 6, 1, 2, 7, 8, 4, 9
@@ -15,9 +38,24 @@ public class Report002 : Report {
 	}
 
 
+	public override bool prepare () {
+		return true;
+		var dlg = new AccountReportParameters (toplevel_window);
+		var ret = dlg.run ();
+		if (ret == Gtk.ResponseType.ACCEPT) {
+			
+		}
+		dlg.destroy ();
+
+		return ret == Gtk.ResponseType.ACCEPT;
+	}
+
+
 	public override void make () throws Error {
 		book.load (GLib.File.new_for_path ("./templates/account.xlsx"));
 
+		var period = periodic.period;
+		var account = periodic.account;
 		var year = period / 12;
 		var account_periods = db.get_account_periods (account, year * 12, year * 12 + 11);
 		var last_account_period = account_periods[account_periods.size - 1];
@@ -37,8 +75,8 @@ public class Report002 : Report {
 
 		sheet.put_string ("BZ1", account_number);
 		sheet.put_string ("R3", account_tenant);
-		sheet.put_string ("K4", account.building.street);
-		sheet.put_string ("AK4", account.building.number);
+		sheet.put_string ("K4", account_period.account.building.street);
+		sheet.put_string ("AK4", account_period.account.building.number);
 		sheet.put_string ("T12", account_period.n_rooms.to_string ());
 		sheet.put_string ("AD12", Utils.format_double (account_period.area, 2));
 		sheet.put_string ("AZ8", n_people.to_string ());
@@ -46,7 +84,7 @@ public class Report002 : Report {
 		sheet.put_string ("CA4", account_period.apartment);
 
 		/* price list */
-		var price_list = db.get_price_list (period);
+		var price_list = db.get_price_list (account_period.period);
 		string s = "";
 		foreach (var price in price_list)
 			s += "%s: %s\n".printf (price.service.name, price.value.format ());

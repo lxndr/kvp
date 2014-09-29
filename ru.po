@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-09-29 12:13+0400\n"
+"POT-Creation-Date: 2014-09-29 23:18+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -179,7 +179,7 @@ msgstr "Площадь"
 msgid "param1"
 msgstr "Эл."
 
-#: src/account-table.vala:29 src/tax-table.vala:33
+#: src/account-table.vala:29 src/tax-table.vala:34
 msgid "total"
 msgstr "Начислено"
 
@@ -226,20 +226,20 @@ msgstr "Дата рождения"
 msgid "relationship"
 msgstr "Отношение"
 
-#: src/tax-table.vala:29
+#: src/tax-table.vala:30
 msgid "apply"
 msgstr "В"
 
-#: src/tax-table.vala:30 src/price-table.vala:7
+#: src/tax-table.vala:31 src/price-table.vala:7
 msgid "service_name"
 msgstr "Услуга"
 
-#: src/tax-table.vala:31
+#: src/tax-table.vala:32
 msgid "amount"
 msgstr "Кол-во"
 
-#: src/tax-table.vala:32
-msgid "price"
+#: src/tax-table.vala:33
+msgid "price_value"
 msgstr "Стоимость"
 
 #: src/price-table.vala:8
