@@ -16,10 +16,18 @@ public class Tax : DB.Entity, DB.Viewable
 	}
 
 
-	public Money price {
+	private Price _price;
+	public unowned Price price {
 		get {
-			return service.get_price (account.building, period).value;
+			if (_price == null && account != null && period > 0 && service != null)
+				_price = service.get_price (account.building, period);
+			return _price;
 		}
+	}
+
+
+	public Money price_value {
+		get { return price.value; }
 	}
 
 
@@ -99,7 +107,6 @@ public class Tax : DB.Entity, DB.Viewable
 		}
 
 		var account_period = account.fetch_period (period);
-		var price = service.get_price (account.building, period);
 
 		switch (price.method) {
 		case 1:	/* always x1 */
@@ -121,7 +128,6 @@ public class Tax : DB.Entity, DB.Viewable
 
 
 	public void calc_total () {
-		var price = service.get_price (account.building, period);
 		if (price.method == 0)
 			return;
 		total = Money (Math.llround (amount * (double) price.value.val));

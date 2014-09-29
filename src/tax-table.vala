@@ -7,6 +7,7 @@ public class TaxTable : DB.ViewTable {
 	private int strikethrough_model_column;
 	private int foreground_model_column;
 	private int editable_model_column;
+	private int visible_model_column;
 
 
 	public signal void total_changed (Tax tax);
@@ -29,7 +30,7 @@ public class TaxTable : DB.ViewTable {
 			N_("apply"),
 			N_("service_name"),
 			N_("amount"),
-			N_("price"),
+			N_("price_value"),
 			N_("total")
 		};
 		return props;
@@ -51,6 +52,8 @@ public class TaxTable : DB.ViewTable {
 		types.add (typeof (bool));
 		editable_model_column = last_model_column++;
 		types.add (typeof (bool));
+		visible_model_column = last_model_column++;
+		types.add (typeof (bool));
 	}
 
 
@@ -66,6 +69,8 @@ public class TaxTable : DB.ViewTable {
 			column.add_attribute (cell, "strikethrough", strikethrough_model_column);
 		if (prop.name == "amount")
 			column.add_attribute (cell, "editable", editable_model_column);
+		if (prop.name == "amount" || prop.name == "price-value")
+			column.add_attribute (cell, "visible", visible_model_column);
 	}
 
 
@@ -86,7 +91,8 @@ public class TaxTable : DB.ViewTable {
 
 		list_store.set (tree_iter,
 				foreground_model_column, color,
-				strikethrough_model_column, !apply);
+				strikethrough_model_column, !apply,
+				visible_model_column, tax.price.method > 0);
 	}
 
 
