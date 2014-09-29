@@ -174,7 +174,7 @@ class MainWindow : Gtk.ApplicationWindow {
 		var label = "%s %d".printf (Utils.month_to_string(period % 12), period / 12);
 
 		/* check if this is an empty period and we need to duplicate all the data */
-		if (db.is_empty_period (period) == true) {
+		if (db.is_empty_period (current_building, period) == true) {
 			var msg = new Gtk.MessageDialog (this, Gtk.DialogFlags.MODAL,
 					Gtk.MessageType.QUESTION, Gtk.ButtonsType.NONE,
 					"Period '%s' has empty data. Do you want to duplicate the last period to the new?", label);
@@ -186,7 +186,7 @@ class MainWindow : Gtk.ApplicationWindow {
 
 			switch (resp) {
 			case Gtk.ResponseType.YES:
-				db.prepare_for_period (period);
+				db.prepare_for_period (current_building, period);
 				/* find last period and copy everything needed */
 				break;
 			case Gtk.ResponseType.NO:

@@ -50,40 +50,53 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public bool is_empty_period (int period) {
+	public bool is_empty_period (Building? building, int period) {
+		string table = AccountPeriod.table_name;
+		if (building != null)
+			table += " JOIN account ON account_period.account=account.id AND account.building=%d"
+					.printf (building.id);
+
+		string where = "period=%d".printf (period);
+		if (building != null)
+			where += " AND building=%d".printf (building.id);
+
 		/* check if we've got any */
-		if (query_count (AccountPeriod.table_name,
-				"period=%d".printf (period)) > 0)
+		if (query_count (table, "period=%d".printf (period)) > 0)
 			return false;
 
+#if 0
 		/* check if we've got any people */
-		if (query_count (Person.table_name,
-				"period=%d".printf (period)) > 0)
+		if (query_count (Person.table_name, where) > 0)
 			return false;
 
 		/* check if we've got any taxes */
-		if (query_count (Tax.table_name,
-				"period=%d".printf (period)) > 0)
+		if (query_count (Tax.table_name, where) > 0)
 			return false;
+#endif
 
 		return true;
 	}
 
 
-	public void prepare_for_period (int period) {
+	public void prepare_for_period (Building? building, int period) {
 		int prev_period = period - 1;
 
+		string building_table = "";
+		if (building != null)
+			building_table += " JOIN account ON account.id=account_period.account AND account.building=%d"
+					.printf (building.id);
+
 		begin_transaction ();
-		exec_sql ("INSERT INTO account_period SELECT account,%d,apartment,n_rooms,area,total,0,balance,0,param1 FROM account_period WHERE period=%d"
-				.printf (period, prev_period), null);
-		exec_sql ("INSERT INTO person SELECT null,account,%d,name,birthday,relationship FROM person WHERE period=%d"
-				.printf (period, prev_period), null);
+		exec_sql (("INSERT INTO account_period SELECT account,%d,apartment,n_rooms,area,total,0,0,0,param1" +
+				" FROM account_period%s WHERE period=%d").printf (period, building_table, prev_period), null);
+		exec_sql (("INSERT INTO person SELECT null,account,%d,name,birthday,relationship" +
+				" FROM person%s WHERE period=%d").printf (period, building_table, prev_period), null);
 
 		/* a little bit more tricky */
 		var price_list = get_price_list (period);
 		foreach (var price in price_list)
-			exec_sql (("INSERT INTO tax SELECT account,%d,service,apply,amount,total FROM tax WHERE period=%d AND service=%d")
-					.printf (period, prev_period, price.service.id), null);
+			exec_sql ("INSERT INTO tax SELECT account,%d,service,apply,amount,total FROM tax%s WHERE period=%d AND service=%d"
+					.printf (period, building_table, prev_period, price.service.id), null);
 		commit_transaction ();
 	}
 
@@ -145,7 +158,7 @@ public class Database : DB.SQLiteDatabase {
 
 	public Gee.List<Price> get_price_list (int period) {
 		return fetch_entity_list<Price> (Price.table_name,
-			("period=%d").printf (period));
+			"period=%d".printf (period));
 	}
 
 
