@@ -4,6 +4,7 @@
 	<gresource prefix="/">
 		<file preprocess="xml-stripblanks" compressed="true">ui/main-window.ui</file>
 		<file preprocess="xml-stripblanks" compressed="true">ui/account-report-parameters.ui</file>
+		<file preprocess="xml-stripblanks" compressed="true">ui/service-window.ui</file>
 
 		<file compressed="true">data/init.sql</file>
 	</gresource>

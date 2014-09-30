@@ -1,15 +1,15 @@
 namespace Kv {
 
 
-public class BuildingWindow : Gtk.Window {
+public class PriceWindow : Gtk.Window {
 	public Database db { get; construct set; }
-	private BuildingTable view_table;
+	private PriceTable view_table;
 
 
 	construct {
-		title = _("Reference - Buildings");
+		title = _("Reference - Prices");
 
-		view_table = new BuildingTable (db);
+		view_table = new PriceTable (db);
 		view_table.refresh_view ();
 
 		var scrolled = new Gtk.ScrolledWindow (null, null);
@@ -20,7 +20,7 @@ public class BuildingWindow : Gtk.Window {
 	}
 
 
-	public BuildingWindow (Gtk.Window parent, Database _db) {
+	public PriceWindow (Gtk.Window parent, Database _db) {
 		Object (type: Gtk.WindowType.TOPLEVEL,
 				transient_for: parent,
 				default_width: 500,

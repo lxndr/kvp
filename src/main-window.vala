@@ -29,7 +29,7 @@ class MainWindow : Gtk.ApplicationWindow {
 	private TaxTable tax_table;
 
 	/*  */
-	private PriceWindow? price_window = null;
+	private ServiceWindow? service_window = null;
 	private BuildingWindow? building_window = null;
 	private Building? current_building = null;
 
@@ -300,15 +300,15 @@ class MainWindow : Gtk.ApplicationWindow {
 
 
 	[GtkCallback]
-	private void ref_prices_clicked () {
-		if (price_window == null) {
-			price_window = new PriceWindow (this, (application as Application).db);
-			price_window.destroy.connect (() => {
-				price_window = null;
+	private void ref_services_clicked () {
+		if (service_window == null) {
+			service_window = new ServiceWindow (this, (application as Application).db);
+			service_window.destroy.connect (() => {
+				service_window = null;
 			});
 		}
 
-		price_window.present ();
+		service_window.present ();
 	}
 
 

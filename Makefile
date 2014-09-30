@@ -11,8 +11,8 @@ SOURCES=\
 		src/account-table.vala \
 		src/people-table.vala \
 		src/tax-table.vala \
-		src/price-table.vala \
-		src/price-window.vala \
+		src/service-table.vala \
+		src/service-window.vala \
 		src/building-table.vala \
 		src/building-window.vala \
 		src/database.vala \

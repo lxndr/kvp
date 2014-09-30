@@ -105,6 +105,11 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
+	public Gee.List<Building> get_building_list () {
+		return fetch_entity_list<Building> (Building.table_name);
+	}
+
+
 	public Gee.List<Service> get_service_list () {
 		return fetch_entity_list<Service> (Service.table_name);
 	}
