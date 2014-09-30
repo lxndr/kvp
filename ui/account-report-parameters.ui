@@ -78,11 +78,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="from_month">
+              <object class="GtkButton" id="from_button">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="hexpand">True</property>
+                <signal name="clicked" handler="from_button_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -90,11 +91,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="to_month">
+              <object class="GtkButton" id="to_button">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="hexpand">True</property>
+                <signal name="clicked" handler="to_button_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>

@@ -2,23 +2,45 @@ namespace Kv {
 
 
 [GtkTemplate (ui = "/ui/account-report-parameters.ui")]
-public class AccountReportParameters : Gtk.Dialog {
+private class AccountReportParameters : Gtk.Dialog {
 	[GtkChild]
-	private Gtk.Button from_month;
+	private Gtk.Button from_button;
 	[GtkChild]
-	private Gtk.Button to_month;
+	private Gtk.Button to_button;
 
-	private YearMonth from_popover;
-	private YearMonth to_popover;
+	private YearMonth from_year_month;
+	private YearMonth to_year_month;
+
 
 	construct {
-		from_popover = new YearMonth (from_month);
-		to_popover = new YearMonth (to_month);
+		from_year_month = new YearMonth (from_button);
+		to_year_month = new YearMonth (to_button);
 	}
 
 
 	public AccountReportParameters (Gtk.Window _parent) {
 		Object (transient_for: _parent);
+	}
+
+
+	[GtkCallback]
+	private void from_button_clicked () {
+		from_year_month.show ();
+	}
+
+
+	[GtkCallback]
+	private void to_button_clicked () {
+		to_year_month.show ();
+	}
+
+
+	public int start_month () {
+		return from_year_month.period;
+	}
+
+	public int end_month () {
+		return to_year_month.period;
 	}
 }
 
@@ -39,7 +61,6 @@ public class Report002 : Report {
 
 
 	public override bool prepare () {
-		return true;
 		var dlg = new AccountReportParameters (toplevel_window);
 		var ret = dlg.run ();
 		if (ret == Gtk.ResponseType.ACCEPT) {
