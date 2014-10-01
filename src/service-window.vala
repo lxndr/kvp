@@ -21,6 +21,11 @@ class ServiceWindow : Gtk.Window {
 	private Gtk.ListStore method_list_store;
 
 
+	private const string method_names[] = {
+		"N", "1", "Ar", "P", "Am", "F5"
+	};
+
+
 	construct {
 		service_column_map = new Gee.HashMap<int, int> ();
 
@@ -149,7 +154,7 @@ class ServiceWindow : Gtk.Window {
 					"building=%d AND period=%d".printf (current_building, period));
 			foreach (var p in list) {
 				var base_column = service_column_map[p.service.id];
-				model.set (iter, base_column + 0, p.value.format (), base_column + 1, p.method.to_string ());
+				model.set (iter, base_column + 0, p.value.format (), base_column + 1, method_names[p.method]);
 			}
 		}
 	}
@@ -163,6 +168,9 @@ class ServiceWindow : Gtk.Window {
 		unowned Gtk.ListStore model = (Gtk.ListStore) price_list.model;
 		model.get_iter_from_string (out tree_iter, tree_path);
 		model.get (tree_iter, 0, out period);
+
+		var money = Money.from_formatted (new_text);
+		
 
 		if (new_text.length > 0) {
 //			db.exec_sql ("REPLACE INTO %s VALUES (%d, %d, %d, %d, %d)"
@@ -184,6 +192,40 @@ class ServiceWindow : Gtk.Window {
 		model.get_iter_from_string (out tree_iter, tree_path);
 		model.get (tree_iter, 0, out period);
 		
+	}
+
+
+	private void price_changed (string path, Gtk.CellRenderer cell) {
+		int period, price, method;
+		int service = cell.get_data<int> ("service");
+		int base_column = service_column_map[service];
+
+		Gtk.TreeIter tree_iter;
+		unowned Gtk.ListStore model = (Gtk.ListStore) price_list.model;
+		model.get_iter_from_string (out tree_iter, path);
+		model.get (tree_iter, 0, out period,
+				base_column + 0, out price,
+				base_column + 2, out method);
+
+		if (price == 0) {
+			model.set (tree_iter,
+					base_column + 0, 0,
+					base_column + 1, null,
+					base_column + 2, false);
+					base_column + 2, false);
+
+			db.delete_entity (Price.table_name,
+					"building=%d AND period=%d AND service=%d"
+					.printf (current_building, period, service));
+		} else {
+			var m = Money (price);
+			model.set (tree_iter,
+					base_column + 1, m.format (),
+					base_column + 3, method_names[method]);
+
+			db.exec_sql (("REPLACE INTO %s VALUES (%d, %d, %d, %" + int64.FORMAT + ", %d)")
+					.printf (Price.table_name, current_building, period, service, val.val, method), null);
+		}
 	}
 }
 
