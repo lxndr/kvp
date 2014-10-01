@@ -1,6 +1,18 @@
 namespace Kv {
 
 
+[Compact]
+private enum PriceColumn {
+	PRICE_VALUE,
+	PRICE_TITLE,
+	METHOD_VALUE,
+	METHOD_TITLE,
+	METHOD_VISIBILITY,
+	COUNT
+}
+
+
+
 [GtkTemplate (ui = "/ui/service-window.ui")]
 class ServiceWindow : Gtk.Window {
 	public Database db { get; construct set; }
@@ -46,8 +58,8 @@ class ServiceWindow : Gtk.Window {
 	public ServiceWindow (Gtk.Window parent, Database _db) {
 		Object (type: Gtk.WindowType.TOPLEVEL,
 				transient_for: parent,
-				default_width: 500,
-				default_height: 300,
+				default_width: 900,
+				default_height: 500,
 				window_position: Gtk.WindowPosition.CENTER_ON_PARENT,
 				db: _db);
 	}
@@ -88,8 +100,11 @@ class ServiceWindow : Gtk.Window {
 		types += typeof (string);
 
 		foreach (var service in service_list) {
+			types += typeof (int);
 			types += typeof (string);
+			types += typeof (int);
 			types += typeof (string);
+			types += typeof (bool);
 		}
 
 		price_list.model = new Gtk.ListStore.newv (types);
@@ -111,9 +126,9 @@ class ServiceWindow : Gtk.Window {
 			text_cell.set ("editable", true,
 							"xalign", 1.0,
 							"xpad", 3);
-			text_cell.edited.connect (value_edited);
+			text_cell.edited.connect (price_edited);
 			column.pack_start (text_cell, true);
-			column.add_attribute (text_cell, "text", base_column + 0);
+			column.add_attribute (text_cell, "text", base_column + PriceColumn.PRICE_TITLE);
 
 			var combo_cell = new Gtk.CellRendererCombo ();
 			combo_cell.set ("editable", true,
@@ -125,11 +140,12 @@ class ServiceWindow : Gtk.Window {
 							"xpad", 3);
 			combo_cell.changed.connect (method_changed);
 			column.pack_start (combo_cell, false);
-			column.add_attribute (combo_cell, "text", base_column + 1);
+			column.add_attribute (combo_cell, "text", base_column + PriceColumn.METHOD_TITLE);
+			column.add_attribute (combo_cell, "visible", base_column + PriceColumn.METHOD_VISIBILITY);
 
 			price_list.append_column (column);
 			service_column_map[service.id] = base_column;
-			base_column += 2;
+			base_column += PriceColumn.COUNT;
 		}
 	}
 
@@ -139,7 +155,7 @@ class ServiceWindow : Gtk.Window {
 		var now = new DateTime.now_local ();
 		var end_period = now.get_year () * 12 + now.get_month () + 4;
 
-		unowned Gtk.ListStore model = (Gtk.ListStore) price_list.model;
+		unowned Gtk.ListStore model = price_list.model as Gtk.ListStore;
 
 		for (var period = start_period; period <= end_period; period++) {
 			var year = period / 12;
@@ -153,66 +169,66 @@ class ServiceWindow : Gtk.Window {
 			var list = db.fetch_entity_list<Price> (Price.table_name,
 					"building=%d AND period=%d".printf (current_building, period));
 			foreach (var p in list) {
+				if (p == null)
+					continue;
+
 				var base_column = service_column_map[p.service.id];
-				model.set (iter, base_column + 0, p.value.format (), base_column + 1, method_names[p.method]);
+				model.set (iter,
+						base_column + PriceColumn.PRICE_VALUE, p.value.val,
+						base_column + PriceColumn.PRICE_TITLE, p.value.format (),
+						base_column + PriceColumn.METHOD_VALUE, p.method,
+						base_column + PriceColumn.METHOD_TITLE, method_names[p.method],
+						base_column + PriceColumn.METHOD_VISIBILITY, true);
 			}
 		}
 	}
 
 
-	private void value_edited (Gtk.CellRendererText cell, string tree_path, string new_text) {
-		int period;
+	private void price_edited (Gtk.CellRendererText cell, string tree_path, string new_text) {
 		int service = cell.get_data<int> ("service");
+		int base_column = service_column_map[service];
+
+		var money = Money.from_formatted (new_text);
 
 		Gtk.TreeIter tree_iter;
 		unowned Gtk.ListStore model = (Gtk.ListStore) price_list.model;
 		model.get_iter_from_string (out tree_iter, tree_path);
-		model.get (tree_iter, 0, out period);
+		model.set (tree_iter, base_column + PriceColumn.PRICE_VALUE, money.val);
 
-		var money = Money.from_formatted (new_text);
-		
-
-		if (new_text.length > 0) {
-//			db.exec_sql ("REPLACE INTO %s VALUES (%d, %d, %d, %d, %d)"
-//					.printf (Price.table_name, current_building, period, service, val, method), null);
-		} else {
-			db.delete_entity (Price.table_name,
-					"building=%d AND period=%d AND service=%d"
-					.printf (current_building, period, service));
-		}
+		value_changed (model, tree_iter, service);
 	}
 
 
 	private void method_changed (Gtk.CellRendererCombo cell, string tree_path, Gtk.TreeIter combo_tree_iter) {
-		int period;
 		int service = cell.get_data<int> ("service");
+		int base_column = service_column_map[service];
+
+		int method;
+		method_list_store.get (combo_tree_iter, 1, out method);
 
 		Gtk.TreeIter tree_iter;
 		unowned Gtk.ListStore model = (Gtk.ListStore) price_list.model;
 		model.get_iter_from_string (out tree_iter, tree_path);
-		model.get (tree_iter, 0, out period);
-		
+		model.set (tree_iter, base_column + PriceColumn.METHOD_VALUE, method);
+
+		value_changed (model, tree_iter, service);
 	}
 
 
-	private void price_changed (string path, Gtk.CellRenderer cell) {
+	private void value_changed (Gtk.ListStore model, Gtk.TreeIter tree_iter, int service) {
 		int period, price, method;
-		int service = cell.get_data<int> ("service");
 		int base_column = service_column_map[service];
 
-		Gtk.TreeIter tree_iter;
-		unowned Gtk.ListStore model = (Gtk.ListStore) price_list.model;
-		model.get_iter_from_string (out tree_iter, path);
 		model.get (tree_iter, 0, out period,
-				base_column + 0, out price,
-				base_column + 2, out method);
+				base_column + PriceColumn.PRICE_VALUE, out price,
+				base_column + PriceColumn.METHOD_VALUE, out method);
 
 		if (price == 0) {
 			model.set (tree_iter,
-					base_column + 0, 0,
-					base_column + 1, null,
-					base_column + 2, false);
-					base_column + 2, false);
+					base_column + PriceColumn.PRICE_VALUE, 0,
+					base_column + PriceColumn.PRICE_TITLE, null,
+					base_column + PriceColumn.METHOD_VALUE, 0,
+					base_column + PriceColumn.METHOD_VISIBILITY, false);
 
 			db.delete_entity (Price.table_name,
 					"building=%d AND period=%d AND service=%d"
@@ -220,11 +236,12 @@ class ServiceWindow : Gtk.Window {
 		} else {
 			var m = Money (price);
 			model.set (tree_iter,
-					base_column + 1, m.format (),
-					base_column + 3, method_names[method]);
+					base_column + PriceColumn.PRICE_TITLE, m.format (),
+					base_column + PriceColumn.METHOD_TITLE, method_names[method],
+					base_column + PriceColumn.METHOD_VISIBILITY, true);
 
 			db.exec_sql (("REPLACE INTO %s VALUES (%d, %d, %d, %" + int64.FORMAT + ", %d)")
-					.printf (Price.table_name, current_building, period, service, val.val, method), null);
+					.printf (Price.table_name, current_building, period, service, price, method), null);
 		}
 	}
 }
