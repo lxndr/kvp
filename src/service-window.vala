@@ -41,17 +41,14 @@ class ServiceWindow : Gtk.Window {
 	construct {
 		service_column_map = new Gee.HashMap<int, int> ();
 
-		/* service */
 		service_table = new ServiceTable (db);
 		service_table.read_only = true;
 		service_table.refresh_view ();
 		service_scrolled.add (service_table);
 		service_scrolled.show_all ();
 
-		/* price */
-		update_building_list ();
 		update_service_list ();
-		update_price_list ();
+		update_building_list ();
 	}
 
 
@@ -73,12 +70,20 @@ class ServiceWindow : Gtk.Window {
 			string name = "%s, %s".printf (building.street, building.number);
 			building_combo.append (building.id.to_string (), name);
 		}
+
+		if (list.size > 0)
+			building_combo.active_id = list[0].id.to_string ();
 	}
 
 
 	[GtkCallback]
 	private void building_changed () {
-		
+		if (building_combo.active_id == null)
+			current_building = 0;
+		else
+			current_building = int.parse (building_combo.active_id);
+
+		update_price_list ();
 	}
 
 
@@ -126,6 +131,7 @@ class ServiceWindow : Gtk.Window {
 			text_cell.set ("editable", true,
 							"xalign", 1.0,
 							"xpad", 3);
+			text_cell.set_data<int> ("service", service.id);
 			text_cell.edited.connect (price_edited);
 			column.pack_start (text_cell, true);
 			column.add_attribute (text_cell, "text", base_column + PriceColumn.PRICE_TITLE);
@@ -138,6 +144,7 @@ class ServiceWindow : Gtk.Window {
 							"weight", 700,
 							"width", 25,
 							"xpad", 3);
+			combo_cell.set_data<int> ("service", service.id);
 			combo_cell.changed.connect (method_changed);
 			column.pack_start (combo_cell, false);
 			column.add_attribute (combo_cell, "text", base_column + PriceColumn.METHOD_TITLE);
@@ -151,11 +158,15 @@ class ServiceWindow : Gtk.Window {
 
 
 	private void update_price_list () {
+		unowned Gtk.ListStore model = price_list.model as Gtk.ListStore;
+		model.clear ();
+
+		if (current_building == 0)
+			return;
+
 		var start_period = 24168;
 		var now = new DateTime.now_local ();
 		var end_period = now.get_year () * 12 + now.get_month () + 4;
-
-		unowned Gtk.ListStore model = price_list.model as Gtk.ListStore;
 
 		for (var period = start_period; period <= end_period; period++) {
 			var year = period / 12;
