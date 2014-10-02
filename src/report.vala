@@ -5,7 +5,7 @@ public abstract class Report : Object {
 	public Gtk.Window toplevel_window { get; construct set; }
 	public Database db { get; construct set; }
 	public Building? building { get; construct set; }
-	public AccountPeriod periodic { get; construct set; }
+	public AccountPeriod selected_account { get; construct set; }
 
 
 	public virtual bool prepare () {

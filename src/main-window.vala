@@ -253,7 +253,7 @@ class MainWindow : Gtk.ApplicationWindow {
 				"toplevel_window", this,
 				"db", db,
 				"building", current_building,
-				"periodic", account_table.get_selected ()) as Report;
+				"selected_account", account_table.get_selected ()) as Report;
 
 		if (report.prepare () == false)
 			return;

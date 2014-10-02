@@ -42,11 +42,11 @@ public class Report003 : Report {
 
 		/* month */
 		sheet.put_string ("A2", _("for %s %d year")
-				.printf (Utils.month_to_string (periodic.period % 12).down (), periodic.period / 12));
+				.printf (Utils.month_to_string (selected_account.period % 12).down (), selected_account.period / 12));
 
 		/* tax prices */
 		var prices = db.fetch_int_int64_map (Price.table_name, "service", "value",
-				"period=%d".printf (periodic.period));
+				"period=%d".printf (selected_account.period));
 
 		foreach (var id in service_ids)
 			if (prices[id] == null) prices[id] = 0;
@@ -69,7 +69,7 @@ public class Report003 : Report {
 			totals[i] = 0;
 
 		foreach (var ac in accounts) {
-			var account_period = ac.fetch_period (periodic.period);
+			var account_period = ac.fetch_period (selected_account.period);
 			if (account_period == null)
 				continue;
 
@@ -78,7 +78,7 @@ public class Report003 : Report {
 
 			row = sheet.get_row (row_number);
 			row.get_cell (1).put_string (ac.number).style = cstyles[0];
-			row.get_cell (2).put_string (make_name (ac.tenant_name (periodic.period))).style = cstyles[1];
+			row.get_cell (2).put_string (make_name (ac.tenant_name (selected_account.period))).style = cstyles[1];
 			row.get_cell (3).put_string (account_period.apartment).style = cstyles[2];
 			row.get_cell (4).put_string (account_period.n_rooms.to_string ()).style = cstyles[3];
 			row.get_cell (5).put_string (Utils.format_double (account_period.area, 2)).style = cstyles[4];
@@ -87,8 +87,7 @@ public class Report003 : Report {
 			row.get_cell (6).put_string (n_people.to_string ()).style = cstyles[5];
 
 			var taxes = db.fetch_int_int64_map (Tax.table_name, "service", "total",
-					("account=%" + int64.FORMAT + " AND period=%d")
-					.printf (ac.id, periodic.period));
+					"account=%d AND period=%d".printf (ac.id, selected_account.period));
 
 			OOXML.Cell cell;
 

@@ -18,6 +18,9 @@ public class YearMonth : Gtk.Popover {
 
 
 	construct {
+		start_period = 1900 * 12;
+		end_period = 10000 * 12;
+
 		grid = new Gtk.Grid ();
 		grid.border_width = 4;
 		grid.column_spacing = 4;
