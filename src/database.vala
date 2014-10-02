@@ -94,7 +94,7 @@ public class Database : DB.SQLiteDatabase {
 		exec_sql ("INSERT INTO %s SELECT null,account,%d,name,birthday,relationship FROM %s WHERE period=%d"
 				.printf (Person.table_name, period, from, prev_period), null);
 		/* a little bit more tricky */
-		var price_list = get_price_list (period);
+		var price_list = get_price_list (building, period);
 		foreach (var price in price_list) {
 			from = form_table_name_with_building (building, Tax.table_name);
 			exec_sql ("INSERT INTO %s SELECT account,%d,service,apply,amount,total FROM %s WHERE period=%d AND service=%d"
@@ -165,9 +165,12 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.List<Price> get_price_list (int period) {
-		return fetch_entity_list<Price> (Price.table_name,
-			"period=%d".printf (period));
+	public Gee.List<Price> get_price_list (Building? building, int period) {
+		string where = "period=%d".printf (period);
+		if (building != null)
+			where += " AND building=%d".printf (building.id);
+
+		return fetch_entity_list<Price> (Price.table_name, where);
 	}
 
 

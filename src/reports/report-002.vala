@@ -105,7 +105,7 @@ public class Report002 : Report {
 		sheet.put_string ("CA4", account_period.apartment);
 
 		/* price list */
-		var price_list = db.get_price_list (account_period.period);
+		var price_list = db.get_price_list (account_period.account.building, account_period.period);
 		string s = "";
 		foreach (var price in price_list)
 			s += "%s: %s\n".printf (price.service.name, price.value.format ());
