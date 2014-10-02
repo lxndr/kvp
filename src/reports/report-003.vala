@@ -134,6 +134,7 @@ public class Report003 : Report {
 
 		/* totals and ending style */
 		for (var i = 0; i < 17; i++) {
+stdout.printf ("%d %lld\n", row_number, totals[i]);
 			row = sheet.get_row (row_number);
 			var cell = row.get_cell (i+1);
 			cell.style = estyles[i];
