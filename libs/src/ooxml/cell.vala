@@ -35,7 +35,7 @@ public class Cell : Object {
 
 
 	public unowned Cell put_string (string text) {
-		val = new StringValue.simple (text);
+		val = new SimpleTextValue (text);
 		return this;
 	}
 }

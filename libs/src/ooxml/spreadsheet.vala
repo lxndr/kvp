@@ -16,13 +16,15 @@ public class Spreadsheet : Object {
 		archive.open (file);
 
 		/* load shared string */
-		var shared_strings = SharedStrings.load_from_xlsx (archive);
+		Gee.List<TextValue> shared_strings = ShareableList.new_for_text ();
+		Xml.Doc* doc = load_xml ("xl/sharedStrings.xml");
+		Reader.shared_strings (doc->get_root_element (), shared_strings);
 
 		load_workbook (shared_strings);
 	}
 
 
-	private void load_workbook (Gee.List<StringValue> shared_strings) throws GLib.Error {
+	private void load_workbook (Gee.List<TextValue> shared_strings) throws GLib.Error {
 		var xml_doc = load_xml ("xl/workbook.xml");
 
 		var workbook_node = xml_doc->get_root_element ();
@@ -41,7 +43,7 @@ public class Spreadsheet : Object {
 	}
 
 
-	private void load_worksheet (uint sheet_id, Gee.List<StringValue> shared_strings) throws GLib.Error {
+	private void load_worksheet (uint sheet_id, Gee.List<TextValue> shared_strings) throws GLib.Error {
 		var path = "xl/worksheets/sheet%u.xml".printf (sheet_id);
 		var xml_doc = load_xml (path);
 
@@ -60,17 +62,26 @@ public class Spreadsheet : Object {
 
 
 	public void save_as (File file) throws GLib.Error {
-		Gee.List<StringValue> shared_strings = new Gee.ArrayList<StringValue> ();
+		var shared_strings = ShareableList.new_for_text ();
 
 		for (var i = 0; i < sheets.size; i++)
 			store_worksheet (sheets[i], i + 1, shared_strings);
 
-		SharedStrings.store_to_xlsx (shared_strings, archive);
+		Xml.Doc* doc = new Xml.Doc ("1.0");
+		doc->standalone = 1;
+		doc->set_root_element (Writer.shared_strings (shared_strings));
+
+		string xml;
+		doc->dump_memory_enc (out xml, null, "UTF-8");
+		xml = Utils.fix_line_ending (xml);
+		var io = archive.add_from_stream ("xl/sharedStrings.xml");
+		io.output_stream.write (xml.data);
+
 		archive.write (file);
 	}
 
 
-	private void store_worksheet (Sheet sheet, uint sheet_id, Gee.List<StringValue> shared_strings) throws GLib.Error {
+	private void store_worksheet (Sheet sheet, uint sheet_id, ShareableList<TextValue> shared_strings) throws GLib.Error {
 		string xml = sheet.to_xml (shared_strings);
 
 		var path = "xl/worksheets/sheet%u.xml".printf (sheet_id);

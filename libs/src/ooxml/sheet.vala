@@ -53,8 +53,6 @@ public class Sheet : Object {
 
 	public void put_string (string cell_name, string text) {
 		get_cell (cell_name).put_string (text);
-//stdout.printf ("PUT_STRING %s %s\n", cell_name, text);
-//stdout.printf ("PUT_STRING %s\n", ();
 	}
 
 
@@ -63,7 +61,7 @@ public class Sheet : Object {
 	}
 
 
-	public void load_from_xml (Xml.Doc* xml_doc, Gee.List<StringValue> shared_strings) throws Error {
+	public void load_from_xml (Xml.Doc* xml_doc, Gee.List<TextValue> shared_strings) throws Error {
 		Xml.Node* xml_root = xml_doc->get_root_element ();
 		if (xml_root->name != "worksheet")
 			throw new Error.WORKSHEET ("Unknown xml node '%s' within a worksheet part", xml_root->name);
@@ -81,7 +79,7 @@ public class Sheet : Object {
 	}
 
 
-	private void load_sheet_data (Xml.Node* xml_node, Gee.List<StringValue> shared_strings) throws Error {
+	private void load_sheet_data (Xml.Node* xml_node, Gee.List<TextValue> shared_strings) throws Error {
 		for (var row_node = xml_node->children; row_node != null; row_node = row_node->next) {
 			if (row_node->name != "row")
 				throw new Error.WORKSHEET ("Unknown xml node '%s' within sheetData", row_node->name);
@@ -184,7 +182,7 @@ public class Sheet : Object {
 						cell.val = shared_strings[(int) int64.parse (val)];
 						break;
 					case "inlineStr":
-						cell.val = new StringValue.simple (val);
+						cell.val = new SimpleTextValue (val);
 						break;
 					default:
 						throw new Error.WORKSHEET ("Unknown value type '%s' for sheetData/row/cell", type);
@@ -195,7 +193,7 @@ public class Sheet : Object {
 	}
 
 
-	public string to_xml (Gee.List<StringValue> shared_strings) {
+	public string to_xml (ShareableList<TextValue> shared_strings) {
 		Xml.Doc* xml_doc = new Xml.Doc ("1.0");
 		xml_doc->standalone = 1;
 		Xml.Node* root_node = xml_doc->new_node (null, "worksheet");
@@ -238,11 +236,11 @@ public class Sheet : Object {
 
 // stdout.printf (xml);
 
-		return Utils.convert_line_end (xml);
+		return Utils.fix_line_ending (xml);
 	}
 
 
-	private Xml.Node* sheet_data_to_xml (Gee.List<StringValue> shared_strings) {
+	private Xml.Node* sheet_data_to_xml (ShareableList<TextValue> shared_strings) {
 		Xml.Node* root_node = new Xml.Node (null, "sheetData");
 
 		foreach (var row in rows) {
@@ -265,16 +263,11 @@ public class Sheet : Object {
 				cell_node->set_prop ("r", cell.get_name ());
 				cell_node->set_prop ("s", cell.style.to_string ());
 
-				if (cell.val is StringValue) {
-					var cell_val = cell.val as StringValue;
+				if (cell.val is TextValue) {
+					var cell_val = cell.val as TextValue;
 					cell_node->set_prop ("t", "s");
 
-					var string_number = shared_strings.index_of (cell_val);
-					if (string_number == -1) {
-						shared_strings.add (cell_val);
-						string_number = shared_strings.size - 1;
-					}
-
+					var string_number = shared_strings.try_add (cell_val);
 					cell_node->new_text_child (null, "v", string_number.to_string ());
 				} else if (cell.val is NumberValue) {
 					var cell_val = cell.val as NumberValue;

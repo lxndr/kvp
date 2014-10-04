@@ -10,6 +10,16 @@ else
 endif
 
 
+ifeq ($(DEBUG), yes)
+	FLAGS = \
+			-g \
+			--save-temps
+else
+	FLAGS = \
+		 --Xcc="-w"
+endif
+
+
 NAME=ooxml
 
 SOURCES= \
@@ -17,9 +27,11 @@ SOURCES= \
 		utils.vala \
 		cell-value.vala \
 		cell.vala \
-		shared-strings.vala \
 		sheet.vala \
-		spreadsheet.vala
+		spreadsheet.vala \
+		shareable-list.vala \
+		reader.vala \
+		writer.vala
 
 PACKAGES= \
 		--vapidir="../../vapi" \
@@ -35,7 +47,7 @@ all: ../../lib/$(NAME).a
 
 ../../lib/$(NAME).a: $(SOURCES)
 	echo -e "\e[0;32mCompiling '$(NAME).a'\e[0m"
-	valac $(PLATFORM_FLAGS) $(PACKAGES) --library=$(NAME) --use-header --header=$(NAME).h  --Xcc="-I../../include" --Xcc="-w" --compile $(SOURCES)
+	valac $(PLATFORM_FLAGS) $(PACKAGES) $(FLAGS) --library=$(NAME) --use-header --header=$(NAME).h  --Xcc="-I../../include" --Xcc="-w" --compile $(SOURCES)
 	$(AR) rcs ../../lib/$(NAME).a *.o
 	mv $(NAME).h ../../include
 	mv $(NAME).vapi ../../vapi

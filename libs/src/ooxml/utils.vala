@@ -49,8 +49,22 @@ public string format_cell_name (int row_number, int cell_number) {
 }
 
 
-public bool parse_bool (string s) {
-	return s == "true" || s == "1";
+public int parse_int (string? s) {
+	if (s == null)
+		return 0;
+	return int.parse (s);
+}
+
+
+public bool parse_bool (string? s) {
+	return s != null && (s == "true" || s == "1");
+}
+
+
+public double parse_double (string? s) {
+	if (s == null)
+		return 0;
+	return double.parse (s);
 }
 
 
@@ -62,7 +76,13 @@ public unowned string format_bool (bool b) {
 }
 
 
-public string convert_line_end (string s) {
+public string format_double (double d) {
+	char[] buf = new char[double.DTOSTR_BUF_SIZE];
+	return d.to_str (buf);
+}
+
+
+public string fix_line_ending (string s) {
 	return s.replace ("\n", "\r\n");
 }
 
