@@ -15,18 +15,6 @@ public class Report003 : Report {
 	}
 
 
-	private string make_name (string? name) {
-		if (name == null)
-			return "";
-
-		var p = name.index_of_char (' ');
-		if (p == -1)
-			return name;
-		else
-			return name[0:p+3];
-	}
-
-
 	public override void make () throws Error {
 		book.load (GLib.File.new_for_path ("./templates/people-and-taxes.xlsx"));
 
@@ -46,21 +34,20 @@ public class Report003 : Report {
 
 		/* tax prices */
 		var prices = db.fetch_int_int64_map (Price.table_name, "service", "value",
-				"period=%d".printf (selected_account.period));
-
+				"building=%d AND period=%d".printf (selected_account.account.building.id, selected_account.period));
 		foreach (var id in service_ids)
 			if (prices[id] == null) prices[id] = 0;
 
-		sheet.put_string ("D3", Money (prices[5]).format ());
-		sheet.put_string ("D4", Money (prices[6]).format ());
-		sheet.put_string ("D5", Money (prices[1]).format ());
-		sheet.put_string ("D6", Money (prices[7]).format ());
-		sheet.put_string ("J3", Money (prices[8]).format ());
-		sheet.put_string ("J4", Money (prices[4]).format ());
-		sheet.put_string ("J5", Money (prices[9]).format ());
+		sheet.put_number ("D3", Money (prices[5]).to_real ());
+		sheet.put_number ("D4", Money (prices[6]).to_real ());
+		sheet.put_number ("D5", Money (prices[1]).to_real ());
+		sheet.put_number ("D6", Money (prices[7]).to_real ());
+		sheet.put_number ("J3", Money (prices[8]).to_real ());
+		sheet.put_number ("J4", Money (prices[4]).to_real ());
+		sheet.put_number ("J5", Money (prices[9]).to_real ());
 
-
-		var accounts = db.get_account_list (building);
+		/*  */
+		var accounts = db.get_account_list (selected_account.account.building);
 		OOXML.Row row = sheet.get_row(1);
 		int row_number = 10;
 
@@ -78,7 +65,7 @@ public class Report003 : Report {
 
 			row = sheet.get_row (row_number);
 			row.get_cell (1).put_string (ac.number).style = cstyles[0];
-			row.get_cell (2).put_string (make_name (ac.tenant_name (selected_account.period))).style = cstyles[1];
+			row.get_cell (2).put_string (Utils.shorten_name (ac.tenant_name (selected_account.period))).style = cstyles[1];
 			row.get_cell (3).put_string (account_period.apartment).style = cstyles[2];
 			row.get_cell (4).put_string (account_period.n_rooms.to_string ()).style = cstyles[3];
 			row.get_cell (5).put_string (Utils.format_double (account_period.area, 2)).style = cstyles[4];
@@ -98,7 +85,7 @@ public class Report003 : Report {
 				cell = row.get_cell (7 + i);
 				if (val != null && val > 0) {
 					totals[6 + i] += val;
-					cell.put_string (Money (val).format ());
+					cell.put_number (Money (val).to_real ());
 				}
 				cell.style = cstyles[6 + i];
 			}
@@ -107,25 +94,25 @@ public class Report003 : Report {
 			val = account_period.total.val;
 			totals[13] += val;
 			cell = row.get_cell (14);
-			cell.put_string (Money (val).format ());
+			cell.put_number (Money (val).to_real ());
 			cell.style = cstyles[13];
 
 			val = account_period.payment.val;
 			totals[14] += val;
 			cell = row.get_cell (15);
-			cell.put_string (Money (val).format ());
+			cell.put_number (Money (val).to_real ());
 			cell.style = cstyles[14];
 
 			val = account_period.previuos_balance ().val;
 			totals[15] += val;
 			cell = row.get_cell (16);
-			cell.put_string (Money (val).format ());
+			cell.put_number (Money (val).to_real ());
 			cell.style = cstyles[15];
 
 			val = account_period.balance.val;
 			totals[16] += val;
 			cell = row.get_cell (17);
-			cell.put_string (Money (val).format ());
+			cell.put_number (Money (val).to_real ());
 			cell.style = cstyles[16];
 
 			row_number++;
@@ -133,7 +120,6 @@ public class Report003 : Report {
 
 		/* totals and ending style */
 		for (var i = 0; i < 17; i++) {
-stdout.printf ("%d %lld\n", row_number, totals[i]);
 			row = sheet.get_row (row_number);
 			var cell = row.get_cell (i+1);
 			cell.style = estyles[i];
@@ -143,7 +129,7 @@ stdout.printf ("%d %lld\n", row_number, totals[i]);
 			else if (i == 5)
 				cell.put_string ("-");
 			else if (i >= 6)
-				cell.put_string (Money (totals[i]).format ());
+				cell.put_number (Money (totals[i]).to_real ());
 		}
 	}
 

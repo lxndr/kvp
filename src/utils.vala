@@ -140,6 +140,38 @@ public void transform_datetime_to_property_adapter (Value src_value, ref Value d
 
 
 
+private string shorten_name (string? name) {
+	if (name == null)
+		return "";
+
+	var sb = new StringBuilder.sized (16);
+	var index = name.index_of_char (' ');
+	if (index == -1)
+		return name;
+	sb.append_len (name, index);
+	index++;
+
+	unichar ch;
+	if (name.get_next_char (ref index, out ch) == false)
+		return sb.str;
+	sb.append_unichar (' ');
+	sb.append_unichar (ch);
+	sb.append_unichar ('.');
+
+	index = name.index_of_char (' ', index);
+	if (index == -1)
+		return sb.str;
+	index++;
+
+	if (name.get_next_char (ref index, out ch) == false)
+		return sb.str;
+	sb.append_unichar (ch);
+	sb.append_unichar ('.');
+	return sb.str;
+}
+
+
+
 public string month_to_string (int month) {
 	string[] months = {
 		_("January"),
