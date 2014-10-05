@@ -60,7 +60,7 @@ debug: resources $(SOURCES)
 
 
 win32: resources $(SOURCES)
-	valac --cc=i686-w64-mingw32-gcc --pkg-config=i686-w64-mingw32-pkg-config -D WINDOWS_BUILD --Xcc="-Ilibs/include" --Xcc="-w" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(SOURCES) src/resources.c --target-glib=2.38 --gresources=kvartplata.gresource.xml -o kvp-x86_32.exe --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=sqlite3 --pkg=libxml-2.0 --pkg=zlib libs/src/archive/zip.vala libs/src/db/database.vala libs/src/db/entity.vala libs/src/db/query-builder.vala libs/src/db/simple-entity.vala libs/src/db/sqlite-database.vala libs/src/db/view-table.vala libs/src/db/viewable.vala libs/src/ooxml/cell.vala libs/src/ooxml/cell-value.vala libs/src/ooxml/error.vala libs/src/ooxml/shared-strings.vala libs/src/ooxml/sheet.vala libs/src/ooxml/spreadsheet.vala libs/src/ooxml/utils.vala libs/src/db/cellrenderer-calendar.vala
+	valac --cc=i686-w64-mingw32-gcc --pkg-config=i686-w64-mingw32-pkg-config -D WINDOWS_BUILD --Xcc="-Ilibs/include" --Xcc="-w" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(SOURCES) src/resources.c --target-glib=2.38 --gresources=kvartplata.gresource.xml -o kvp-x86_32.exe --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=sqlite3 --pkg=libxml-2.0 --pkg=zlib libs/src/archive/zip.vala libs/src/db/database.vala libs/src/db/entity.vala libs/src/db/query-builder.vala libs/src/db/simple-entity.vala libs/src/db/sqlite-database.vala libs/src/db/view-table.vala libs/src/db/viewable.vala libs/src/ooxml/cell.vala libs/src/ooxml/cell-value.vala libs/src/ooxml/error.vala libs/src/ooxml/shareable-list.vala libs/src/ooxml/reader.vala libs/src/ooxml/writer.vala libs/src/ooxml/sheet.vala libs/src/ooxml/spreadsheet.vala libs/src/ooxml/utils.vala libs/src/db/cellrenderer-calendar.vala
 
 
 win64: resources $(SOURCES)

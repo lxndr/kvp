@@ -1,7 +1,7 @@
 ifeq ($(WIN32), yes)
 	AR=i686-w64-mingw32-ar
 	PLATFORM_FLAGS = \
-		--cc=i686-w64-mingw32-gcc
+		--cc=i686-w64-mingw32-gcc \
 		--pkg-config=i686-w64-mingw32-pkg-config \
 		-D WINDOWS_BUILD
 else
