@@ -187,26 +187,26 @@ public class Report002 : Report {
 				var tax = taxes[service_ids[j]];
 				if (tax != null) {
 					totals[j] += tax.total.val;
-					row.get_cell (3 + j).put_string (tax.total.format ());
+					row.get_cell (3 + j).put_number (tax.total.to_real ());
 				}
 			}
 
 			totals[8] += periodic.total.val;
-			row.get_cell (12).put_string (periodic.total.format ());
+			row.get_cell (12).put_number (periodic.total.to_real ());
 			totals[9] += periodic.payment.val;
-			row.get_cell (13).put_string (periodic.payment.format ());
+			row.get_cell (13).put_number (periodic.payment.to_real ());
 			totals[10] = periodic.balance.val;
-			row.get_cell (14).put_string (periodic.balance.format ());
+			row.get_cell (14).put_number (periodic.balance.to_real ());
 
 			row_number++;
 		}
 
 		var row = sheet.get_row (17);
 		for (var j = 0; j < 8; j++)
-			row.get_cell (3 + j).put_string (Money (totals[j]).format ());
-		row.get_cell (12).put_string (Money (totals[8]).format ());
-		row.get_cell (13).put_string (Money (totals[9]).format ());
-		row.get_cell (14).put_string (Money (totals[10]).format ());
+			row.get_cell (3 + j).put_number (Money (totals[j]).to_real ());
+		row.get_cell (12).put_number (Money (totals[8]).to_real ());
+		row.get_cell (13).put_number (Money (totals[9]).to_real ());
+		row.get_cell (14).put_number (Money (totals[10]).to_real ());
 	}
 
 

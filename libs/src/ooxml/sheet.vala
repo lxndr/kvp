@@ -1,14 +1,199 @@
 namespace OOXML {
 
 
+public enum Pane {
+	TOP_LEFT,
+	TOP_RIGHT,
+	BOTTOM_LEFT,
+	BOTTOM_RIGHT
+}
+
+
+public enum Orientation {
+	DEFAULT,
+	PORTRAIT,
+	LANDSCAPE
+}
+
+
+public class Selection : Object {
+	private Sheet sheet;
+
+	public Pane pane;
+	public Cell? active_cell;
+	public uint active_cell_id;
+//	public SqRef sqref;
+
+
+	public Selection (Sheet _sheet) {
+		sheet = _sheet;
+		pane = Pane.TOP_LEFT;
+		active_cell = sheet.get_cell ("A1");
+		active_cell_id = 0;
+//		sqref = 
+	}
+}
+
+
+public enum SheetViewType {
+	NORMAL,
+	PAGE_BREAK_PREVIEW,
+	PAGE_LAYOUT
+}
+
+
+
+public class SheetView : Object {
+	public bool window_protection;
+	public bool show_formulas;
+	public bool show_grid_lines;
+	public bool show_row_col_headers;
+	public bool show_zeros;
+	public bool right_to_left;
+	public bool tab_selected;
+	public bool show_ruler;
+	public bool show_outline_symbols;
+	public bool default_grid_color;
+	public bool show_white_space;
+	public SheetViewType view;
+	public Cell? top_left_cell;
+	public uint color_id;
+	public uint zoom_scale;
+	public uint zoom_scale_normal;
+	public uint zoom_scale_sheet_layout_view;
+	public uint zoom_scale_page_layout_view;
+	public uint workbook_view_id;
+
+	public Gee.List<Selection> selections;
+
+
+	public SheetView () {
+		window_protection = false;
+		show_formulas = false;
+		show_grid_lines = true;
+		show_row_col_headers = true;
+		show_zeros = true;
+		right_to_left = false;
+		tab_selected = false;
+		show_ruler = true;
+		show_outline_symbols = true;
+		default_grid_color = true;
+		show_white_space = true;
+		view = SheetViewType.NORMAL;
+		top_left_cell = null;
+		color_id = 64;
+		zoom_scale = 100;
+		zoom_scale_normal = 0;
+		zoom_scale_sheet_layout_view = 0;
+
+		selections = new Gee.ArrayList<Selection> ();
+	}
+}
+
+
+public struct PrintOptions {
+	bool horizontal_centered;
+	bool vertical_centered;
+	bool headings;
+	bool grid_lines;
+	bool grid_lines_set;
+
+
+	public PrintOptions () {
+		horizontal_centered = false;
+		vertical_centered = false;
+		headings = false;
+		grid_lines = false;
+		grid_lines_set = true;
+	}
+}
+
+
+public struct PageMargins {
+	double left;
+	double right;
+	double top;
+	double bottom;
+	double header;
+	double footer;
+}
+
+
+public struct PageSetup {
+	uint paper_size;
+	Orientation orientation;
+	uint vertical_dpi;
+	string r_id;
+
+
+	public PageSetup () {
+		paper_size = 1;
+		orientation = Orientation.DEFAULT;
+		vertical_dpi = 600;
+	}
+}
+
+
+public class Column : Object {
+	public uint min;
+	public uint max;
+	public double width;
+	public uint style;
+	public bool hidden;
+	public bool best_fit;
+	public bool custom_width;
+	public bool phonetic;
+	public uint8 outline_level;
+	public bool collapsed;
+
+
+	public Column () {
+		style = 0;
+		hidden = false;
+		best_fit = false;
+		custom_width = false;
+		phonetic = false;
+		outline_level = 0;
+		collapsed = false;
+	}
+}
+
+
 public class Sheet : Object {
+	public uint base_col_width;
+	public double default_col_width;
+	public double default_row_height;
+	public bool custom_height;
+	public bool zero_height;
+	public bool thick_top;
+	public bool thick_bottom;
+	public uint8 outline_level_row;
+	public uint8 outline_level_col;
+	public PrintOptions print_options;
+	public PageMargins page_margins;
+	public PageSetup page_setup;
+
+	public Gee.List<SheetView> views;
+	public Gee.List<string> merge_cells;
+	public Gee.List<Column> cols;
 	public Gee.List<Row> rows;
-	private Gee.HashMap<string, Xml.Node*> extra_xml_nodes;
 
 
 	public Sheet () {
+		base_col_width = 8;
+		default_col_width = -1.0;
+		default_row_height = -1.0;
+		custom_height = false;
+		zero_height = false;
+		thick_top = false;
+		thick_bottom = false;
+		outline_level_row = 0;
+		outline_level_col = 0;
+
+		views = new Gee.ArrayList<SheetView> ();
+		merge_cells = new Gee.ArrayList<string> ();
+		cols = new Gee.ArrayList<Column> ();
 		rows = new Gee.ArrayList<Row> ();
-		extra_xml_nodes = new Gee.HashMap<string, Xml.Node*> ();
 	}
 
 
@@ -58,226 +243,6 @@ public class Sheet : Object {
 
 	public void put_number (string cell_name, double number) {
 		get_cell (cell_name).val = new NumberValue (number);
-	}
-
-
-	public void load_from_xml (Xml.Doc* xml_doc, Gee.List<TextValue> shared_strings) throws Error {
-		Xml.Node* xml_root = xml_doc->get_root_element ();
-		if (xml_root->name != "worksheet")
-			throw new Error.WORKSHEET ("Unknown xml node '%s' within a worksheet part", xml_root->name);
-
-		for (var xml_node = xml_root->children; xml_node != null; xml_node = xml_node->next) {
-			switch (xml_node->name) {
-			case "sheetData":
-				load_sheet_data (xml_node, shared_strings);
-				break;
-			default:
-				extra_xml_nodes[xml_node->name] = xml_node->copy (1);
-				break;
-			}
-		}
-	}
-
-
-	private void load_sheet_data (Xml.Node* xml_node, Gee.List<TextValue> shared_strings) throws Error {
-		for (var row_node = xml_node->children; row_node != null; row_node = row_node->next) {
-			if (row_node->name != "row")
-				throw new Error.WORKSHEET ("Unknown xml node '%s' within sheetData", row_node->name);
-
-			int row_number = 0;
-			var row = new Row (this);
-
-			for (var attr = row_node->properties; attr != null; attr = attr->next) {
-				unowned string val = attr->children->content;
-
-				switch (attr->name) {
-				case "r":
-					row_number = (int) int64.parse (val);
-					break;
-				case "spans":
-				case "dyDescent":
-					break;
-				case "s":
-					row.style = (uint) uint64.parse (val);
-					break;
-				case "customFormat":
-					row.custom_format = Utils.parse_bool (val);
-					break;
-				case "ht":
-					row.height = double.parse (val);
-					break;
-				case "hidden":
-					row.hidden = Utils.parse_bool (val);
-					break;
-				case "customHeight":
-					row.custom_height = Utils.parse_bool (val);
-					break;
-				case "outlineLevel":
-					row.outline_level = (uint8) uint64.parse (val);
-					break;
-				case "collapsed":
-					row.collapsed = Utils.parse_bool (val);
-					break;
-				case "thickTop":
-					row.thick_top = Utils.parse_bool (val);
-					break;
-				case "thickBot":
-					row.thick_bot = Utils.parse_bool (val);
-					break;
-				case "ph":
-					row.phonetic = Utils.parse_bool (val);
-					break;
-				default:
-					throw new Error.WORKSHEET ("Unknown xml attribute '%s' within sheetData/row", attr->name);
-				}
-			}
-
-			set_row (row_number, row);
-
-			for (var c_node = row_node->children; c_node != null; c_node = c_node->next) {
-				if (c_node->name != "c")
-					throw new Error.WORKSHEET ("Unknown xml node '%s' within sheetData/row", c_node->name);
-
-				int cell_number = 0;
-				var cell = new Cell (row);
-				string? val;
-
-				/* ref */
-
-
-
-				val = c_node->get_prop ("r");
-				if (val == null)
-					val = "A1"; /* FIXME no no no */
-//stdout.printf ("CELL %s\n", val);
-				int y;
-				Utils.parse_cell_name (val, out y, out cell_number);
-//stdout.printf ("\t c%d r%d\n", cell_number, y);
-				assert (y == row_number);
-
-				row.set_cell (cell_number, cell);
-//stdout.printf ("\t c%d r%d = %s\n", cell.number, cell.row.number, cell.get_name ());
-				assert (val == cell.get_name ());
-
-				/* style */
-				val = c_node->get_prop ("s");
-				if (val == null)
-					val = "0";
-				cell.style = (uint) uint64.parse (val);
-
-				/* type */
-				string? type = c_node->get_prop ("t");
-				if (type == null)
-					type = "n";
-
-				var v_node = c_node->children;
-				if (v_node != null) {
-					val = v_node->children->content;
-
-					switch (type) {
-					case "n":
-						cell.val = new NumberValue.from_string (val);
-						break;
-					case "s":
-						cell.val = shared_strings[(int) int64.parse (val)];
-						break;
-					case "inlineStr":
-						cell.val = new SimpleTextValue (val);
-						break;
-					default:
-						throw new Error.WORKSHEET ("Unknown value type '%s' for sheetData/row/cell", type);
-					}
-				}
-			}
-		}
-	}
-
-
-	public string to_xml (ShareableList<TextValue> shared_strings) {
-		Xml.Doc* xml_doc = new Xml.Doc ("1.0");
-		xml_doc->standalone = 1;
-		Xml.Node* root_node = xml_doc->new_node (null, "worksheet");
-		root_node->set_prop ("xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
-
-		xml_doc->set_root_element (root_node);
-
-		/* extra nodes */
-		string[] top_nodes = {
-			"dimension",
-			"sheetViews",
-			"sheetFormatPr",
-			"cols"
-		};
-
-		foreach (var name in top_nodes) {
-			Xml.Node* xml_node = extra_xml_nodes[name];
-			root_node->add_child (xml_node);
-		}
-
-		/* sheetData */
-		root_node->add_child (sheet_data_to_xml (shared_strings));
-
-		/* extra nodes */
-		string[] bottom_nodes = {
-			"mergeCells",
-			"printOptions",
-			"pageMargins",
-			"pageSetup"
-		};
-
-		foreach (var name in bottom_nodes) {
-			Xml.Node* xml_node = extra_xml_nodes[name];
-			root_node->add_child (xml_node);
-		}
-
-		/* dump */
-		string xml;
-		xml_doc->dump_memory_enc (out xml);
-
-// stdout.printf (xml);
-
-		return Utils.fix_line_ending (xml);
-	}
-
-
-	private Xml.Node* sheet_data_to_xml (ShareableList<TextValue> shared_strings) {
-		Xml.Node* root_node = new Xml.Node (null, "sheetData");
-
-		foreach (var row in rows) {
-			if (row.is_empty () == true)
-				continue;
-
-			Xml.Node* row_node = root_node->new_child (null, "row");
-			row_node->set_prop ("r", row.number.to_string ());
-			row_node->set_prop ("s", row.style.to_string ());
-			row_node->set_prop ("customFormat", Utils.format_bool (row.custom_format));
-			row_node->set_prop ("ht", row.height.to_string ());
-			row_node->set_prop ("customHeight", Utils.format_bool (row.custom_height));
-			row_node->set_prop ("thickTop", Utils.format_bool (row.thick_top));
-
-			foreach (var cell in row.cells) {
-				if (cell.is_empty () == true)
-					continue;
-
-				Xml.Node* cell_node = row_node->new_child (null, "c");
-				cell_node->set_prop ("r", cell.get_name ());
-				cell_node->set_prop ("s", cell.style.to_string ());
-
-				if (cell.val is TextValue) {
-					var cell_val = cell.val as TextValue;
-					cell_node->set_prop ("t", "s");
-
-					var string_number = shared_strings.try_add (cell_val);
-					cell_node->new_text_child (null, "v", string_number.to_string ());
-				} else if (cell.val is NumberValue) {
-					var cell_val = cell.val as NumberValue;
-					cell_node->set_prop ("t", "n");
-					cell_node->new_text_child (null, "v", cell_val.val.to_string ());
-				}
-			}
-		}
-
-		return root_node;
 	}
 }
 

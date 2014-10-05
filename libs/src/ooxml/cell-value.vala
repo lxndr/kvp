@@ -5,16 +5,6 @@ public abstract class CellValue : Object {
 }
 
 
-public class IntegerValue : CellValue {
-	public int64 val { get; set; default = 0; }
-
-
-	public IntegerValue.from_string (string s) {
-		Object (val: int64.parse (s));
-	}
-}
-
-
 public class NumberValue : CellValue {
 	public double val { get; set; default = 0; }
 

@@ -3,6 +3,9 @@ namespace OOXML {
 
 public class Cell : Object {
 	public Row row { get; construct; }
+	public uint cell_metadata;
+	public uint value_metadata;
+	public bool show_phonetic;
 
 	public uint style { get; set; default = 0; }
 	public CellValue? val { get; set; default = null; }
@@ -20,6 +23,10 @@ public class Cell : Object {
 
 	public Cell (Row _row) {
 		Object (row: _row);
+
+		cell_metadata = 0;
+		value_metadata = 0;
+		show_phonetic = false;
 	}
 
 
@@ -38,6 +45,12 @@ public class Cell : Object {
 		val = new SimpleTextValue (text);
 		return this;
 	}
+
+
+	public unowned Cell put_number (double n) {
+		val = new NumberValue (n);
+		return this;
+	}
 }
 
 
@@ -46,14 +59,15 @@ public class Row : Object {
 
 	public uint style { get; set; default = 0; }
 	public bool custom_format { get; set; default = false; }
-	public double height { get; set; }
+	public double height { get; set; default = -1; }
 	public bool hidden { get; set; default = false; }
 	public bool custom_height { get; set; default = false; }
 	public uint8 outline_level { get; set; default = 0; }
 	public bool collapsed { get; set; default = false; }
 	public bool thick_top { get; set; default = false; }
-	public bool thick_bot { get; set; default = false; }
-	public bool phonetic { get; set; default = false; }
+	public bool thick_bottom { get; set; default = false; }
+	public bool show_phonetic { get; set; default = false; }
+	public double dyDescent;
 	public Gee.List<Cell> cells;
 
 
@@ -92,6 +106,9 @@ public class Row : Object {
 
 
 	public bool is_empty () {
+		if (height > 0.0)
+			return false;
+
 		foreach (var cell in cells)
 			if (cell.is_empty () == false)
 				return false;

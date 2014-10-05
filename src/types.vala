@@ -98,6 +98,12 @@ public struct Money {
 		sb.append_printf ("%" + int64.FORMAT + ",%03" + int64.FORMAT, p0, p1);
 		return sb.str;
 	}
+
+
+	public double to_real () {
+		var x = Utils.pow_integer (10, 3);
+		return (double) val / (double) x;
+	}
 }
 
 

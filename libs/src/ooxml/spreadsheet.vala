@@ -15,16 +15,13 @@ public class Spreadsheet : Object {
 	public void load (File file) throws GLib.Error {
 		archive.open (file);
 
-		/* load shared string */
-		Gee.List<TextValue> shared_strings = ShareableList.new_for_text ();
-		Xml.Doc* doc = load_xml ("xl/sharedStrings.xml");
-		Reader.shared_strings (doc->get_root_element (), shared_strings);
-
-		load_workbook (shared_strings);
+		var reader = new Reader ();
+		reader.shared_strings (load_xml ("xl/sharedStrings.xml"));
+		load_workbook (reader);
 	}
 
 
-	private void load_workbook (Gee.List<TextValue> shared_strings) throws GLib.Error {
+	private void load_workbook (Reader reader) throws GLib.Error {
 		var xml_doc = load_xml ("xl/workbook.xml");
 
 		var workbook_node = xml_doc->get_root_element ();
@@ -36,19 +33,18 @@ public class Spreadsheet : Object {
 			if (node->name == "sheets") {
 				for (Xml.Node* sheet_node = node->children; sheet_node != null; sheet_node = sheet_node->next) {
 					var sheet_id = (uint) uint64.parse (sheet_node->get_prop ("sheetId"));
-					load_worksheet (sheet_id, shared_strings);
+					load_worksheet (sheet_id, reader);
 				}
 			}
 		}
 	}
 
 
-	private void load_worksheet (uint sheet_id, Gee.List<TextValue> shared_strings) throws GLib.Error {
+	private void load_worksheet (uint sheet_id, Reader reader) throws GLib.Error {
 		var path = "xl/worksheets/sheet%u.xml".printf (sheet_id);
-		var xml_doc = load_xml (path);
+		var doc = load_xml (path);
 
-		var sheet = new Sheet ();
-		sheet.load_from_xml (xml_doc, shared_strings);
+		var sheet = reader.worksheet (doc);
 		sheets.add (sheet);
 	}
 
@@ -62,17 +58,13 @@ public class Spreadsheet : Object {
 
 
 	public void save_as (File file) throws GLib.Error {
-		var shared_strings = ShareableList.new_for_text ();
+		var writer = new Writer ();
 
 		for (var i = 0; i < sheets.size; i++)
-			store_worksheet (sheets[i], i + 1, shared_strings);
-
-		Xml.Doc* doc = new Xml.Doc ("1.0");
-		doc->standalone = 1;
-		doc->set_root_element (Writer.shared_strings (shared_strings));
+			store_worksheet (sheets[i], i + 1, writer);
 
 		string xml;
-		doc->dump_memory_enc (out xml, null, "UTF-8");
+		writer.shared_strings ()->dump_memory_enc (out xml, null, "UTF-8");
 		xml = Utils.fix_line_ending (xml);
 		var io = archive.add_from_stream ("xl/sharedStrings.xml");
 		io.output_stream.write (xml.data);
@@ -81,8 +73,12 @@ public class Spreadsheet : Object {
 	}
 
 
-	private void store_worksheet (Sheet sheet, uint sheet_id, ShareableList<TextValue> shared_strings) throws GLib.Error {
-		string xml = sheet.to_xml (shared_strings);
+	private void store_worksheet (Sheet sheet, uint sheet_id, Writer writer) throws GLib.Error {
+		Xml.Doc* doc = writer.worksheet (sheet);
+
+		string xml;
+		doc->dump_memory_enc (out xml, null, "UTF-8");
+		xml = Utils.fix_line_ending (xml);
 
 		var path = "xl/worksheets/sheet%u.xml".printf (sheet_id);
 		var io = archive.add_from_stream (path);
