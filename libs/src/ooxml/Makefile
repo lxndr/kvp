@@ -1,23 +1,4 @@
-ifeq ($(WIN32), yes)
-	AR=i686-w64-mingw32-ar
-	PLATFORM_FLAGS = \
-		--cc=i686-w64-mingw32-gcc \
-		--pkg-config=i686-w64-mingw32-pkg-config \
-		-D WINDOWS_BUILD \
-		--Xcc="-lxml2"
-else
-	AR=ar
-endif
-
-
-ifeq ($(DEBUG), yes)
-	FLAGS = \
-			-g \
-			--save-temps
-else
-	FLAGS = \
-		 --Xcc="-w"
-endif
+include ../../../common.mk
 
 
 NAME=ooxml
@@ -47,7 +28,7 @@ all: ../../lib/$(NAME).a
 
 ../../lib/$(NAME).a: $(SOURCES)
 	echo -e "\e[0;32mCompiling '$(NAME).a'\e[0m"
-	valac $(PLATFORM_FLAGS) $(PACKAGES) $(FLAGS) --library=$(NAME) --use-header --header=$(NAME).h  --Xcc="-I../../include" --Xcc="-w" --compile $(SOURCES)
+	valac $(PACKAGES) $(FLAGS) --library=$(NAME) --use-header --header=$(NAME).h  --Xcc="-I../../include" --compile $(SOURCES)
 	$(AR) rcs ../../lib/$(NAME).a *.o
 	mv $(NAME).h ../../include
 	mv $(NAME).vapi ../../vapi

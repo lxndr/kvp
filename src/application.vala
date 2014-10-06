@@ -77,7 +77,7 @@ public class Application : Gtk.Application
 
 
 	public static int main (string[] args) {
-#if KVP_DEBUG
+#if DEBUG
 		var root_dir = Path.get_dirname (args[0]);
 #else
 		var root_dir = Path.get_dirname (Path.get_dirname (args[0]));

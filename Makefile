@@ -1,45 +1,52 @@
-RESOURCES=ui/main-window.ui \
+include common.mk
+
+
+NAME = kvp
+
+
+RESOURCES = \
+	ui/main-window.ui \
 	data/init.sql
 
-SOURCES=\
-		src/widgets/year-month.vala \
-		src/widgets/central-year-month.vala \
-		src/application.vala \
-		src/main-window.vala \
-		src/utils.vala \
-		src/types.vala \
-		src/account-table.vala \
-		src/people-table.vala \
-		src/tax-table.vala \
-		src/service-table.vala \
-		src/service-window.vala \
-		src/building-table.vala \
-		src/building-window.vala \
-		src/database.vala \
-		src/entities/building.vala \
-		src/entities/tax.vala \
-		src/entities/person.vala \
-		src/entities/account.vala \
-		src/entities/account-period.vala \
-		src/entities/service.vala \
-		src/entities/price.vala \
-		src/entities/relationship.vala \
-		src/report.vala \
-		src/reports/report-001.vala \
-		src/reports/report-002.vala \
-		src/reports/report-003.vala
+SOURCES = \
+	src/widgets/year-month.vala \
+	src/widgets/central-year-month.vala \
+	src/application.vala \
+	src/main-window.vala \
+	src/utils.vala \
+	src/types.vala \
+	src/account-table.vala \
+	src/people-table.vala \
+	src/tax-table.vala \
+	src/service-table.vala \
+	src/service-window.vala \
+	src/building-table.vala \
+	src/building-window.vala \
+	src/database.vala \
+	src/entities/building.vala \
+	src/entities/tax.vala \
+	src/entities/person.vala \
+	src/entities/account.vala \
+	src/entities/account-period.vala \
+	src/entities/service.vala \
+	src/entities/price.vala \
+	src/entities/relationship.vala \
+	src/report.vala \
+	src/reports/report-001.vala \
+	src/reports/report-002.vala \
+	src/reports/report-003.vala
 
-PACKAGES= \
-		--vapidir="libs/vapi" \
-		--pkg=gtk+-3.0 \
-		--pkg=gee-0.8 \
-		--pkg=sqlite3 \
-		--pkg=libxml-2.0 \
-		--pkg=db \
-		--pkg=db-gtk \
-		--pkg=ooxml
+PACKAGES = \
+	--vapidir="libs/vapi" \
+	--pkg=gtk+-3.0 \
+	--pkg=gee-0.8 \
+	--pkg=sqlite3 \
+	--pkg=libxml-2.0 \
+	--pkg=db \
+	--pkg=db-gtk \
+	--pkg=ooxml
 
-LIBS= \
+LIBS = \
 	--Xcc="libs/lib/db.a" \
 	--Xcc="libs/lib/db-gtk.a" \
 	--Xcc="libs/lib/ooxml.a" \
@@ -47,16 +54,18 @@ LIBS= \
 	--Xcc="-lz"
 
 
-all: kvp
+all: build-libs $(NAME) po
 	
 
 
-kvp: resources $(SOURCES)
-	valac $(SOURCES) src/resources.c --Xcc="-w" --Xcc="-lm" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --Xcc="-Ilibs/include" $(LIBS) --target-glib=2.38 $(PACKAGES) --gresources=kvartplata.gresource.xml -o kvp
+build-libs:
+	$(MAKE) -C libs/src/archive
+	$(MAKE) -C libs/src/db
+	$(MAKE) -C libs/src/ooxml
 
 
-debug: resources $(SOURCES)
-	valac $(SOURCES) src/resources.c -D KVP_DEBUG --Xcc="-lm" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --Xcc="-Ilibs/include" $(LIBS) --target-glib=2.38 $(PACKAGES) --gresources=kvartplata.gresource.xml -g --save-temps -o kvp
+$(NAME): resources $(SOURCES)
+	valac $(FLAGS) --Xcc="-lm" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --Xcc="-Ilibs/include" $(LIBS) --target-glib=2.38 $(PACKAGES) --gresources=kvartplata.gresource.xml -o $(NAME) $(SOURCES) src/resources.c
 
 
 win32: resources $(SOURCES)
@@ -67,7 +76,11 @@ win64: resources $(SOURCES)
 	valac --cc=x86_64-w64-mingw32-gcc --pkg-config=x86_64-w64-mingw32-pkg-config --Xcc="-w" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(SOURCES) src/resources.c --target-glib=2.38 $(PACKAGES) --gresources=kvartplata.gresource.xml -o kvp-x86_64.exe
 
 
-resources: kvartplata.gresource.xml $(RESOURCES)
+resources: src/resources.c
+	
+
+
+src/resources.c: kvartplata.gresource.xml $(RESOURCES)
 	glib-compile-resources --generate-source --target=src/resources.c kvartplata.gresource.xml
 
 
@@ -84,6 +97,10 @@ kvp.pot: $(SOURCES)
 
 
 clean:
+	$(MAKE) -C libs/src/archive clean
+	$(MAKE) -C libs/src/archive clean
+	$(MAKE) -C libs/src/archive clean
+	
 	rm -f src/*.c
 	rm -f src/widgets/*.c
 	rm -f src/entities/*.c

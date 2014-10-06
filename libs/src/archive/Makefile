@@ -1,12 +1,4 @@
-ifeq ($(WIN32), yes)
-	AR=i686-w64-mingw32-ar
-	PLATFORM_FLAGS = \
-		--cc=i686-w64-mingw32-gcc \
-		--pkg-config=i686-w64-mingw32-pkg-config \
-		-D WINDOWS_BUILD
-else
-	AR=ar
-endif
+include ../../../common.mk
 
 
 
@@ -27,7 +19,7 @@ all: ../../lib/$(NAME).a
 
 ../../lib/$(NAME).a: $(SOURCES)
 	echo -e "\e[0;32mCompiling '$(NAME).a'\e[0m"
-	valac $(PLATFORM_FLAGS) $(PACKAGES) --library=$(NAME) --use-header --header=$(NAME).h --Xcc="-w" --compile $(SOURCES)
+	valac $(FLAGS) $(PACKAGES) --library=$(NAME) --use-header --header=$(NAME).h --compile $(SOURCES)
 	$(AR) rcs ../../lib/$(NAME).a *.o
 	mv $(NAME).h ../../include
 	mv $(NAME).vapi ../../vapi
