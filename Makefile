@@ -37,7 +37,6 @@ SOURCES = \
 	src/reports/report-003.vala
 
 PACKAGES = \
-	--vapidir="libs/vapi" \
 	--pkg=gtk+-3.0 \
 	--pkg=gee-0.8 \
 	--pkg=sqlite3 \
@@ -47,40 +46,69 @@ PACKAGES = \
 	--pkg=ooxml
 
 LIBS = \
-	--Xcc="libs/lib/db.a" \
-	--Xcc="libs/lib/db-gtk.a" \
-	--Xcc="libs/lib/ooxml.a" \
-	--Xcc="libs/lib/archive.a" \
+	--Xcc="libs/lib/db.$(LIBEXT)" \
+	--Xcc="libs/lib/db-gtk.$(LIBEXT)" \
+	--Xcc="libs/lib/ooxml.$(LIBEXT)" \
+	--Xcc="libs/lib/archive.$(LIBEXT)" \
 	--Xcc="-lz"
 
 
-all: build-libs $(NAME) po
+ifeq ($(BUILD), win32)
+else ifeq ($(BUILD), win64)
+else
+endif
+
+
+ifeq ($(STATIC), yes)
+	LDFLAGS += \
+		/usr/i686-w64-mingw32/lib/libgee-0.8.a \
+		/usr/i686-w64-mingw32/lib/libsqlite3.a \
+		/usr/i686-w64-mingw32/lib/libxml2.a \
+		`$(PKGCONFIG) --libs gtk+-3.0`
+else
+	LDFLAGS += \
+		-lz \
+		`$(PKGCONFIG) --libs gtk+-3.0 gee-0.8 sqlite3 libxml-2.0`
+
+	ifeq ($(BUILD), win32)
+		LDFLAGS += \
+			-lintl
+	else ifeq ($(BUILD), win64)
+		LDFLAGS += \
+			-lintl
+	else
+		LDFLAGS += \
+			-lm
+	endif
+endif
+
+
+all: build-libs $(NAME)$(BINEXT) po
 	
 
 
 build-libs:
 	$(MAKE) -C libs/src/archive
-	$(MAKE) -C libs/src/db
 	$(MAKE) -C libs/src/ooxml
+	$(MAKE) -C libs/src/db
+	$(MAKE) -C libs/src/db-gtk
 
 
-$(NAME): resources $(SOURCES)
-	valac $(FLAGS) --Xcc="-lm" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --Xcc="-Ilibs/include" $(LIBS) --target-glib=2.38 $(PACKAGES) --gresources=kvartplata.gresource.xml -o $(NAME) $(SOURCES) src/resources.c
+$(NAME)$(BINEXT): resources $(SOURCES)
+	rm -fr "build"
+	mkdir -p "build"
+	cp *.gresource.xml "build/"
+	cp -r "ui" "build"
+	cd "build" && \
+		valac $(FLAGS) $(PACKAGES) --vapidir="../libs/vapi" --target-glib=2.38 --gresources=kvartplata.gresource.xml --header=kvp.h --use-header --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --Xcc="-I../libs/include" --compile ../src/*.vala ../src/entities/*.vala ../src/widgets/*.vala ../src/reports/*.vala ../src/resources.c
+	$(CC) -o $(NAME)$(BINEXT) build/*.o libs/lib/db.$(LIBEXT) libs/lib/db-gtk.$(LIBEXT) libs/lib/ooxml.$(LIBEXT) libs/lib/archive.$(LIBEXT) $(LDFLAGS)
 
 
-win32: resources $(SOURCES)
-	valac --cc=i686-w64-mingw32-gcc --pkg-config=i686-w64-mingw32-pkg-config -D WINDOWS_BUILD --Xcc="-Ilibs/include" --Xcc="-w" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(SOURCES) src/resources.c --target-glib=2.38 --gresources=kvartplata.gresource.xml -o kvp-x86_32.exe --pkg=gtk+-3.0 --pkg=gee-0.8 --pkg=sqlite3 --pkg=libxml-2.0 --pkg=zlib libs/src/archive/zip.vala libs/src/db/database.vala libs/src/db/entity.vala libs/src/db/query-builder.vala libs/src/db/simple-entity.vala libs/src/db/sqlite-database.vala libs/src/db/view-table.vala libs/src/db/viewable.vala libs/src/ooxml/cell.vala libs/src/ooxml/cell-value.vala libs/src/ooxml/error.vala libs/src/ooxml/shareable-list.vala libs/src/ooxml/reader.vala libs/src/ooxml/writer.vala libs/src/ooxml/sheet.vala libs/src/ooxml/spreadsheet.vala libs/src/ooxml/utils.vala libs/src/db/cellrenderer-calendar.vala
-
-
-win64: resources $(SOURCES)
-	valac --cc=x86_64-w64-mingw32-gcc --pkg-config=x86_64-w64-mingw32-pkg-config --Xcc="-w" --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(SOURCES) src/resources.c --target-glib=2.38 $(PACKAGES) --gresources=kvartplata.gresource.xml -o kvp-x86_64.exe
-
-
-resources: src/resources.c
+resources: build/resources.c
 	
 
 
-src/resources.c: kvartplata.gresource.xml $(RESOURCES)
+build/resources.c: kvartplata.gresource.xml $(RESOURCES)
 	glib-compile-resources --generate-source --target=src/resources.c kvartplata.gresource.xml
 
 
@@ -98,11 +126,13 @@ kvp.pot: $(SOURCES)
 
 clean:
 	$(MAKE) -C libs/src/archive clean
-	$(MAKE) -C libs/src/archive clean
-	$(MAKE) -C libs/src/archive clean
-	
+	$(MAKE) -C libs/src/ooxml clean
+	$(MAKE) -C libs/src/db clean
+	$(MAKE) -C libs/src/db-gtk clean
+
 	rm -f src/*.c
 	rm -f src/widgets/*.c
 	rm -f src/entities/*.c
 	rm -f src/reports/*.c
-	rm -f kvp kvp-x86_32.exe kvp-x86_64.exe
+	rm -fr build
+	rm -f kvp kvp.exe

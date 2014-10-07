@@ -31,9 +31,11 @@ public class Spreadsheet : Object {
 
 		for (Xml.Node* node = workbook_node->children; node != null; node = node->next) {
 			if (node->name == "sheets") {
+				int n = 1;
 				for (Xml.Node* sheet_node = node->children; sheet_node != null; sheet_node = sheet_node->next) {
-					var sheet_id = (uint) uint64.parse (sheet_node->get_prop ("sheetId"));
-					load_worksheet (sheet_id, reader);
+//					var sheet_id = (uint) uint64.parse (sheet_node->get_prop ("sheetId"));
+					load_worksheet (n, reader);
+					n++;
 				}
 			}
 		}

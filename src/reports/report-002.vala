@@ -109,6 +109,47 @@ public class Report002 : Report {
 	}
 
 
+	private string process_pattern (string tmpl) {
+		var re = new Regex ("{(.+?)}");
+		return re.replace_eval (tmpl, -1, 0, 0, (match_info, result) => {
+			switch (match_info.fetch (1)) {
+			case "ACCOUNT_NUMBER":
+				result.append (selected_account.account.number);
+				break;
+			case "ACCOUNT_TENANT":
+				result.append (main_tenant.name);
+				break;
+			case "ACCOUNT_ROOM":
+				result.append (selected_account.apartment);
+				break;
+			case "ACCOUNT_NPEOPLE":
+				result.append (people.size.to_string ());
+				break;
+			case "ACCOUNT_NROOMS":
+				result.append (selected_account.n_rooms.to_string ());
+				break;
+			case "ACCOUNT_AREA":
+				result.append (Utils.format_double (selected_account.area, 2));
+				break;
+			case "BUILDING_LOCATION":
+				result.append (selected_account.account.building.location);
+				break;
+			case "BUILDING_STREET":
+				result.append (selected_account.account.building.street);
+				break;
+			case "BUILDING_NUMBER":
+				result.append (selected_account.account.building.number);
+				break;
+			default:
+				result.append_printf ("{%s}", match_info.fetch (1));
+				break;
+			}
+
+			return false;
+		});
+	}
+
+
 	public override void make () throws Error {
 		book.load (GLib.File.new_for_path ("./templates/account.xlsx"));
 
@@ -129,11 +170,21 @@ public class Report002 : Report {
 			error ("This account does not have a main tenant");
 
 		make_page1 (book.sheet (0));
-		make_page2 (book.sheet (1));
+//		make_page2 (book.sheet (1));
+//		make_page3 (book.sheet (2));
 	}
 
 
 	private void make_page1 (OOXML.Sheet sheet) {
+		var cell = sheet.get_cell("A3");
+		unowned OOXML.SimpleTextValue val = cell.val as OOXML.SimpleTextValue;
+		var str = val.text;
+		str = process_pattern (str);
+		val.text = str;
+	}
+
+
+	private void make_page2 (OOXML.Sheet sheet) {
 		unowned Building building = selected_account.account.building;
 		var n_people = people.size;
 
@@ -164,7 +215,7 @@ public class Report002 : Report {
 	}
 
 
-	private void make_page2 (OOXML.Sheet sheet) {
+	private void make_page3 (OOXML.Sheet sheet) {
 		/* base information */
 		sheet.put_string ("C1", main_tenant.name);
 		sheet.put_string ("L1", selected_account.account.number);
