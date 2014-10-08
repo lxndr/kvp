@@ -170,8 +170,8 @@ public class Report002 : Report {
 			error ("This account does not have a main tenant");
 
 		make_page1 (book.sheet (0));
-//		make_page2 (book.sheet (1));
-//		make_page3 (book.sheet (2));
+		make_page2 (book.sheet (1));
+		make_page3 (book.sheet (2));
 	}
 
 

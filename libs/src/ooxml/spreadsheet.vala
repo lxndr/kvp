@@ -45,7 +45,6 @@ public class Spreadsheet : Object {
 	private void load_worksheet (uint sheet_id, Reader reader) throws GLib.Error {
 		var path = "xl/worksheets/sheet%u.xml".printf (sheet_id);
 		var doc = load_xml (path);
-
 		var sheet = reader.worksheet (doc);
 		sheets.add (sheet);
 	}
