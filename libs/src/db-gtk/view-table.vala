@@ -367,6 +367,9 @@ public abstract class ViewTable : Gtk.TreeView {
 	 * This function clears table and requests new entity list to display.
 	 */
 	public void refresh_view () {
+		/* unselect to prevent emitting selection events when GTK clears the list */
+		get_selection ().unselect_all ();
+
 		Gtk.TreeIter iter;
 		list_store.clear ();
 

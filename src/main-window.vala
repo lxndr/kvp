@@ -274,7 +274,7 @@ class MainWindow : Gtk.ApplicationWindow {
 		}
 
 		try {
-#if WINDOWS_BUILD
+#if WINDOWS
 			var ai = AppInfo.get_default_for_type (".xlsx", false);
 			var l = new List<File> ();
 			l.append (tmp_file);

@@ -4,14 +4,6 @@ include ../../../common.mk
 NAME = db
 
 
-SOURCES = \
-	database.vala \
-	sqlite-database.vala \
-	query-builder.vala \
-	entity.vala \
-	simple-entity.vala \
-
-
 PACKAGES = \
 	--pkg=gee-0.8 \
 	--pkg=sqlite3
@@ -23,7 +15,7 @@ all: ../../lib/$(NAME).$(LIBEXT)
 
 ../../lib/$(NAME).$(LIBEXT): $(SOURCES)
 	echo -e "\e[0;32mCompiling '$(NAME).a'\e[0m"
-	valac $(FLAGS) $(PACKAGES) --library=$(NAME) --use-header --header=$(NAME).h --compile $(SOURCES)
+	valac $(FLAGS) $(PACKAGES) --library=$(NAME) --use-header --header=$(NAME).h --compile *.vala
 	$(AR) rcs "../../lib/$(NAME).$(LIBEXT)" *.o
 	mv $(NAME).h "../../include"
 	mv $(NAME).vapi "../../vapi"

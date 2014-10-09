@@ -6,7 +6,7 @@ ifeq ($(BUILD), win32)
 	FLAGS = \
 		--cc=$(CC) \
 		--pkg-config=$(PKGCONFIG) \
-		-D WINDOWS_BUILD
+		-D WINDOWS
 	BINEXT = .exe
 	LIBEXT = lib
 else ifeq ($(BUILD), win64)
@@ -17,7 +17,7 @@ else ifeq ($(BUILD), win64)
 	FLAGS = \
 		--cc=$(CC) \
 		--pkg-config=$(PKGCONFIG) \
-		-D WINDOWS_BUILD
+		-D WINDOWS
 	BINEXT = .exe
 	LIBEXT = lib
 else

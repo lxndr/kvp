@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-10-05 23:23+0400\n"
+"POT-Creation-Date: 2014-10-09 06:09+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -160,11 +160,11 @@ msgid "apartment"
 msgstr "Комната"
 
 #: src/account-table.vala:25
-msgid "n_rooms"
+msgid "n-rooms"
 msgstr "К-во ком."
 
 #: src/account-table.vala:26
-msgid "n_people"
+msgid "n-people"
 msgstr "К-во чел."
 
 #: src/account-table.vala:27

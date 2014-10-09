@@ -53,12 +53,6 @@ LIBS = \
 	--Xcc="-lz"
 
 
-ifeq ($(BUILD), win32)
-else ifeq ($(BUILD), win64)
-else
-endif
-
-
 ifeq ($(STATIC), yes)
 	LDFLAGS += \
 		/usr/i686-w64-mingw32/lib/libgee-0.8.a \
@@ -130,7 +124,7 @@ clean:
 	$(MAKE) -C libs/src/db clean
 	$(MAKE) -C libs/src/db-gtk clean
 
-	rm -f src/*.c
+#	rm -f src/*.c
 	rm -f src/widgets/*.c
 	rm -f src/entities/*.c
 	rm -f src/reports/*.c

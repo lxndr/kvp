@@ -4,12 +4,6 @@ include ../../../common.mk
 NAME = db-gtk
 
 
-SOURCES = \
-	cellrenderer-calendar.vala \
-	view-table.vala \
-	viewable.vala
-
-
 PACKAGES = \
 	--vapidir="../../vapi" \
 	--pkg=gee-0.8 \
@@ -20,7 +14,7 @@ PACKAGES = \
 
 ../../lib/$(NAME).$(LIBEXT): ../../vapi/db.vapi $(SOURCES)
 	echo -e "\e[0;32mCompiling '$(NAME).$(LIBEXT)'\e[0m"
-	valac $(PACKAGES) $(FLAGS) --library=$(NAME) --use-header --header=$(NAME).h  --Xcc="-I../../include" --compile --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" $(SOURCES)
+	valac $(PACKAGES) $(FLAGS) --library=$(NAME) --use-header --header=$(NAME).h  --Xcc="-I../../include" --compile --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" *.vala
 	$(AR) rcs "../../lib/$(NAME).$(LIBEXT)" *.o
 	mv "$(NAME).h" "../../include"
 	mv "$(NAME).vapi" "../../vapi"

@@ -3,17 +3,6 @@ include ../../../common.mk
 
 NAME=ooxml
 
-SOURCES= \
-		error.vala \
-		utils.vala \
-		cell-value.vala \
-		cell.vala \
-		sheet.vala \
-		spreadsheet.vala \
-		shareable-list.vala \
-		reader.vala \
-		writer.vala
-
 
 PACKAGES= \
 		--vapidir="../../vapi" \
@@ -29,7 +18,7 @@ all: ../../lib/$(NAME).$(LIBEXT)
 
 ../../lib/$(NAME).$(LIBEXT): $(SOURCES)
 	echo -e "\e[0;32mCompiling '$(NAME).$(LIBEXT)'\e[0m"
-	valac $(PACKAGES) $(FLAGS) --library=$(NAME) --use-header --header=$(NAME).h  --Xcc="-I../../include" --compile $(SOURCES)
+	valac $(PACKAGES) $(FLAGS) --library=$(NAME) --use-header --header=$(NAME).h  --Xcc="-I../../include" --compile *.vala
 	$(AR) rcs "../../lib/$(NAME).$(LIBEXT)" *.o
 	mv $(NAME).h "../../include"
 	mv $(NAME).vapi "../../vapi"
