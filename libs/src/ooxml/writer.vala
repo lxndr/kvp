@@ -393,6 +393,9 @@ public class Writer {
 			st_bool (node, ns, "gridLines", options.grid_lines);
 		if (options.grid_lines_set != true)
 			st_bool (node, ns, "gridLinesSet", options.grid_lines_set);
+
+		if (node->properties == null)
+			node->unlink ();
 	}
 
 
@@ -418,6 +421,9 @@ public class Writer {
 		if (setup.vertical_dpi != 600)
 			st_uint (node, ns, "verticalDpi", setup.vertical_dpi);
 		st_string (node, r_ns, "id", setup.r_id);
+
+		if (node->properties == null)
+			node->unlink ();
 	}
 
 

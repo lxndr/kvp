@@ -190,6 +190,9 @@ public class Sheet : Object {
 		outline_level_row = 0;
 		outline_level_col = 0;
 
+		print_options = PrintOptions ();
+		page_setup = PageSetup ();
+
 		views = new Gee.ArrayList<SheetView> ();
 		merge_cells = new Gee.ArrayList<string> ();
 		cols = new Gee.ArrayList<Column> ();
