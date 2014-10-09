@@ -646,11 +646,11 @@ public class Reader {
 	}
 
 
-	private RichTextValue ct_relt (Xml.Node* node) throws Error {
-		var ret = new RichTextValue ();
+	private RichTextPiece ct_relt (Xml.Node* node) throws Error {
+		var ret = new RichTextPiece ();
 
 		for (var child = node->children; child != null; child = child->next) {
-			switch (child-<name) {
+			switch (child->name) {
 			case "rPr":
 				ct_rprelt (child, ret);
 				break;
@@ -718,7 +718,7 @@ public class Reader {
 	}
 
 
-	private string ct_font_name (Xml.Node* node) {
+	private string ct_font_name (Xml.Node* node) throws Error {
 		string ret = "";
 
 		for (var attr = node->properties; attr != null; attr = attr->next) {
@@ -735,7 +735,7 @@ public class Reader {
 	}
 
 
-	private int ct_int_property (Xml.Node* node) {
+	private int ct_int_property (Xml.Node* node) throws Error {
 		int ret = 0;
 
 		for (var attr = node->properties; attr != null; attr = attr->next) {
@@ -752,7 +752,7 @@ public class Reader {
 	}
 
 
-	private int ct_boolean_property (Xml.Node* node) {
+	private bool ct_boolean_property (Xml.Node* node) throws Error {
 		bool ret = false;
 
 		for (var attr = node->properties; attr != null; attr = attr->next) {
@@ -769,7 +769,7 @@ public class Reader {
 	}
 
 
-	private int ct_font_size (Xml.Node* node) {
+	private double ct_font_size (Xml.Node* node) throws Error {
 		double ret = 0.0;
 
 		for (var attr = node->properties; attr != null; attr = attr->next) {
@@ -786,7 +786,7 @@ public class Reader {
 	}
 
 
-	private int ct_underline_property (Xml.Node* node) {
+	private UnderlineType ct_underline_property (Xml.Node* node) throws Error {
 		UnderlineType ret = UnderlineType.NONE;
 
 		for (var attr = node->properties; attr != null; attr = attr->next) {
@@ -803,7 +803,7 @@ public class Reader {
 	}
 
 
-	private UnderlineType st_underline_values (Xml.Attr* attr) {
+	private UnderlineType st_underline_values (Xml.Attr* attr) throws Error {
 		var val = st_string (attr);
 
 		switch (val) {
@@ -840,6 +840,11 @@ public class Reader {
 
 	private uint8 st_ubyte (Xml.Attr* attr) {
 		return (uint8) uint64.parse (st_string (attr));
+	}
+
+
+	private int st_int (Xml.Attr* attr) {
+		return int.parse (st_string (attr));
 	}
 
 

@@ -75,7 +75,7 @@ public class Writer {
 		ct_bool_property (node, "extend", piece.extend);
 //		st_color (node, "color", piece.color);
 		ct_font_size (node, "sz", piece.size);
-		st_underline_property (node, "u", piece.underline);
+//		st_underline_property (node, "u", piece.underline);
 //		st_vertical_align_font_property (node, "vertAlign", piece.vertical_align);
 //		st_font_schema (node, "scheme", piece.scheme);
 	}
