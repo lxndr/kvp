@@ -58,6 +58,7 @@ public class RichTextPiece {
 	public bool condense;
 	public bool extend;
 	public double size;
+	public UnderlineType underline;
 }
 
 

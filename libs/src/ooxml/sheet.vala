@@ -16,6 +16,15 @@ public enum Orientation {
 }
 
 
+public enum UnderlineType {
+	NONE,
+	SINGLE,
+	DOUBLE,
+	SINGLE_ACCOUNTING,
+	DOUBLE_ACCOUNTING
+}
+
+
 public class Selection : Object {
 	private Sheet sheet;
 

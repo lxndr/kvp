@@ -53,105 +53,6 @@ public class Reader {
 	}
 
 
-	private TextValue ct_rst (Xml.Node* node) throws Error {
-		var ret = new RichTextValue ();
-
-		for (Xml.Node* child = node->children; child != null; child = child->next) {
-			switch (child->name) {
-			case "t":
-				return new SimpleTextValue (st_xstring (child));
-//			case "r":
-//				ret.pieces.add (ct_relt (child));
-//				break;
-			default:
-				throw unknown_tag (child);
-			}
-		}
-
-		return ret;
-	}
-
-
-#if 0
-	/*
-	 * Shared strings
-	 */
-	private static void rich_text_properties (Xml.Node* rpr_node, RichTextPiece piece) throws Error {
-		for (Xml.Node* node = rpr_node->children; node != null; node = node->next) {
-			switch (node->name) {
-			case "rFront":
-				piece.font = node->get_prop ("val");
-				break;
-			case "charset":
-				var v = node->get_prop ("val");
-				if (v != null)
-					piece.charset = int.parse (v);
-				break;
-			case "family":
-				piece.family = Utils.parse_int (node->get_prop ("val"));
-				break;
-			case "b":
-				piece.bold = Utils.parse_bool (node->get_prop ("val"));
-				break;
-			case "i":
-				piece.italic = Utils.parse_bool (node->get_prop ("val"));
-				break;
-			case "strike":
-				piece.strike = Utils.parse_bool (node->get_prop ("val"));
-				break;
-			case "outline":
-				piece.outline = Utils.parse_bool (node->get_prop ("val"));
-				break;
-			case "shadow":
-				piece.shadow = Utils.parse_bool (node->get_prop ("val"));
-				break;
-			case "condense":
-				piece.condense = Utils.parse_bool (node->get_prop ("val"));
-				break;
-			case "extend":
-				piece.extend = Utils.parse_bool (node->get_prop ("val"));
-				break;
-//			case "color":
-//				break;
-			case "sz":
-				piece.size = Utils.parse_double (node->get_prop ("val"));
-				break;
-//			case "u":
-//				break;
-//			case "scheme":
-//				break;
-			default:
-				throw new Error.SHARED_STRINGS ("Unknown tag '%s' at sharedStrings.xml/sst/si/r/rPr", node->name);
-			}
-		}
-	}
-
-
-	private static TextValue rich_text (Xml.Node* r_node) throws Error {
-		var ret = new RichTextValue ();
-
-		for (Xml.Node* node = r_node->children; node != null; node = node->next) {
-			var piece = new RichTextPiece ();
-
-			switch (node->name) {
-			case "rPr":
-				rich_text_properties (node, piece);
-				break;
-			case "t":
-				piece.text = st_xstring (node);
-				break;
-			default:
-				throw new Error.SHARED_STRINGS ("Unknown tag '%s' at sharedStrings.xml/sst/si/r", node->name);
-			}
-
-			ret.pieces.add (piece);
-		}
-
-		return ret;
-	}
-#endif
-
-
 	public Sheet worksheet (Xml.Doc* doc) throws Error {
 		Xml.Node* node = doc->get_root_element ();
 
@@ -723,6 +624,202 @@ public class Reader {
 				throw unknown_attr (attr);
 			}
 		}
+	}
+
+
+	private TextValue ct_rst (Xml.Node* node) throws Error {
+		var ret = new RichTextValue ();
+
+		for (Xml.Node* child = node->children; child != null; child = child->next) {
+			switch (child->name) {
+			case "t":
+				return new SimpleTextValue (st_xstring (child));
+			case "r":
+				ret.pieces.add (ct_relt (child));
+				break;
+			default:
+				throw unknown_tag (child);
+			}
+		}
+
+		return ret;
+	}
+
+
+	private RichTextValue ct_relt (Xml.Node* node) throws Error {
+		var ret = new RichTextValue ();
+
+		for (var child = node->children; child != null; child = child->next) {
+			switch (child-<name) {
+			case "rPr":
+				ct_rprelt (child, ret);
+				break;
+			case "t":
+				ret.text = st_xstring (child);
+				break;
+			default:
+				throw unknown_tag (child);
+			}
+		}
+
+		return ret;
+	}
+
+
+	private void ct_rprelt (Xml.Node* node, RichTextPiece piece) throws Error {
+		for (var child = node->children; child != null; child = child->next) {
+			switch (child->name) {
+			case "rFront":
+				piece.font = ct_font_name (child);
+				break;
+			case "charset":
+				piece.charset = ct_int_property (child);
+				break;
+			case "family":
+				piece.family = ct_int_property (child);
+				break;
+			case "b":
+				piece.bold = ct_boolean_property (child);
+				break;
+			case "i":
+				piece.italic = ct_boolean_property (child);
+				break;
+			case "strike":
+				piece.strike = ct_boolean_property (child);
+				break;
+			case "outline":
+				piece.outline = ct_boolean_property (child);
+				break;
+			case "shadow":
+				piece.shadow = ct_boolean_property (child);
+				break;
+			case "condense":
+				piece.condense = ct_boolean_property (child);
+				break;
+			case "extend":
+				piece.extend = ct_boolean_property (child);
+				break;
+//			case "color":
+//				break;
+			case "sz":
+				piece.size = ct_font_size (child);
+				break;
+			case "u":
+				piece.underline = ct_underline_property (child);
+				break;
+			case "vertAlign":
+				break;
+			case "scheme":
+				break;
+			default:
+				throw unknown_tag (child);
+			}
+		}
+	}
+
+
+	private string ct_font_name (Xml.Node* node) {
+		string ret = "";
+
+		for (var attr = node->properties; attr != null; attr = attr->next) {
+			switch (attr->name) {
+			case "val":
+				ret = st_string (attr);
+				break;
+			default:
+				throw unknown_attr (attr);
+			}
+		}
+
+		return ret;
+	}
+
+
+	private int ct_int_property (Xml.Node* node) {
+		int ret = 0;
+
+		for (var attr = node->properties; attr != null; attr = attr->next) {
+			switch (attr->name) {
+			case "val":
+				ret = st_int (attr);
+				break;
+			default:
+				throw unknown_attr (attr);
+			}
+		}
+
+		return ret;
+	}
+
+
+	private int ct_boolean_property (Xml.Node* node) {
+		bool ret = false;
+
+		for (var attr = node->properties; attr != null; attr = attr->next) {
+			switch (attr->name) {
+			case "val":
+				ret = st_bool (attr);
+				break;
+			default:
+				throw unknown_attr (attr);
+			}
+		}
+
+		return ret;
+	}
+
+
+	private int ct_font_size (Xml.Node* node) {
+		double ret = 0.0;
+
+		for (var attr = node->properties; attr != null; attr = attr->next) {
+			switch (attr->name) {
+			case "val":
+				ret = st_double (attr);
+				break;
+			default:
+				throw unknown_attr (attr);
+			}
+		}
+
+		return ret;
+	}
+
+
+	private int ct_underline_property (Xml.Node* node) {
+		UnderlineType ret = UnderlineType.NONE;
+
+		for (var attr = node->properties; attr != null; attr = attr->next) {
+			switch (attr->name) {
+			case "val":
+				ret = st_underline_values (attr);
+				break;
+			default:
+				throw unknown_attr (attr);
+			}
+		}
+
+		return ret;
+	}
+
+
+	private UnderlineType st_underline_values (Xml.Attr* attr) {
+		var val = st_string (attr);
+
+		switch (val) {
+		case "single":
+			return UnderlineType.SINGLE;
+		case "double":
+			return UnderlineType.DOUBLE;
+		case "singleAccounting":
+			return UnderlineType.SINGLE_ACCOUNTING;
+		case "doubleAccounting":
+			return UnderlineType.DOUBLE_ACCOUNTING;
+		case "none":
+			return UnderlineType.NONE;
+		default:
+			throw unknown_value (attr);
+		}		
 	}
 
 
