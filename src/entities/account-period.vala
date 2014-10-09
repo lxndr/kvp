@@ -6,7 +6,7 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	public Account account { get; set; }
 	public int period { get; set; }
 	public string apartment { get; set; default = "000"; }
-	public int n_rooms {get; set; default = 1;}
+	public int n_rooms { get; set; default = 1; }
 	public double area { get; set; default = 0.0; }
 	public Money total { get; set; default = Money (0); }
 	public Money payment { get; set; default = Money (0); }
@@ -36,7 +36,7 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	}
 
 
-	public DateTime opened {
+	public Date opened {
 		get { return account.opened; }
 		set { account.opened = value; }
 	}

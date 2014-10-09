@@ -5,12 +5,13 @@ public class Account : DB.SimpleEntity
 {
 	public Building building { get; construct set; }
 	public string number { get; set; default = "000"; }
-	public DateTime opened {get; set; } /* FIXME gotta be now */
+	public Date opened {get; set; }
 	public string comment { get; set; default = ""; }
 
 
 	construct {
-		opened = new DateTime.now_local ();
+		var now = new DateTime.now_local ();
+		opened.set_dmy ((DateDay) now.get_day_of_month (), now.get_month (), (DateYear) now.get_year ());
 	}
 
 

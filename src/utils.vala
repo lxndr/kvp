@@ -94,24 +94,46 @@ public void transform_money_to_string (Value src_value, ref Value dest_value) {
 }
 
 
-public void transform_string_to_datetime (Value src_value, ref Value dest_value) {
-	int64 n = int64.parse (src_value.get_string ());
-	var dt = new DateTime.from_unix_local (n);
-	dest_value.set_boxed (dt);
+public void transform_string_to_date (Value src_value, ref Value dest_value) {
+	var n = (uint) uint64.parse (src_value.get_string ());
+	var date = new Date ();
+	date.set_julian (n);
+	dest_value.set_boxed (&date);
 }
 
-public void transform_datetime_to_string (Value src_value, ref Value dest_value) {
-	DateTime dt = (DateTime) src_value.get_boxed ();
-	dest_value.set_string (dt.to_unix ().to_string ());
+public void transform_date_to_string (Value src_value, ref Value dest_value) {
+	var date = (Date*) src_value.get_boxed ();
+	dest_value.set_string (date.get_julian ().to_string ());
 }
 
 
+/*
+ * Adapter <-> Date
+ */
+public void transform_date_to_property_adapter (Value src_value, ref Value dest_value) {
+	char s[32];
+	var date = (Date*) src_value.get_boxed ();
+	date.strftime (s, "%x");
+	DB.PropertyAdapter ad = { (string) s };
+	dest_value.set_boxed (&ad);
+}
+
+public void transform_property_adapter_to_date (Value src_value, ref Value dest_value) {
+	var ad = (DB.PropertyAdapter*) src_value.get_boxed ();
+	var date = Date ();
+	date.set_parse (ad.val);
+	dest_value.set_boxed (&date);
+}
+
+
+/*
+ * Adapter <-> double
+ */
 public void transform_double_to_property_adapter (Value src_value, ref Value dest_value) {
 	double d = src_value.get_double ();
 	DB.PropertyAdapter ad = { format_double (d, 2) };
 	dest_value.set_boxed (&ad);
 }
-
 
 public void transform_property_adapter_to_double (Value src_value, ref Value dest_value) {
 	var ad = (DB.PropertyAdapter*) src_value.get_boxed ();
@@ -119,6 +141,9 @@ public void transform_property_adapter_to_double (Value src_value, ref Value des
 }
 
 
+/*
+ * Adapter <-> Money
+ */
 public void transform_money_to_property_adapter (Value src_value, ref Value dest_value) {
 	Money* m = (Money*) src_value.get_boxed ();
 	DB.PropertyAdapter ad = { m->format () };
@@ -129,13 +154,6 @@ public void transform_property_adapter_to_money (Value src_value, ref Value dest
 	var ad = (DB.PropertyAdapter*) src_value.get_boxed ();
 	var m = Money.from_formatted (ad.val);
 	dest_value.set_boxed (&m);
-}
-
-
-public void transform_datetime_to_property_adapter (Value src_value, ref Value dest_value) {
-	DateTime dt = (DateTime) src_value.get_boxed ();
-	DB.PropertyAdapter ad = { dt.format ("%e.%m.%Y") };
-	dest_value.set_boxed (&ad);
 }
 
 

@@ -155,12 +155,6 @@ public abstract class ViewTable : Gtk.TreeView {
 			column.pack_start (toggle_cell, false);
 			column.add_attribute (toggle_cell, "active", model_column);
 			cell = toggle_cell;
-		} else if (prop_type == typeof (DateTime)) {
-			var cal_cell = new CellRendererCalendar ();
-			cal_cell.set ("editable", (prop.flags & ParamFlags.WRITABLE) > 0);
-			column.pack_start (cal_cell, false);
-			column.add_attribute (cal_cell, "text", model_column);
-			cell = cal_cell;
 		} else {
 			var text_cell = new Gtk.CellRendererText ();
 			text_cell.set ("editable", (prop.flags & ParamFlags.WRITABLE) > 0);

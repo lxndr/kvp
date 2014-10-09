@@ -109,7 +109,7 @@ public class Report002 : Report {
 	}
 
 
-	private string process_pattern (string tmpl) {
+	private string process_pattern (string tmpl) throws Error {
 		var re = new Regex ("{(.+?)}");
 		return re.replace_eval (tmpl, -1, 0, 0, (match_info, result) => {
 			switch (match_info.fetch (1)) {
@@ -175,7 +175,7 @@ public class Report002 : Report {
 	}
 
 
-	private void make_page1 (OOXML.Sheet sheet) {
+	private void make_page1 (OOXML.Sheet sheet) throws Error {
 		var cell = sheet.get_cell("A3");
 		unowned OOXML.SimpleTextValue val = cell.val as OOXML.SimpleTextValue;
 		var str = val.text;
