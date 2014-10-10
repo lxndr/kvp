@@ -4,10 +4,6 @@ include common.mk
 NAME = kvp
 
 
-RESOURCES = \
-	ui/main-window.ui \
-	data/init.sql
-
 SOURCES = \
 	src/widgets/year-month.vala \
 	src/widgets/central-year-month.vala \
@@ -96,7 +92,7 @@ $(NAME)$(BINEXT): resources $(SOURCES)
 	cp *.gresource.xml "build/"
 	cp -r "ui" "build"
 	cd "build" && \
-		valac $(FLAGS) $(PACKAGES) --vapidir="../libs/vapi" --target-glib=2.38 --gresources=kvartplata.gresource.xml --header=kvp.h --use-header --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --Xcc="-I../libs/include" --compile ../src/*.vala ../src/entities/*.vala ../src/widgets/*.vala ../src/reports/*.vala ../src/resources.c
+		valac $(FLAGS) $(PACKAGES) --vapidir="../libs/vapi" --target-glib=2.38 --gresources=kvp.gresource.xml --header=kvp.h --use-header --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --Xcc="-I../libs/include" --compile ../src/*.vala ../src/entities/*.vala ../src/widgets/*.vala ../src/reports/*.vala ../src/resources.c
 	$(CC) -o $(NAME)$(BINEXT) build/*.o libs/lib/db.$(LIBEXT) libs/lib/db-gtk.$(LIBEXT) libs/lib/ooxml.$(LIBEXT) libs/lib/archive.$(LIBEXT) $(LDFLAGS)
 
 
@@ -104,8 +100,8 @@ resources: build/resources.c
 	
 
 
-build/resources.c: kvartplata.gresource.xml $(RESOURCES)
-	glib-compile-resources --generate-source --target=src/resources.c kvartplata.gresource.xml
+build/resources.c: kvp.gresource.xml ui/*.ui data/init.sql
+	glib-compile-resources --generate-source --target=src/resources.c kvp.gresource.xml
 
 
 po: kvp.pot

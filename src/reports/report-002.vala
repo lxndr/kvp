@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-[GtkTemplate (ui = "/ui/account-report-parameters.ui")]
+[GtkTemplate (ui = "/org/lxndr/kvp/ui/account-report-parameters.ui")]
 private class AccountReportParameters : Gtk.Dialog {
 	[GtkChild]
 	private Gtk.Button from_button;

@@ -13,7 +13,7 @@ private enum PriceColumn {
 
 
 
-[GtkTemplate (ui = "/ui/service-window.ui")]
+[GtkTemplate (ui = "/org/lxndr/kvp/ui/service-window.ui")]
 class ServiceWindow : Gtk.Window {
 	public Database db { get; construct set; }
 	private int current_building = 1;

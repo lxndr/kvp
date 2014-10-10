@@ -6,7 +6,7 @@ public class Database : DB.SQLiteDatabase {
 		Object (path: "./kvartplata.db");
 
 		/* prepare the database */
-		var bytes = resources_lookup_data ("/data/init.sql", ResourceLookupFlags.NONE);
+		var bytes = resources_lookup_data ("/org/lxndr/kvp/data/init.sql", ResourceLookupFlags.NONE);
 		unowned uint8[] data = bytes.get_data ();
 //		exec_sql ((string) data);
 	}

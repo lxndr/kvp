@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-[GtkTemplate (ui = "/ui/main-window.ui")]
+[GtkTemplate (ui = "/org/lxndr/kvp/ui/main-window.ui")]
 class MainWindow : Gtk.ApplicationWindow {
 	/* period */
 	[GtkChild]
