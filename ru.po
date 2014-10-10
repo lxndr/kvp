@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-10-10 13:28+0400\n"
+"POT-Creation-Date: 2014-10-10 18:58+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -199,15 +199,15 @@ msgstr "Остаток"
 msgid "comment"
 msgstr "Примечание"
 
-#: src/account-table.vala:45
+#: src/account-table.vala:46
 msgid "Recalculate"
 msgstr "Пересчитать"
 
-#: src/account-table.vala:50
+#: src/account-table.vala:51
 msgid "Recalculate this period"
 msgstr "Пересчитать весь месяц"
 
-#: src/account-table.vala:83
+#: src/account-table.vala:84
 msgid ""
 "Every account has to be related to a building. Only one building has to be "
 "currently selected to add a new account. You have selected either all of "
@@ -275,23 +275,27 @@ msgstr "за %s %d г."
 msgid "Kvartplata"
 msgstr "Квартплата"
 
-#: ui/main-window.ui:24 ui/main-window.ui:202
+#: ui/main-window.ui:24 ui/main-window.ui:199
 msgid "Buildings"
 msgstr "Здания"
 
-#: ui/main-window.ui:48
+#: ui/main-window.ui:37
 msgid "Current period"
 msgstr "Текущий период"
 
-#: ui/main-window.ui:74
-msgid "Reports"
-msgstr "Отчеты"
+#: ui/main-window.ui:53
+msgid "Filter"
+msgstr ""
 
-#: ui/main-window.ui:99
+#: ui/main-window.ui:78
 msgid "References"
 msgstr "Справочники"
 
-#: ui/main-window.ui:193
+#: ui/main-window.ui:92
+msgid "Reports"
+msgstr "Отчеты"
+
+#: ui/main-window.ui:190
 msgid "Prices"
 msgstr "Тарифы"
 

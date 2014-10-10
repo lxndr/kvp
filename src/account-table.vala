@@ -40,6 +40,7 @@ public class AccountTable : DB.ViewTable {
 		var menu = base.create_menu (add_remove);
 
 		Gtk.MenuItem mi = new Gtk.SeparatorMenuItem ();
+		mi.visible = true;
 		menu.append (mi);
 
 		recalc_menu_item = new Gtk.MenuItem.with_label (_("Recalculate"));
