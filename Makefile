@@ -114,7 +114,7 @@ po: kvp.pot
 kvp.pot: $(SOURCES)
 	xgettext --output=kvp.pot \
 			--keyword=_ --keyword=N_ --keyword=C_:1c,2 --keyword=NC_:1c,2 \
-			$(SOURCES) "ui/main-window.ui" \
+			$(SOURCES) "ui/main-window.ui" libs/src/db-gtk/*.vala \
 			--msgid-bugs-address=lxndr87@users.sourceforge.net \
 			--from-code=UTF-8
 	msgmerge --update --quiet ru.po kvp.pot

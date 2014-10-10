@@ -125,27 +125,15 @@ public class Database : DB.SQLiteDatabase {
 
 
 	public Gee.List<AccountPeriod> get_account_period_list (Building? building, int period) {
-/*		var accounts = get_account_list (building);
-		var account_periods = fetch_int_entity_map<AccountPeriod> (
-				"account_period JOIN account ON account.building=%d".printf (building.id),
-				"account", "account_period.*", "period=%d".printf (period));
-
-		var result = new Gee.ArrayList<AccountPeriod> ();
-
-		foreach (var account in accounts) {
-			var account_period = account_periods[account.id];
-			if (account_period == null)
-				account_period = new AccountPeriod (this, account, period);
-			result.add (account_period);
-		}
-
-		return result;*/
+		var date = Date ();
+		date.set_dmy (1, (period % 12) + 2, (DateYear) (period / 12));
+		var month_end_day = date.get_julian () - 1;
 
 		/*
 		 * SELECT account_period.*, account.id AS account, ? AS period
 		 * FROM account LEFT JOIN account_period
 		 * ON account.id=account_period.account AND period=?
-		 * WHERE account.building=? AND opened>=?;
+		 * WHERE account.building=? AND opened<=?;
 		 */
 
 		var query = new DB.QueryBuilder ();
@@ -153,7 +141,7 @@ public class Database : DB.SQLiteDatabase {
 			.from ("account LEFT JOIN account_period")
 			.on ("account.id=account_period.account AND period=%d".printf (period));
 		if (building != null)
-			query.where ("account.building=%d".printf (building.id));
+			query.where ("account.building=%d AND account.opened<=%u".printf (building.id, month_end_day));
 		return fetch_entity_list_ex (typeof (AccountPeriod), query) as Gee.List<AccountPeriod>;
 	}
 

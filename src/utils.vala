@@ -96,7 +96,7 @@ public void transform_money_to_string (Value src_value, ref Value dest_value) {
 
 public void transform_string_to_date (Value src_value, ref Value dest_value) {
 	var n = (uint) uint64.parse (src_value.get_string ());
-	var date = new Date ();
+	var date = Date ();
 	date.set_julian (n);
 	dest_value.set_boxed (&date);
 }
