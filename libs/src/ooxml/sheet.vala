@@ -16,6 +16,15 @@ public enum Orientation {
 }
 
 
+public enum UnderlineType {
+	NONE,
+	SINGLE,
+	DOUBLE,
+	SINGLE_ACCOUNTING,
+	DOUBLE_ACCOUNTING
+}
+
+
 public class Selection : Object {
 	private Sheet sheet;
 
@@ -189,6 +198,9 @@ public class Sheet : Object {
 		thick_bottom = false;
 		outline_level_row = 0;
 		outline_level_col = 0;
+
+		print_options = PrintOptions ();
+		page_setup = PageSetup ();
 
 		views = new Gee.ArrayList<SheetView> ();
 		merge_cells = new Gee.ArrayList<string> ();
