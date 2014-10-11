@@ -161,8 +161,8 @@ public class Report002 : Report {
 		people = general_periodic.get_people ();
 
 		foreach (var person in people) {
-			unowned Relationship? rel = person.relationship;
-			if (rel != null && rel.id == 1)
+//			unowned Relationship? rel = person.relation;
+//			if (rel != null && rel.id == 1)
 				main_tenant = person;
 		}
 
@@ -209,8 +209,8 @@ public class Report002 : Report {
 		for (var i = 0; i < n_people; i++) {
 			var person = people[i];
 			sheet.get_row (14 + i).get_cell (27).put_string (person.name);
-			sheet.get_row (14 + i).get_cell (49).put_string (person.birthday);
-			sheet.get_row (14 + i).get_cell (57).put_string (person.relationship.name);
+			sheet.get_row (14 + i).get_cell (49).put_string (Utils.format_date (person.birthday));
+//			sheet.get_row (14 + i).get_cell (57).put_string (person.relation.name);
 		}
 	}
 

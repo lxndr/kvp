@@ -137,7 +137,7 @@
                 <property name="position">512</property>
                 <property name="position_set">True</property>
                 <child>
-                  <object class="GtkScrolledWindow" id="people_scroller">
+                  <object class="GtkScrolledWindow" id="tenant_scroller">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="shadow_type">in</property>
@@ -199,6 +199,15 @@
         <property name="label" translatable="yes">Buildings</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="ref_buildings_clicked" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="menuitem3">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">People</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="ref_people_clicked" swapped="no"/>
       </object>
     </child>
   </object>

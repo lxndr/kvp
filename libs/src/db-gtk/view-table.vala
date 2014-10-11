@@ -3,7 +3,7 @@ namespace DB {
 
 [Compact]
 public struct PropertyAdapter {
-	public string val;
+	public string? val;
 }
 
 

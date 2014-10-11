@@ -148,8 +148,13 @@ public class Database : DB.SQLiteDatabase {
 
 	public Gee.List<Person> get_people_list (Account account, int period) {
 		return fetch_entity_list<Person> (Person.table_name,
-				("account=%d AND period=%d")
-				.printf (account.id, period));
+				"account=%d AND period=%d".printf (account.id, period));
+	}
+
+
+	public Gee.List<Tenant> get_tenant_list (Account account) {
+		return fetch_entity_list<Tenant> (Tenant.table_name,
+				"account=%d".printf (account.id));
 	}
 
 

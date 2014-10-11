@@ -20,17 +20,18 @@ class MainWindow : Gtk.ApplicationWindow {
 	[GtkChild]
 	private Gtk.ScrolledWindow account_scroller;
 	[GtkChild]
-	private Gtk.ScrolledWindow people_scroller;
+	private Gtk.ScrolledWindow tenant_scroller;
 	[GtkChild]
 	private Gtk.ScrolledWindow tax_scroller;
 
 	private AccountTable account_table;
-	private PeopleTable people_table;
+	private TenantTable tenant_table;
 	private TaxTable tax_table;
 
 	/*  */
 	private ServiceWindow? service_window = null;
 	private BuildingWindow? building_window = null;
+	private PeopleWindow? people_window = null;
 	private Building? current_building = null;
 
 	/*  */
@@ -63,12 +64,12 @@ class MainWindow : Gtk.ApplicationWindow {
 		account_table.selection_changed.connect (on_account_selection_changed);
 		account_scroller.add (account_table);
 
-		/* UI: people list */
-		people_table = new PeopleTable (app.db);
-		people_table.visible = true;
-//		people_table.entity_inserted.connect (on_people_list_changed);
-//		people_table.entity_deleted.connect (on_people_list_changed);
-		people_scroller.add (people_table);
+		/* UI: tenant list */
+		tenant_table = new TenantTable (app.db);
+		tenant_table.visible = true;
+//		tenant_table.entity_inserted.connect (on_tenant_list_changed);
+//		tenant_table.entity_deleted.connect (on_tenant_list_changed);
+		tenant_scroller.add (tenant_table);
 
 		/* UI: tax list */
 		tax_table = new TaxTable (app.db);
@@ -325,6 +326,20 @@ class MainWindow : Gtk.ApplicationWindow {
 	}
 
 
+	[GtkCallback]
+	private void ref_people_clicked () {
+		if (people_window == null) {
+			people_window = new PeopleWindow (this, (application as Application).db);
+			people_window.add_to_tenants.connect (tenant_table.add_tenant);
+			people_window.destroy.connect (() => {
+				people_window = null;
+			});
+		}
+
+		people_window.present ();
+	}
+
+
 	/*
 	 * Events and actions
 	 */
@@ -341,12 +356,12 @@ class MainWindow : Gtk.ApplicationWindow {
 
 	private void on_account_selection_changed () {
 		unowned AccountPeriod periodic = account_table.get_selected ();
-		people_table.setup (periodic);
+		tenant_table.setup (periodic);
 		tax_table.setup (periodic);
 	}
 
 
-	private void on_people_list_changed () {
+	private void on_tenant_list_changed () {
 		
 	}
 

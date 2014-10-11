@@ -94,8 +94,8 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 
 	public int64 number_of_people () {
-		return db.query_count (Person.table_name,
-				"account=%d AND period=%d".printf (account.id, period));
+		return db.query_count (Tenant.table_name,
+				"account=%d".printf (account.id));
 	}
 
 
@@ -120,9 +120,10 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 
 	public string? tenant_name () {
-		return db.fetch_string (Person.table_name, "name",
+/*		return db.fetch_string (Person.table_name, "name",
 			"account=%d AND period=%d AND relationship=1"
-			.printf (account.id, period));
+			.printf (account.id, period));*/
+		return "fixme";
 	}
 
 

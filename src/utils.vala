@@ -57,6 +57,13 @@ public string format_double (double n, int max_digits) {
 }
 
 
+public string format_date (Date date) {
+	char s[16];
+	date.strftime (s, "%x");
+	return (string) s;
+}
+
+
 public void transform_string_to_int (Value src_value, ref Value dest_value) {
 	unowned string s = src_value.get_string ();
 	dest_value.set_int (int.parse (s));
@@ -111,10 +118,15 @@ public void transform_date_to_string (Value src_value, ref Value dest_value) {
  * Adapter <-> Date
  */
 public void transform_date_to_property_adapter (Value src_value, ref Value dest_value) {
-	char s[32];
+	DB.PropertyAdapter ad = { null };
+
 	var date = (Date*) src_value.get_boxed ();
-	date.strftime (s, "%x");
-	DB.PropertyAdapter ad = { (string) s };
+	if (date.valid () == true && date.get_julian () > 1) {
+		char buf[32];
+		date.strftime (buf, "%x");
+		ad.val = (string) buf;
+	}
+
 	dest_value.set_boxed (&ad);
 }
 

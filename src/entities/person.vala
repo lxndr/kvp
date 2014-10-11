@@ -3,16 +3,16 @@ namespace Kv {
 
 public class Person : DB.SimpleEntity, DB.Viewable
 {
-	public Account account { get; set; }
-	public int period { get; set; }
-	public string name { get; set; }
-	public string birthday { get; set; }
-	public Relationship relationship { get; set; }
+	public string name { get; set; default = _("A person"); }
+	public Date birthday { get; set; }
+	public bool gender { get; set; default = false; }
+	public string? real_life_id { get; set; default = null; }
 
 
 	construct {
-		name = _("A person");
-		birthday = "";
+		Date date;
+		date.set_julian (1);
+		birthday = date;
 	}
 
 
@@ -24,23 +24,12 @@ public class Person : DB.SimpleEntity, DB.Viewable
 
 	public override unowned string[] db_fields () {
 		const string[] fields = {
-			"account",
-			"period",
 			"name",
 			"birthday",
-			"relationship"
+			"gender",
+			"real_life_id"
 		};
 		return fields;
-	}
-
-
-	public Person (Database _db, Account _account, int _period) {
-		var _relationship = _db.fetch_entity_by_id<Relationship> (2);
-
-		Object (db: _db,
-				account: _account,
-				period: _period,
-				relationship: _relationship);
 	}
 
 

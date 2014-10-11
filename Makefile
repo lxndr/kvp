@@ -5,32 +5,10 @@ NAME = kvp
 
 
 SOURCES = \
-	src/widgets/year-month.vala \
-	src/widgets/central-year-month.vala \
-	src/application.vala \
-	src/main-window.vala \
-	src/utils.vala \
-	src/types.vala \
-	src/account-table.vala \
-	src/people-table.vala \
-	src/tax-table.vala \
-	src/service-table.vala \
-	src/service-window.vala \
-	src/building-table.vala \
-	src/building-window.vala \
-	src/database.vala \
-	src/entities/building.vala \
-	src/entities/tax.vala \
-	src/entities/person.vala \
-	src/entities/account.vala \
-	src/entities/account-period.vala \
-	src/entities/service.vala \
-	src/entities/price.vala \
-	src/entities/relationship.vala \
-	src/report.vala \
-	src/reports/report-001.vala \
-	src/reports/report-002.vala \
-	src/reports/report-003.vala
+	src/*.vala \
+	src/widgets/*.vala \
+	src/entities/*.vala \
+	src/reports/*.vala
 
 PACKAGES = \
 	--pkg=gtk+-3.0 \

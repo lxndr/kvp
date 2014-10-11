@@ -27,10 +27,10 @@ public class Report001 : Report {
 			var people = db.get_people_list (selected_account.account, selected_account.period);
 			foreach (var person in people) {
 				people_string += person.name + "\n";
-				if (person.birthday == "")
-					birthday_string += " \n";
+				if (person.birthday.valid () == false)
+					birthday_string += "\n";
 				else
-					birthday_string += person.birthday + "\n";
+					birthday_string += Utils.format_date (person.birthday) + "\n";
 				row_height += 15.0;
 			}
 
