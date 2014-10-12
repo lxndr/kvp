@@ -39,9 +39,13 @@ else
 		`$(PKGCONFIG) --libs gtk+-3.0 gee-0.8 sqlite3 libxml-2.0`
 
 	ifeq ($(BUILD), win32)
+		SOURCES += \
+			src/winmain.c
 		LDFLAGS += \
 			-lintl
 	else ifeq ($(BUILD), win64)
+		SOURCES += \
+			src/winmain.c
 		LDFLAGS += \
 			-lintl
 	else
