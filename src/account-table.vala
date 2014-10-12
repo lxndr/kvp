@@ -49,7 +49,7 @@ public class AccountTable : DB.ViewTable {
 		menu.append (recalc_menu_item);
 
 		recalc_period_menu_item = new Gtk.MenuItem.with_label (_("Recalculate this period"));
-//		recalc_period_menu_item.activate.connect (recalculate_period_clicked);
+		recalc_period_menu_item.activate.connect (recalculate_period_clicked);
 		recalc_period_menu_item.visible = true;
 		menu.append (recalc_period_menu_item);
 
@@ -204,9 +204,9 @@ public class AccountTable : DB.ViewTable {
 			where += " AND building=%d".printf (current_building.id);
 
 		var periods = db.fetch_entity_list<AccountPeriod> (AccountPeriod.table_name, where);
-		foreach (var account_period in periods)
-			recalculate_period (account_period);
-		refresh_all ();
+//		foreach (var account_period in periods)
+//			recalculate_period (account_period);
+//		refresh_all ();
 
 		db.commit_transaction ();
 	}

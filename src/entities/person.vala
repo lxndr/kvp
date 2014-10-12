@@ -16,6 +16,11 @@ public class Person : DB.SimpleEntity, DB.Viewable
 	}
 
 
+	public Person (DB.Database _db) {
+		Object (db: _db);
+	}
+
+
 	public static unowned string table_name = "person";
 	public override unowned string db_table () {
 		return table_name;

@@ -29,11 +29,11 @@ public class TenantTable : DB.ViewTable {
 	}
 
 
-/*
 	protected override DB.Entity? new_entity () {
-		return new Tenant (db as Database, current_periodic.account, current_periodic.period);
+		var person = new Person (db);
+		person.persist ();
+		return new Tenant (db, current_periodic.account, person);
 	}
-*/
 
 
 	protected override unowned string[] viewable_props () {
@@ -96,6 +96,17 @@ public class TenantTable : DB.ViewTable {
 		list_store.set (tree_iter,
 				foreground_model_column, color,
 				strikethrough_model_column, moved_out);
+	}
+
+
+	public override void row_edited (Gtk.TreeIter tree_iter, DB.Entity entity, string prop_name) {
+		unowned Tenant tenant = (Tenant) entity;
+
+		if (prop_name == "name" || prop_name == "birthday") {
+			tenant.person.persist ();
+		} else {
+			base.row_edited (tree_iter, entity, prop_name);
+		}
 	}
 
 
