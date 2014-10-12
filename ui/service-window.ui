@@ -187,6 +187,10 @@
         <col id="0" translatable="yes">Ф5</col>
         <col id="1">5</col>
       </row>
+      <row>
+        <col id="0" translatable="yes">Ф6</col>
+        <col id="1">6</col>
+      </row>
     </data>
   </object>
 </interface>

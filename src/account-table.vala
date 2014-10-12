@@ -49,7 +49,7 @@ public class AccountTable : DB.ViewTable {
 		menu.append (recalc_menu_item);
 
 		recalc_period_menu_item = new Gtk.MenuItem.with_label (_("Recalculate this period"));
-		recalc_period_menu_item.activate.connect (recalculate_period_clicked);
+//		recalc_period_menu_item.activate.connect (recalculate_period_clicked);
 		recalc_period_menu_item.visible = true;
 		menu.append (recalc_period_menu_item);
 
