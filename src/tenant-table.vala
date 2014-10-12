@@ -80,9 +80,8 @@ public class TenantTable : DB.ViewTable {
 	protected override void row_refreshed (Gtk.TreeIter tree_iter, DB.Entity entity) {
 		unowned Tenant tenant = (Tenant) entity;
 
-		uint month_first_day;
-		uint month_last_day;
-		Utils.get_month_range (current_periodic.period, out month_first_day, out month_last_day);
+		uint month_first_day = Utils.get_month_first_day (current_periodic.period);
+		uint month_last_day = Utils.get_month_last_day (current_periodic.period);
 
 		bool moved_out = false;
 		var move_out_day = tenant.move_out.get_julian ();

@@ -91,9 +91,8 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 
 	public int64 number_of_people () {
-		uint month_first_day;
-		uint month_last_day;
-		Utils.get_month_range (period, out month_first_day, out month_last_day);
+		uint month_first_day = Utils.get_month_first_day (period);
+		uint month_last_day = Utils.get_month_last_day (period);
 
 		return db.query_count (Tenant.table_name,
 				"account=%d AND move_in!=1 AND move_in<=%u AND (move_out=1 OR move_out>=%u)"

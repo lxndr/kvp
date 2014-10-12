@@ -125,9 +125,7 @@ public class Database : DB.SQLiteDatabase {
 
 
 	public Gee.List<AccountPeriod> get_account_period_list (Building? building, int period) {
-		var date = Date ();
-		date.set_dmy (1, (period % 12) + 2, (DateYear) (period / 12));
-		var month_end_day = date.get_julian () - 1;
+		var month_last_day = Utils.get_month_last_day (period);
 
 		/*
 		 * SELECT account_period.*, account.id AS account, ? AS period
@@ -141,7 +139,7 @@ public class Database : DB.SQLiteDatabase {
 			.from ("account LEFT JOIN account_period")
 			.on ("account.id=account_period.account AND period=%d".printf (period));
 
-		string where = "account.opened<=%u".printf (month_end_day);
+		string where = "account.opened<=%u".printf (month_last_day);
 		if (building != null)
 			where += " AND account.building=%d".printf (building.id);
 		query.where (where);

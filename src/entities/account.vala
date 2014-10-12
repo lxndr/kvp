@@ -11,7 +11,9 @@ public class Account : DB.SimpleEntity
 
 	construct {
 		var now = new DateTime.now_local ();
-		opened.set_dmy ((DateDay) now.get_day_of_month (), now.get_month (), (DateYear) now.get_year ());
+		Date date;
+		date.set_dmy ((DateDay) now.get_day_of_month (), now.get_month (), (DateYear) now.get_year ());
+		opened = date;
 	}
 
 

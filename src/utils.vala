@@ -204,16 +204,18 @@ private string shorten_name (string? name) {
 }
 
 
-public void get_month_range (int period, out uint first_day, out uint last_day) {
-	var year = period / 12;
-	var month = period % 12 + 1;
-
+public uint get_month_first_day (int month) {
 	var date = Date ();
-	date.set_dmy ((DateDay) 1, month, (DateYear) year);
-	first_day = date.get_julian ();
+	date.set_dmy ((DateDay) 1, (month % 12) + 1, (DateYear) month / 12);
+	return date.get_julian ();
+}
 
-	date.set_dmy ((DateDay) 1, month + 1, (DateYear) year);
-	last_day = date.get_julian () - 1;
+
+public uint get_month_last_day (int month) {
+	month++;
+	var date = Date ();
+	date.set_dmy ((DateDay) 1, (month % 12) + 1, (DateYear) month / 12);
+	return date.get_julian () - 1;
 }
 
 
