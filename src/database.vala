@@ -140,8 +140,12 @@ public class Database : DB.SQLiteDatabase {
 		query.select ("account_period.*, account.id AS account, %d AS period".printf (period))
 			.from ("account LEFT JOIN account_period")
 			.on ("account.id=account_period.account AND period=%d".printf (period));
+
+		string where = "account.opened<=%u".printf (month_end_day);
 		if (building != null)
-			query.where ("account.building=%d AND account.opened<=%u".printf (building.id, month_end_day));
+			where += " AND account.building=%d".printf (building.id);
+		query.where (where);
+
 		return fetch_entity_list_ex (typeof (AccountPeriod), query) as Gee.List<AccountPeriod>;
 	}
 

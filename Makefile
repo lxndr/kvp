@@ -32,9 +32,7 @@ ifeq ($(STATIC), yes)
 		/usr/i686-w64-mingw32/lib/libgee-0.8.a \
 		/usr/i686-w64-mingw32/lib/libsqlite3.a \
 		/usr/i686-w64-mingw32/lib/libxml2.a \
-		/home/lxndr/devel/research/kvartplata/aa/libgtk-3.a \
-		`$(PKGCONFIG) --libs gio-2.0 pango gdk-3.0 atk gobject-2.0 glib-2.0 gmodule-2.0` \
-		-lwinspool -lcomctl32 -lcomdlg32
+		`$(PKGCONFIG) --libs gtk+-3.0`
 else
 	LDFLAGS += \
 		-lz \

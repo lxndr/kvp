@@ -56,21 +56,21 @@ public class Report003 : Report {
 			totals[i] = 0;
 
 		foreach (var ac in accounts) {
-			var account_period = ac.fetch_period (selected_account.period);
-			if (account_period == null)
+			var periodic = ac.fetch_period (selected_account.period);
+			if (periodic == null)
 				continue;
 
-			if (account_period.total.val == 0 && account_period.balance.val == 0)
+			if (periodic.total.val == 0 && periodic.balance.val == 0)
 				continue;
 
 			row = sheet.get_row (row_number);
 			row.get_cell (1).put_string (ac.number).style = cstyles[0];
-			row.get_cell (2).put_string (Utils.shorten_name (ac.tenant_name (selected_account.period))).style = cstyles[1];
-			row.get_cell (3).put_string (account_period.apartment).style = cstyles[2];
-			row.get_cell (4).put_string (account_period.n_rooms.to_string ()).style = cstyles[3];
-			row.get_cell (5).put_string (Utils.format_double (account_period.area, 2)).style = cstyles[4];
+			row.get_cell (2).put_string (Utils.shorten_name (periodic.main_tenant_name ())).style = cstyles[1];
+			row.get_cell (3).put_string (periodic.apartment).style = cstyles[2];
+			row.get_cell (4).put_string (periodic.n_rooms.to_string ()).style = cstyles[3];
+			row.get_cell (5).put_string (Utils.format_double (periodic.area, 2)).style = cstyles[4];
 
-			int64 n_people = account_period.number_of_people ();
+			int64 n_people = periodic.number_of_people ();
 			row.get_cell (6).put_string (n_people.to_string ()).style = cstyles[5];
 
 			var taxes = db.fetch_int_int64_map (Tax.table_name, "service", "total",
@@ -91,25 +91,25 @@ public class Report003 : Report {
 			}
 
 			int64 val;
-			val = account_period.total.val;
+			val = periodic.total.val;
 			totals[13] += val;
 			cell = row.get_cell (14);
 			cell.put_number (Money (val).to_real ());
 			cell.style = cstyles[13];
 
-			val = account_period.payment.val;
+			val = periodic.payment.val;
 			totals[14] += val;
 			cell = row.get_cell (15);
 			cell.put_number (Money (val).to_real ());
 			cell.style = cstyles[14];
 
-			val = account_period.previuos_balance ().val;
+			val = periodic.previuos_balance ().val;
 			totals[15] += val;
 			cell = row.get_cell (16);
 			cell.put_number (Money (val).to_real ());
 			cell.style = cstyles[15];
 
-			val = account_period.balance.val;
+			val = periodic.balance.val;
 			totals[16] += val;
 			cell = row.get_cell (17);
 			cell.put_number (Money (val).to_real ());

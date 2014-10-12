@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-10-11 19:15+0400\n"
+"POT-Creation-Date: 2014-10-12 11:08+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -118,11 +118,11 @@ msgstr "Все здания"
 msgid "Edit..."
 msgstr "Редактировать..."
 
-#: src/people-table.vala:10 src/service-table.vala:8 src/tenant-table.vala:38
+#: src/people-table.vala:10 src/service-table.vala:8 src/tenant-table.vala:41
 msgid "name"
 msgstr "Имя"
 
-#: src/people-table.vala:11 src/tenant-table.vala:39
+#: src/people-table.vala:11 src/tenant-table.vala:42
 msgid "birthday"
 msgstr "Дата рождения"
 
@@ -164,66 +164,66 @@ msgstr "Кол-во"
 msgid "price_value"
 msgstr "Стоимость"
 
-#: src/tenant-table.vala:40
+#: src/tenant-table.vala:43
 #, fuzzy
 msgid "relation"
 msgstr "Отношение"
 
-#: src/tenant-table.vala:41
+#: src/tenant-table.vala:44
 #, fuzzy
 msgid "move-in"
 msgstr "Удалить"
 
-#: src/tenant-table.vala:42
+#: src/tenant-table.vala:45
 #, fuzzy
 msgid "move-out"
 msgstr "Удалить"
 
-#: src/utils.vala:207
+#: src/utils.vala:222
 msgid "January"
 msgstr "Январь"
 
-#: src/utils.vala:208
+#: src/utils.vala:223
 msgid "February"
 msgstr "Февраль"
 
-#: src/utils.vala:209
+#: src/utils.vala:224
 msgid "March"
 msgstr "Март"
 
-#: src/utils.vala:210
+#: src/utils.vala:225
 msgid "April"
 msgstr "Апрель"
 
-#: src/utils.vala:211
+#: src/utils.vala:226
 msgid "May"
 msgstr "Май"
 
-#: src/utils.vala:212
+#: src/utils.vala:227
 msgid "June"
 msgstr "Июнь"
 
-#: src/utils.vala:213
+#: src/utils.vala:228
 msgid "July"
 msgstr "Июль"
 
-#: src/utils.vala:214
+#: src/utils.vala:229
 msgid "August"
 msgstr "Август"
 
-#: src/utils.vala:215
+#: src/utils.vala:230
 msgid "September"
 msgstr "Сентябрь"
 
-#: src/utils.vala:216
+#: src/utils.vala:231
 msgid "October"
 msgstr "Октябрь"
 
-#: src/utils.vala:217
+#: src/utils.vala:232
 msgid "November"
 msgstr "Ноябрь"
 
-#: src/utils.vala:218
+#: src/utils.vala:233
 msgid "December"
 msgstr "Декабрь"
 

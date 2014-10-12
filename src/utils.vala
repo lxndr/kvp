@@ -133,7 +133,10 @@ public void transform_date_to_property_adapter (Value src_value, ref Value dest_
 public void transform_property_adapter_to_date (Value src_value, ref Value dest_value) {
 	var ad = (DB.PropertyAdapter*) src_value.get_boxed ();
 	var date = Date ();
-	date.set_parse (ad.val);
+	if (ad.val != null)
+		date.set_parse (ad.val);
+	if (date.valid () == false)
+		date.set_julian (1);
 	dest_value.set_boxed (&date);
 }
 
@@ -200,6 +203,18 @@ private string shorten_name (string? name) {
 	return sb.str;
 }
 
+
+public void get_month_range (int period, out uint first_day, out uint last_day) {
+	var year = period / 12;
+	var month = period % 12 + 1;
+
+	var date = Date ();
+	date.set_dmy ((DateDay) 1, month, (DateYear) year);
+	first_day = date.get_julian ();
+
+	date.set_dmy ((DateDay) 1, month + 1, (DateYear) year);
+	last_day = date.get_julian () - 1;
+}
 
 
 public string month_to_string (int month) {

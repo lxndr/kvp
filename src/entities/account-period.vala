@@ -29,10 +29,7 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 	private string _tenant;
 	public string tenant {
-		get {
-			_tenant = account.tenant_name (period);
-			return _tenant;
-		}
+		get { _tenant = main_tenant_name (); return _tenant; }
 	}
 
 
@@ -94,8 +91,13 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 
 	public int64 number_of_people () {
+		uint month_first_day;
+		uint month_last_day;
+		Utils.get_month_range (period, out month_first_day, out month_last_day);
+
 		return db.query_count (Tenant.table_name,
-				"account=%d".printf (account.id));
+				"account=%d AND move_in!=1 AND move_in<=%u AND (move_out=1 OR move_out>=%u)"
+				.printf (account.id, month_last_day, month_last_day));
 	}
 
 
@@ -119,11 +121,9 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	}
 
 
-	public string? tenant_name () {
-/*		return db.fetch_string (Person.table_name, "name",
-			"account=%d AND period=%d AND relationship=1"
-			.printf (account.id, period));*/
-		return "fixme";
+	public string? main_tenant_name () {
+		return db.fetch_string ("person JOIN tenant ON tenant.person=person.id",
+				"name", "account=%d AND relation=1".printf (account.id));
 	}
 
 
