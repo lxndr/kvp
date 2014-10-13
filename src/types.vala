@@ -68,8 +68,6 @@ public struct Money {
 		}
 
 		/* prepare */
-		p1 = Utils.string_remove_leading (p1, '0');
-
 		if (p2.length < money_precision) {
 			var sb = new StringBuilder (p2);
 			while (sb.len < money_precision)
@@ -79,7 +77,8 @@ public struct Money {
 			p2 = p2[0:3];
 		}
 
-		val = int64.parse (p1 + p2);
+		p1 = Utils.string_remove_leading (p1 + p2, '0');
+		val = int64.parse (p1);
 		if (negative)
 			val = -val;
 	}
