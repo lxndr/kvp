@@ -89,10 +89,14 @@ public class Database : DB.SQLiteDatabase {
 		from = form_table_name_with_building (building, AccountPeriod.table_name);
 		exec_sql ("INSERT INTO %s SELECT account,%d,apartment,n_rooms,area,total,0,0,0,param1 FROM %s WHERE period=%d"
 				.printf (AccountPeriod.table_name, period, from, prev_period), null);
+
+#if 0
 		/* people */
 		from = form_table_name_with_building (building, Person.table_name);
 		exec_sql ("INSERT INTO %s SELECT null,account,%d,name,birthday,relationship FROM %s WHERE period=%d"
 				.printf (Person.table_name, period, from, prev_period), null);
+#endif
+
 		/* a little bit more tricky */
 		var price_list = get_price_list (building, period);
 		foreach (var price in price_list) {
