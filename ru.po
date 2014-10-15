@@ -37,11 +37,11 @@ msgstr "Комната"
 
 #: src/account-table.vala:25
 msgid "n-rooms"
-msgstr "К-во ком."
+msgstr "К.ком."
 
 #: src/account-table.vala:26
 msgid "n-people"
-msgstr "К-во чел."
+msgstr "К.чел."
 
 #: src/account-table.vala:27
 msgid "area"
@@ -128,17 +128,15 @@ msgstr "Дата рождения"
 
 #: src/people-table.vala:12
 msgid "gender"
-msgstr ""
+msgstr "Женщина"
 
 #: src/people-table.vala:25
-#, fuzzy
 msgid "Add to tenants"
-msgstr "Список жилцов"
+msgstr "К списку жильцов"
 
 #: src/people-window.vala:13
-#, fuzzy
 msgid "Reference - People"
-msgstr "Справочник - Здания"
+msgstr "Справочник - Люди"
 
 #: src/service-table.vala:7
 msgid "id"
@@ -165,19 +163,16 @@ msgid "price_value"
 msgstr "Стоимость"
 
 #: src/tenant-table.vala:43
-#, fuzzy
 msgid "relation"
 msgstr "Отношение"
 
 #: src/tenant-table.vala:44
-#, fuzzy
 msgid "move-in"
-msgstr "Удалить"
+msgstr "Прибыл"
 
 #: src/tenant-table.vala:45
-#, fuzzy
 msgid "move-out"
-msgstr "Удалить"
+msgstr "Выбыл"
 
 #: src/utils.vala:224
 msgid "January"
@@ -310,7 +305,7 @@ msgstr "Текущий период"
 
 #: ui/main-window.ui:53
 msgid "Filter"
-msgstr ""
+msgstr "Фильтр"
 
 #: ui/main-window.ui:78
 msgid "References"
@@ -325,9 +320,8 @@ msgid "Prices"
 msgstr "Тарифы"
 
 #: ui/main-window.ui:208
-#, fuzzy
 msgid "People"
-msgstr "К-во чел."
+msgstr "Люди"
 
 #: libs/src/db-gtk/view-table.vala:103
 msgid "Add"
