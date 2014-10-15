@@ -87,8 +87,8 @@ public class Report002 : Report {
 
 	private Gee.List<AccountPeriod> periodic_list;
 	private AccountPeriod general_periodic;
-	private Gee.List<Person> people;
-	private Person main_tenant;
+	private Gee.List<Tenant> tenants;
+	private Tenant main_tenant;
 
 
 	construct {
@@ -123,7 +123,7 @@ public class Report002 : Report {
 				result.append (selected_account.apartment);
 				break;
 			case "ACCOUNT_NPEOPLE":
-				result.append (people.size.to_string ());
+				result.append (tenants.size.to_string ());
 				break;
 			case "ACCOUNT_NROOMS":
 				result.append (selected_account.n_rooms.to_string ());
@@ -158,12 +158,12 @@ public class Report002 : Report {
 			error ("There's no periods!");
 
 		general_periodic = periodic_list.last ();
-		people = general_periodic.get_people ();
+		tenants = general_periodic.get_tenant_list ();
 
-		foreach (var person in people) {
-//			unowned Relationship? rel = person.relation;
-//			if (rel != null && rel.id == 1)
-				main_tenant = person;
+		foreach (var tenant in tenants) {
+			unowned Relationship? rel = tenant.relation;
+			if (rel != null && rel.id == 1)
+				main_tenant = tenant;
 		}
 
 		if (main_tenant == null)
@@ -186,7 +186,7 @@ public class Report002 : Report {
 
 	private void make_page2 (OOXML.Sheet sheet) {
 		unowned Building building = selected_account.account.building;
-		var n_people = people.size;
+		var n_tenants = tenants.size;
 
 		sheet.put_string ("BZ1", selected_account.account.number);
 		sheet.put_string ("R3", main_tenant.name);
@@ -194,8 +194,8 @@ public class Report002 : Report {
 		sheet.put_string ("AK4", building.number);
 		sheet.put_string ("T12", general_periodic.n_rooms.to_string ());
 		sheet.put_string ("AD12", Utils.format_double (general_periodic.area, 2));
-		sheet.put_string ("AZ8", n_people.to_string ());
-		sheet.put_string ("BF8", n_people.to_string ());
+		sheet.put_string ("AZ8", n_tenants.to_string ());
+		sheet.put_string ("BF8", n_tenants.to_string ());
 		sheet.put_string ("CA4", general_periodic.apartment);
 
 		/* services and prices */
@@ -205,12 +205,13 @@ public class Report002 : Report {
 			sb.append_printf ("%s: %s\n", price.service.name, price.value.format ());
 		sheet.put_string ("A7", sb.str);
 
-		/* people */
-		for (var i = 0; i < n_people; i++) {
-			var person = people[i];
+		/* tenants */
+		for (var i = 0; i < n_tenants; i++) {
+			var tenant = tenants[i];
+			unowned Person person = tenant.person;
 			sheet.get_row (14 + i).get_cell (27).put_string (person.name);
 			sheet.get_row (14 + i).get_cell (49).put_string (Utils.format_date (person.birthday));
-//			sheet.get_row (14 + i).get_cell (57).put_string (person.relation.name);
+			sheet.get_row (14 + i).get_cell (57).put_string (tenant.relation.name);
 		}
 	}
 

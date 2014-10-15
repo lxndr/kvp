@@ -125,9 +125,8 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	}
 
 
-	public Gee.List<Person> get_people () {
-		return db.fetch_entity_list<Person> (Person.table_name,
-				"account=%d AND period=%d".printf (account.id, period));
+	public Gee.List<Tenant> get_tenant_list () {
+		return ((Database) db).get_tenant_list (account, period);
 	}
 
 

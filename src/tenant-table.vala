@@ -73,7 +73,7 @@ public class TenantTable : DB.ViewTable {
 	protected override Gee.List<DB.Entity> get_entity_list () {
 		if (current_periodic == null)
 			return new Gee.ArrayList<Tenant> ();
-		return (db as Database).get_tenant_list (current_periodic.account);
+		return current_periodic.get_tenant_list ();
 	}
 
 

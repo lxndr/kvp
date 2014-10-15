@@ -158,9 +158,21 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.List<Tenant> get_tenant_list (Account account) {
-		return fetch_entity_list<Tenant> (Tenant.table_name,
-				"account=%d".printf (account.id));
+	/**
+	 * Fetches a list of tenants fron the database.
+	 * @period: if greatee than 0 then only tenants that are actual to the @period are returned.
+	 */
+	public Gee.List<Tenant> get_tenant_list (Account account, int period) {
+		var sb = new StringBuilder.sized (64);
+		sb.append_printf ("account=%d", account.id);
+		if (period > 0) {
+			uint month_first_day = Utils.get_month_first_day (period);
+			uint month_last_day = Utils.get_month_last_day (period);
+			sb.append_printf (" AND (relation == 1 OR (move_in!=1 AND move_in<=%u AND (move_out=1 OR move_out>=%u)))",
+					month_last_day, month_last_day);
+		}
+
+		return fetch_entity_list<Tenant> (Tenant.table_name, sb.str);
 	}
 
 

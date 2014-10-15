@@ -54,32 +54,10 @@ public class Account : DB.SimpleEntity
 		db.commit_transaction ();
 	}
 
-/*
-	public int64 number_of_people (int period) {
-		return db.query_count ("people",
-				("account=%" + int64.FORMAT + " AND period=%d")
-				.printf (id, period));
-	}
-*/
 
-/*
-	public Person? tenant (int year, int month) {
-		return db.get_entity (typeof (Person),
-				("SELECT * FROM people WHERE account=%" + int64.FORMAT +
-				" AND year=%d AND month=%d AND relationship=1")
-				.printf (id, year, month));
+	public Gee.List<Tenant> get_tenant_list () {
+		return ((Database) db).get_tenant_list (this, 0);
 	}
-*/
-
-
-/*
-	public string? tenant_name (int period) {
-		return db.fetch_string (Person.table_name, "name",
-				"account=%d AND period=%d AND relationship=1"
-				.printf (id, period));
-		return "fixme";
-	}
-*/
 
 
 	public AccountPeriod? fetch_period (int period) {
