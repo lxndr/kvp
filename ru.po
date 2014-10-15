@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-10-12 17:41+0400\n"
+"POT-Creation-Date: 2014-10-15 15:02+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -48,38 +48,46 @@ msgid "area"
 msgstr "Площадь"
 
 #: src/account-table.vala:28
-msgid "param1"
-msgstr "Эл."
+msgid "param2"
+msgstr "Э.пл."
 
-#: src/account-table.vala:29 src/tax-table.vala:34
+#: src/account-table.vala:29
+msgid "param1"
+msgstr "Э.вд."
+
+#: src/account-table.vala:30
+msgid "param3"
+msgstr "Душ"
+
+#: src/account-table.vala:31 src/tax-table.vala:34
 msgid "total"
 msgstr "Начислено"
 
-#: src/account-table.vala:30
+#: src/account-table.vala:32
 msgid "extra"
 msgstr "Доп."
 
-#: src/account-table.vala:31
+#: src/account-table.vala:33
 msgid "payment"
 msgstr "Уплачено"
 
-#: src/account-table.vala:32
+#: src/account-table.vala:34
 msgid "balance"
 msgstr "Остаток"
 
-#: src/account-table.vala:33
+#: src/account-table.vala:35
 msgid "comment"
 msgstr "Примечание"
 
-#: src/account-table.vala:46
+#: src/account-table.vala:48
 msgid "Recalculate"
 msgstr "Пересчитать"
 
-#: src/account-table.vala:51
+#: src/account-table.vala:53
 msgid "Recalculate this period"
 msgstr "Пересчитать весь месяц"
 
-#: src/account-table.vala:84
+#: src/account-table.vala:86
 msgid ""
 "Every account has to be related to a building. Only one building has to be "
 "currently selected to add a new account. You have selected either all of "

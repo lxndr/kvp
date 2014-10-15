@@ -12,7 +12,9 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	public Money payment { get; set; default = Money (0); }
 	public Money balance { get; set; default = Money (0); }
 	public Money extra { get; set; default = Money (0); }
-	public bool param1 { get; set; default = false; }
+	public bool param1 { get; set; default = false; }	/* water heater */
+	public bool param2 { get; set; default = false; }	/* electric oven */
+	public bool param3 { get; set; default = false; }	/* shower */
 
 
 	public string number {
@@ -76,7 +78,9 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 			"payment",
 			"balance",
 			"extra",
-			"param1"
+			"param1",
+			"param2",
+			"param3"
 		};
 		return fields;
 	}
