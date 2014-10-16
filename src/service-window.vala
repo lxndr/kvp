@@ -34,7 +34,7 @@ class ServiceWindow : Gtk.Window {
 
 
 	private const string method_names[] = {
-		"N", "1", "Ar", "P", "Am", "F5", "F6"
+		"N", "1", "Ar", "P", "Am", "F5", "F6", "F7"
 	};
 
 

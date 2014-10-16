@@ -7,6 +7,7 @@ public class Price : DB.Entity
 	public Service service { get; set; }
 	public int period { get; set; }
 	public Money value { get; set; }
+	public Money value2 { get; set; }
 	public int method { get; set; }
 
 	public unowned string service_name { get { return service.name; } }
@@ -30,7 +31,8 @@ public class Price : DB.Entity
 	public override unowned string[] db_fields () {
 		const string[] fields = {
 			"value",
-			"method"
+			"method",
+			"value2"
 		};
 		return fields;
 	}

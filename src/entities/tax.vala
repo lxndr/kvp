@@ -26,8 +26,23 @@ public class Tax : DB.Entity, DB.Viewable
 	}
 
 
+	private AccountPeriod _periodic;
+	public unowned AccountPeriod periodic {
+		get {
+			if (_periodic == null)
+				_periodic = account.fetch_period (period);
+			return _periodic;
+		}
+	}
+
+
 	public Money price_value {
-		get { return price.value; }
+		get {
+			if (price.method == 7 && periodic.param3 == true)
+				return price.value2;
+			else
+				return price.value;
+		}
 	}
 
 
@@ -139,23 +154,22 @@ public class Tax : DB.Entity, DB.Viewable
 			return;
 		}
 
-		var account_period = account.fetch_period (period);
-
 		switch (price.method) {
 		case 1:	/* always x1 */
 			amount = 1.0;
 			break;
 		case 2:	/* area */
-			amount = account_period.area;
+			amount = periodic.area;
 			break;
 		case 3: /* number of people */
-			amount = (double) account_period.number_of_people ();
+		case 7:
+			amount = (double) periodic.number_of_people ();
 			break;
 		case 5:
-			amount = method_05 (account_period);
+			amount = method_05 (periodic);
 			break;
 		case 6:
-			amount = method_06 (account_period);
+			amount = method_06 (periodic);
 			break;
 		default: /* amount is specified */
 			break;
@@ -166,6 +180,10 @@ public class Tax : DB.Entity, DB.Viewable
 	public void calc_total () {
 		if (price.method == 0)
 			return;
+		if (price.method == 7 && periodic.param3 == true) {
+			total = Money (Math.llround (amount * (double) price.value2.val));
+			return;
+		}
 		total = Money (Math.llround (amount * (double) price.value.val));
 	}
 }
