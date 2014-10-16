@@ -211,7 +211,8 @@ public class Report002 : Report {
 			unowned Person person = tenant.person;
 			sheet.get_row (14 + i).get_cell (27).put_string (person.name);
 			sheet.get_row (14 + i).get_cell (49).put_string (Utils.format_date (person.birthday));
-			sheet.get_row (14 + i).get_cell (57).put_string (tenant.relation.name);
+			if (tenant.relation != null)
+				sheet.get_row (14 + i).get_cell (57).put_string (tenant.relation.name);
 		}
 	}
 
