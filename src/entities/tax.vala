@@ -159,7 +159,7 @@ public class Tax : DB.Entity, DB.Viewable
 			amount = 1.0;
 			break;
 		case 2:	/* area */
-			amount = periodic.area;
+			amount = periodic.area * periodic.period_coefficient ();
 			break;
 		case 3: /* number of people */
 		case 7:

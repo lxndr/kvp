@@ -138,6 +138,27 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 		return db.fetch_entity_list<Tax> (Tax.table_name,
 				"account=%d AND period=%d".printf (account.id, period));
 	}
+
+
+	public double period_coefficient () {
+		uint julian;
+
+		julian = account.opened.get_julian ();
+		uint first_day = Utils.get_month_first_day (period);
+		if (first_day < julian)
+			first_day = julian;
+
+		julian = account.closed.get_julian ();
+		uint last_day = Utils.get_month_last_day (period);
+		if (julian > 1 && last_day > julian)
+			last_day = julian;
+
+		var days = last_day - first_day + 1;
+		var days_in_month = ((DateMonth) (period % 12 + 1)).get_days_in_month ((DateYear) (period / 12));
+stdout.printf ("%u %u %f\n", days, days_in_month, (double) days / (double) days_in_month);
+
+		return (double) days / (double) days_in_month;
+	}
 }
 
 
