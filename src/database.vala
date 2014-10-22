@@ -25,8 +25,10 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public TaxCalculation create_tax_calculation (string? id) {
-		return Object.new (tax_calc_methods[id]) as TaxCalculation;
+	public TaxCalculation? create_tax_calculation (string? id, Tax tax) {
+		if (id == null)
+			return null;
+		return Object.new (tax_calc_methods[id], "tax", tax) as TaxCalculation;
 	}
 
 

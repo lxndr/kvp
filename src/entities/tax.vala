@@ -46,13 +46,12 @@ public class Tax : DB.Entity, DB.Viewable
 	}
 
 
-	private TaxCalculation? calculation;
-	private string? _calc_method;
-	public string? calc_method {
-		get { return _calc_method; }
-		set {
-			_calc_method = value;
-			calculation = ((Database) db).create_tax_calculation (_calc_method);
+	private TaxCalculation? _calculation;
+	public TaxCalculation? calculation {
+		get {
+			if (_calculation == null)
+				_calculation = ((Database) db).create_tax_calculation (price.calc_id, this);
+			return _calculation;
 		}
 	}
 

@@ -86,25 +86,25 @@ public class TaxFormula05 : TaxCalculation {
 
 	public override double get_amount () {
 		/* oven/heater - rooms - people */
-		int[,,] norm = {{
+		int[,,] norm = {{	/* no oven, no heater */
 			{  0,   0,   0,   0,  0,    0},
 			{  0,  93,  58,  45,  36,  32},
 			{  0, 120,  74,  57,  47,  41},
 			{  0, 135,  84,  65,  53,  46},
 			{  0, 147,  91,  70,  57,  50}
-		}, {
+		}, {				/* oven, no heater */
 			{  0,   0,   0,   0,   0,   0},
 			{  0, 143,  89,  69,  56,  49},
 			{  0, 168, 104,  81,  66,  57},
 			{  0, 184, 114,  88,  72,  63},
 			{  0, 196, 121,  94,  76,  67}
-		}, {
+		}, {				/* no oven, heater */
 			{  0,   0,   0,   0,  0,    0},
 			{  0, 167, 103,  80,  65,  57},
 			{  0, 215, 133, 103,  84,  73},
 			{  0, 243, 151, 117,  95,  83},
 			{  0, 263, 163, 126, 103,  90}
-		}, {
+		}, {				/* oven, heater */
 			{  0,   0,   0,   0,   0,   0},
 			{  0, 217, 134, 104,  85,  74},
 			{  0, 256, 159, 123, 100,  87},
@@ -112,9 +112,12 @@ public class TaxFormula05 : TaxCalculation {
 			{  0, 297, 184, 143, 116, 101}
 		}};
 
-
-		var list = tax.periodic.get_tenant_list ();
-		return (double) list.size;
+		unowned AccountPeriod ac = tax.periodic;
+		var norm_idx = (int) ac.param1 * 2 + (int) tax.periodic.param2;
+		int norm_rooms = (int) ac.n_rooms.clamp (0, 4);
+		int norm_people = (int) ac.n_people.clamp (0, 5);
+		int n = norm[norm_idx, norm_rooms, norm_people];
+		return (double) (n * ac.n_people);
 	}
 }
 

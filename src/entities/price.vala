@@ -10,6 +10,9 @@ public class Price : DB.Entity
 	public Money value2 { get; set; }
 	public int method { get; set; }
 
+	public string? calc_id { get; set; }
+
+
 	public unowned string service_name { get { return service.name; } }
 
 
