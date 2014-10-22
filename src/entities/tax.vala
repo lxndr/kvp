@@ -38,10 +38,21 @@ public class Tax : DB.Entity, DB.Viewable
 
 	public Money price_value {
 		get {
-			if (price.method == 7 && periodic.param3 == true)
-				return price.value2;
+			if (calculation == null)
+				return Money (0);
 			else
-				return price.value;
+				return calculation.get_price ();
+		}
+	}
+
+
+	private TaxCalculation? calculation;
+	private string? _calc_method;
+	public string? calc_method {
+		get { return _calc_method; }
+		set {
+			_calc_method = value;
+			calculation = ((Database) db).create_tax_calculation (_calc_method);
 		}
 	}
 
@@ -154,6 +165,12 @@ public class Tax : DB.Entity, DB.Viewable
 			return;
 		}
 
+		if (calculation == null)
+			amount = 0.0;
+		else
+			amount = calculation.get_amount ();
+
+#if 0
 		switch (price.method) {
 		case 1:	/* always x1 */
 			amount = 1.0;
@@ -174,10 +191,12 @@ public class Tax : DB.Entity, DB.Viewable
 		default: /* amount is specified */
 			break;
 		}
+#endif
 	}
 
 
 	public void calc_total () {
+#if 0
 		if (price.method == 0)
 			return;
 		if (price.method == 7 && periodic.param3 == true) {
@@ -185,6 +204,12 @@ public class Tax : DB.Entity, DB.Viewable
 			return;
 		}
 		total = Money (Math.llround (amount * (double) price.value.val));
+#endif
+
+		if (calculation == null)
+			total = Money (0);
+		else
+			total = calculation.get_total ();
 	}
 }
 

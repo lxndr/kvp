@@ -2,13 +2,31 @@ namespace Kv {
 
 
 public class Database : DB.SQLiteDatabase {
-	public Database () throws Error {
-		Object (path: "./kvartplata.db");
+	private Gee.Map<string, Type> tax_calc_methods;
+
+
+	construct {
+		/* tax colculation methods */
+		tax_calc_methods = new Gee.HashMap<string, Type> ();
+		tax_calc_methods[TaxFormula02.id] = typeof (TaxFormula02);
+		tax_calc_methods[TaxFormula03.id] = typeof (TaxFormula03);
+		tax_calc_methods[TaxFormula05.id] = typeof (TaxFormula05);
+		tax_calc_methods[TaxFormula07.id] = typeof (TaxFormula07);
 
 		/* prepare the database */
 		var bytes = resources_lookup_data ("/org/lxndr/kvp/data/init.sql", ResourceLookupFlags.NONE);
 		unowned uint8[] data = bytes.get_data ();
 //		exec_sql ((string) data);
+	}
+
+
+	public Database () {
+		Object (path: "./kvartplata.db");
+	}
+
+
+	public TaxCalculation create_tax_calculation (string? id) {
+		return Object.new (tax_calc_methods[id]) as TaxCalculation;
 	}
 
 
@@ -87,7 +105,7 @@ public class Database : DB.SQLiteDatabase {
 		begin_transaction ();
 		/* periodic */
 		from = form_table_name_with_building (building, AccountPeriod.table_name);
-		exec_sql ("INSERT INTO %s SELECT account,%d,apartment,n_rooms,area,total,0,0,0,param1 FROM %s WHERE period=%d"
+		exec_sql ("INSERT INTO %s SELECT account,%d,apartment,n_rooms,area,total,0,0,0,param1,param2,param3 FROM %s WHERE period=%d"
 				.printf (AccountPeriod.table_name, period, from, prev_period), null);
 
 #if 0
