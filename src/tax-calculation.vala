@@ -25,6 +25,30 @@ public abstract class TaxCalculation : Object {
 
 
 
+public class TaxFormula01 : TaxCalculation {
+	public static unowned string id = "price-only";
+	public override unowned string get_id () {
+		return id;
+	}
+
+
+	construct {
+		name = N_("Pr");
+		desc = N_("total = price");
+	}
+
+
+	public override double get_amount () {
+		return 0.0;
+	}
+
+
+	public override Money get_total () {
+		return get_price ();
+	}
+}
+
+
 public class TaxFormula02 : TaxCalculation {
 	public static unowned string id = "area";
 	public override unowned string get_id () {
@@ -117,7 +141,29 @@ public class TaxFormula05 : TaxCalculation {
 		int norm_rooms = (int) ac.n_rooms.clamp (0, 4);
 		int norm_people = (int) ac.n_people.clamp (0, 5);
 		int n = norm[norm_idx, norm_rooms, norm_people];
-		return (double) (n * ac.n_people);
+
+		double amount_coef = 1.0;
+		if (ac.account.building.id == 3) {
+			double[] coef = {
+				1.4465,
+				1.6206,
+				1.2084,
+				1.3434,
+				1.0214,
+				1.0156,
+				0.9860,
+				1.1038,
+				1.0912,
+				1.0000,
+				1.0000,
+				1.0000
+			};
+
+			int month = ac.period % 12;
+			amount_coef = coef[month];
+		}
+
+		return Math.round ((double) (n * ac.n_people) * amount_coef);
 	}
 }
 
