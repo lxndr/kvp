@@ -164,9 +164,7 @@ public class Tax : DB.Entity, DB.Viewable
 			return;
 		}
 
-		if (calculation == null)
-			amount = 0.0;
-		else
+		if (calculation != null)
 			amount = calculation.get_amount ();
 
 #if 0
@@ -205,9 +203,7 @@ public class Tax : DB.Entity, DB.Viewable
 		total = Money (Math.llround (amount * (double) price.value.val));
 #endif
 
-		if (calculation == null)
-			total = Money (0);
-		else
+		if (calculation != null)
 			total = calculation.get_total ();
 	}
 }

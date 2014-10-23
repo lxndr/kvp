@@ -155,9 +155,33 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 		var days = last_day - first_day + 1;
 		var days_in_month = ((DateMonth) (period % 12 + 1)).get_days_in_month ((DateYear) (period / 12));
-stdout.printf ("%u %u %f\n", days, days_in_month, (double) days / (double) days_in_month);
 
 		return (double) days / (double) days_in_month;
+	}
+
+
+	public double tenant_coefficient () {
+		uint first_day = Utils.get_month_first_day (period);
+		uint last_day = Utils.get_month_last_day (period);
+
+		Utils.clamp_date_range (ref first_day, ref last_day,
+				account.opened.get_julian (), account.closed.get_julian ());
+
+		uint days = 0;
+		var tenant_list = get_tenant_list ();
+		foreach (var tenant in tenant_list) {
+			uint first = tenant.move_in.get_julian ();
+			uint last = tenant.move_out.get_julian ();
+
+			Utils.clamp_date_range (ref first, ref last, first_day, last_day);
+			days += last - first + 1;
+		}
+
+		var year = (DateYear) (period / 12);
+		var month = (DateMonth) (period % 12 + 1);
+		var days_in_month = month.get_days_in_month (year);
+
+		return (double) days / (double) (days_in_month * tenant_list.size);
 	}
 }
 
