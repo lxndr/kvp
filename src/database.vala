@@ -8,6 +8,7 @@ public class Database : DB.SQLiteDatabase {
 	construct {
 		/* tax colculation methods */
 		tax_calc_methods = new Gee.HashMap<string, Type> ();
+		tax_calc_methods[TaxFormula01.id] = typeof (TaxFormula01);
 		tax_calc_methods[TaxFormula02.id] = typeof (TaxFormula02);
 		tax_calc_methods[TaxFormula03.id] = typeof (TaxFormula03);
 		tax_calc_methods[TaxFormula05.id] = typeof (TaxFormula05);

@@ -176,11 +176,11 @@ public class TaxFormula07 : TaxCalculation {
 
 	construct {
 		name = N_("Ts");
-		desc = N_("total = tenant_coef * ?(shower, price1, price2)");
+		desc = N_("total = tenant_coef * ?(shower, price2, price1)");
 	}
 
 
-	public virtual Money get_price () {
+	public override Money get_price () {
 		if (tax.periodic.param3)
 			return tax.price.value2;
 		else

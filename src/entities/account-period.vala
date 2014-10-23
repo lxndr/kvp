@@ -181,7 +181,7 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 		var month = (DateMonth) (period % 12 + 1);
 		var days_in_month = month.get_days_in_month (year);
 
-		return (double) days / (double) (days_in_month * tenant_list.size);
+		return (double) days / (double) days_in_month;
 	}
 }
 

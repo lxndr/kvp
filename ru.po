@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-10-23 15:49+0400\n"
+"POT-Creation-Date: 2014-10-23 20:14+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -191,7 +191,7 @@ msgid "Ts"
 msgstr ""
 
 #: src/tax-calculation.vala:179
-msgid "total = tenant_coef * ?(shower, price1, price2)"
+msgid "total = tenant_coef * ?(shower, price2, price1)"
 msgstr ""
 
 #: src/tax-table.vala:30
