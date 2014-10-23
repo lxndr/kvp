@@ -173,6 +173,11 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 			uint first = tenant.move_in.get_julian ();
 			uint last = tenant.move_out.get_julian ();
 
+			if (first == 1 && last == 1)
+				continue;
+			if (first < first_day || (last > 1 && last > last_day))
+				continue;
+
 			Utils.clamp_date_range (ref first, ref last, first_day, last_day);
 			days += last - first + 1;
 		}

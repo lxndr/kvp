@@ -189,8 +189,7 @@ public class TaxFormula07 : TaxCalculation {
 
 
 	public override double get_amount () {
-		var list = tax.periodic.get_tenant_list ();
-		return (double) list.size;
+		return tax.periodic.tenant_coefficient ();
 	}
 }
 

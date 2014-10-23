@@ -244,7 +244,8 @@ public bool is_day_in_period (uint day, uint first_day, uint last_day) {
 }
 
 
-public void clamp_date_range (ref uint first_day, ref uint last_day, uint min, uint max) {
+public void clamp_date_range (ref uint first_day, ref uint last_day, uint min, uint max)
+		requires (first_day < last_day) {
 	first_day = uint.max (first_day, min);
 
 	if (last_day == 1)
