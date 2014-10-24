@@ -244,14 +244,38 @@ public bool is_day_in_period (uint day, uint first_day, uint last_day) {
 }
 
 
+/*
+ * Julian days
+ * 1 = none
+ * first =1, last =1 - no range
+ * first >1, last =1 - no last day
+ * first =1, last >1 - no first day
+ * first >1, last >1 - actually a range
+ */
 public void clamp_date_range (ref uint first_day, ref uint last_day, uint min, uint max)
-		requires (first_day < last_day) {
-	first_day = uint.max (first_day, min);
-
-	if (last_day == 1)
+		requires (last_day == 1 || first_day <= last_day)
+		requires (max == 1 || min <= max)
+		ensures (first_day <= last_day) {
+	if (min > 1 && (first_day == 1 || first_day < min))
+		first_day = min;
+	if (max > 1 && (last_day == 1 || last_day > max))
 		last_day = max;
-	else if (max > 1)
-		last_day = uint.min (last_day, max);
+}
+
+
+public void clamp_date_range2 (ref Date? first_day, ref Date? last_day, Date? min, Date? max)
+		requires ((first_day == null || last_day == null) && first_day.compare (last_day) < 1)
+		requires ((min == null || max == null) && min.compare (max) < 1) {
+	if (min != null) {
+		if (last_day != null
+
+		if (first_day == null)
+			first_day = min;
+		else if ()
+		else if (first_day.compare (min) < 0))
+		first_day = min;
+	if (max != null && (last_day == null || last_day.compare (max) > 0))
+		last_day = max;
 }
 
 
