@@ -253,29 +253,62 @@ public bool is_day_in_period (uint day, uint first_day, uint last_day) {
  * first >1, last >1 - actually a range
  */
 public void clamp_date_range (ref uint first_day, ref uint last_day, uint min, uint max)
-		requires (last_day == 1 || first_day <= last_day)
+		requires (first_day != 1 || last_day != 1 || first_day <= last_day)
 		requires (max == 1 || min <= max)
 		ensures (first_day <= last_day) {
-	if (min > 1 && (first_day == 1 || first_day < min))
-		first_day = min;
-	if (max > 1 && (last_day == 1 || last_day > max))
-		last_day = max;
+	if (first_day == 1 && last_day == 1)
+		return;
+
+	if (min > 1) {
+		if (last_day > 1 && last_day < min) {
+			first_day = 1;
+			last_day = 1;
+		}
+
+		if (first_day == 1 || first_day < min)
+			first_day = min;
+	}
+
+	if (max > 1) {
+		if (first_day > 1 && first_day > max) {
+			first_day = 1;
+			last_day = 1;
+		}
+
+		if (last_day == 1 || last_day > max)
+			last_day = max;
+	}
 }
 
 
-public void clamp_date_range2 (ref Date? first_day, ref Date? last_day, Date? min, Date? max)
-		requires ((first_day == null || last_day == null) && first_day.compare (last_day) < 1)
+public void clamp_date_range2 (ref Date? first, ref Date? last, Date? min, Date? max)
+		requires ((first == null || last == null) && first.compare (last_day) < 1)
 		requires ((min == null || max == null) && min.compare (max) < 1) {
-	if (min != null) {
-		if (last_day != null
+	/* no dates */
+	if (first == null && last == null)
+		return;
 
-		if (first_day == null)
-			first_day = min;
-		else if ()
-		else if (first_day.compare (min) < 0))
-		first_day = min;
-	if (max != null && (last_day == null || last_day.compare (max) > 0))
-		last_day = max;
+	if (min != null) {
+		if (last != null && last.compare (min) < 0) {
+			/* out of range */
+			first = null;
+			last = null;
+		}
+
+		if (first == null || first.compare (min) < 0)
+			first = min;
+	}
+
+	if (max != null) {
+		if (first != null && first.compare (max) > 0) {
+			/* out of range */
+			first = null;
+			last = null;
+		}
+
+		if (last == null || last.compare (max) > 0)
+			last = max;
+	}
 }
 
 

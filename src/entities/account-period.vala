@@ -172,18 +172,12 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 		foreach (var tenant in tenant_list) {
 			uint first = tenant.move_in.get_julian ();
 			uint last = tenant.move_out.get_julian ();
+			Utils.clamp_date_range (ref first, ref last, first_day, last_day);
 
-			/* weird */
-			if (last > 1 && first > last)
-				continue;
 			/* no range at all */
 			if (first == 1 && last == 1)
 				continue;
-			/* out of range */
-			if (first > last_day || (last > 1 && last < first_day))
-				continue;
 
-			Utils.clamp_date_range (ref first, ref last, first_day, last_day);
 			days += last - first + 1;
 		}
 
