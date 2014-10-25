@@ -41,6 +41,12 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	}
 
 
+	public Date closed {
+		get { return account.closed; }
+		set { account.closed = value; }
+	}
+
+
 	public int n_people {
 		get { return (int) number_of_people (); }
 	}

@@ -7,7 +7,7 @@ public class Account : DB.SimpleEntity
 	public string number { get; set; default = "000"; }
 	public Date opened { get; set; }
 	public Date closed { get; set; }
-	public string comment { get; set; default = ""; }
+	public string? comment { get; set; }
 
 
 	construct {
@@ -32,6 +32,7 @@ public class Account : DB.SimpleEntity
 			"building",
 			"number",
 			"opened",
+			"closed",
 			"comment"
 		};
 		return fields;

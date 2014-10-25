@@ -5,7 +5,7 @@ public class Tenant : DB.Entity, DB.Viewable
 {
 	public Account account { get; set; }
 	public Person person { get; set; }
-	public weak Date move_in { get; set; }
+	public Date move_in { get; set; }
 	public Date move_out { get; set; }
 	public Relationship? relation { get; set; default = null; }
 

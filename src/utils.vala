@@ -282,7 +282,7 @@ public void clamp_date_range (ref uint first_day, ref uint last_day, uint min, u
 
 
 public void clamp_date_range2 (ref Date? first, ref Date? last, Date? min, Date? max)
-		requires ((first == null || last == null) && first.compare (last_day) < 1)
+		requires ((first == null || last == null) && first.compare (last) < 1)
 		requires ((min == null || max == null) && min.compare (max) < 1) {
 	/* no dates */
 	if (first == null && last == null)

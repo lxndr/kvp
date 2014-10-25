@@ -164,6 +164,13 @@ public class TaxFormula05 : TaxCalculation {
 
 		return Math.round ((double) (n * ac.n_people) * amount_coef);
 	}
+
+
+	public override Money get_total () {
+		return Money (Math.llround (
+				tax.amount * (double) get_price ().val * tax.periodic.period_coefficient ()
+		));
+	}
 }
 
 

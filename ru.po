@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-10-23 20:14+0400\n"
+"POT-Creation-Date: 2014-10-25 12:22+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -28,66 +28,70 @@ msgid "opened"
 msgstr "Открыт"
 
 #: src/account-table.vala:23
+msgid "closed"
+msgstr ""
+
+#: src/account-table.vala:24
 msgid "tenant"
 msgstr "Квартиронаниматель"
 
-#: src/account-table.vala:24
+#: src/account-table.vala:25
 msgid "apartment"
 msgstr "Комната"
 
-#: src/account-table.vala:25
+#: src/account-table.vala:26
 msgid "n-rooms"
 msgstr "К.ком."
 
-#: src/account-table.vala:26
+#: src/account-table.vala:27
 msgid "n-people"
 msgstr "К.чел."
 
-#: src/account-table.vala:27
+#: src/account-table.vala:28
 msgid "area"
 msgstr "Площадь"
 
-#: src/account-table.vala:28
+#: src/account-table.vala:29
 msgid "param2"
 msgstr "Э.пл."
 
-#: src/account-table.vala:29
+#: src/account-table.vala:30
 msgid "param1"
 msgstr "Э.вд."
 
-#: src/account-table.vala:30
+#: src/account-table.vala:31
 msgid "param3"
 msgstr "Душ"
 
-#: src/account-table.vala:31 src/tax-table.vala:34
+#: src/account-table.vala:32 src/tax-table.vala:34
 msgid "total"
 msgstr "Начислено"
 
-#: src/account-table.vala:32
+#: src/account-table.vala:33
 msgid "extra"
 msgstr "Доп."
 
-#: src/account-table.vala:33
+#: src/account-table.vala:34
 msgid "payment"
 msgstr "Уплачено"
 
-#: src/account-table.vala:34
+#: src/account-table.vala:35
 msgid "balance"
 msgstr "Остаток"
 
-#: src/account-table.vala:35
+#: src/account-table.vala:36
 msgid "comment"
 msgstr "Примечание"
 
-#: src/account-table.vala:48
+#: src/account-table.vala:49
 msgid "Recalculate"
 msgstr "Пересчитать"
 
-#: src/account-table.vala:53
+#: src/account-table.vala:54
 msgid "Recalculate this period"
 msgstr "Пересчитать весь месяц"
 
-#: src/account-table.vala:86
+#: src/account-table.vala:87
 msgid ""
 "Every account has to be related to a building. Only one building has to be "
 "currently selected to add a new account. You have selected either all of "
@@ -186,11 +190,11 @@ msgstr ""
 msgid "total = norm * n_people * "
 msgstr ""
 
-#: src/tax-calculation.vala:178
+#: src/tax-calculation.vala:185
 msgid "Ts"
 msgstr ""
 
-#: src/tax-calculation.vala:179
+#: src/tax-calculation.vala:186
 msgid "total = tenant_coef * ?(shower, price2, price1)"
 msgstr ""
 

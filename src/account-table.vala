@@ -20,6 +20,7 @@ public class AccountTable : DB.ViewTable {
 		const string props[] = {
 			N_("number"),
 			N_("opened"),
+			N_("closed"),
 			N_("tenant"),
 			N_("apartment"),
 			N_("n-rooms"),
@@ -168,7 +169,7 @@ public class AccountTable : DB.ViewTable {
 			entity.persist ();
 		}
 
-		if (prop_name == "number" || prop_name == "opened" || prop_name == "comment") {
+		if (prop_name == "number" || prop_name == "opened" || prop_name == "closed" || prop_name == "comment") {
 			periodic.account.persist ();
 		} else {
 			base.row_edited (tree_iter, entity, prop_name);
