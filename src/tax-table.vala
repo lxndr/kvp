@@ -28,9 +28,9 @@ public class TaxTable : DB.ViewTable {
 	protected override unowned string[] viewable_props () {
 		const string[] props = {
 			N_("apply"),
-			N_("service_name"),
+			N_("service-name"),
 			N_("amount"),
-			N_("price_value"),
+			N_("price-value"),
 			N_("total")
 		};
 		return props;

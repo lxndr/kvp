@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-10-25 12:22+0400\n"
+"POT-Creation-Date: 2014-10-25 14:35+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgstr "Открыт"
 
 #: src/account-table.vala:23
 msgid "closed"
-msgstr ""
+msgstr "Закрыт"
 
 #: src/account-table.vala:24
 msgid "tenant"
@@ -203,7 +203,7 @@ msgid "apply"
 msgstr "В"
 
 #: src/tax-table.vala:31
-msgid "service_name"
+msgid "service-name"
 msgstr "Услуга"
 
 #: src/tax-table.vala:32
@@ -211,7 +211,7 @@ msgid "amount"
 msgstr "Кол-во"
 
 #: src/tax-table.vala:33
-msgid "price_value"
+msgid "price-value"
 msgstr "Стоимость"
 
 #: src/tenant-table.vala:43
