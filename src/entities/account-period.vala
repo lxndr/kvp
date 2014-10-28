@@ -162,7 +162,9 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 		var days = last_day - first_day + 1;
 		var days_in_month = ((DateMonth) (period % 12 + 1)).get_days_in_month ((DateYear) (period / 12));
 
-		return (double) days / (double) days_in_month;
+		var coef = (double) days / (double) days_in_month;
+		stdout.printf ("period_coef %f\n", coef);
+		return coef;
 	}
 
 
