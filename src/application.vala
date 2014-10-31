@@ -76,25 +76,25 @@ public class Application : Gtk.Application
 		var win = new MainWindow (this);
 		win.show ();
 	}
+}
 
 
-	public static int main (string[] args) {
-		var exe_file = File.new_for_commandline_arg (args[0]);
+public int start (string[] args) {
+	var exe_file = File.new_for_commandline_arg (args[0]);
 
 #if DEBUG
-		var root_dir = exe_file.get_parent ();
+	var root_dir = exe_file.get_parent ();
 #else
-		var root_dir = exe_file.get_parent ().get_parent ();
+	var root_dir = exe_file.get_parent ().get_parent ();
 #endif
-		var locale_path = root_dir.get_child ("share").get_child ("locale");
+	var locale_path = root_dir.get_child ("share").get_child ("locale");
 
-		Intl.bindtextdomain ("kvp", locale_path.get_path ());
-		Intl.bind_textdomain_codeset ("kvp", "UTF-8");
-		Intl.textdomain ("kvp");
+	Intl.bindtextdomain ("kvp", locale_path.get_path ());
+	Intl.bind_textdomain_codeset ("kvp", "UTF-8");
+	Intl.textdomain ("kvp");
 
-		Application app = new Application ();
-		return app.run (args);
-	}
+	Application app = new Application ();
+	return app.run (args);
 }
 
 

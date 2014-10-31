@@ -39,15 +39,13 @@ else
 		`$(PKGCONFIG) --libs gtk+-3.0 gee-0.8 sqlite3 libxml-2.0`
 
 	ifeq ($(BUILD), win32)
-		SOURCES += \
-			src/winmain.c
 		LDFLAGS += \
-			-lintl
+			-lintl \
+			-mwindows
 	else ifeq ($(BUILD), win64)
-		SOURCES += \
-			src/winmain.c
 		LDFLAGS += \
-			-lintl
+			-lintl \
+			-mwindows
 	else
 		LDFLAGS += \
 			-lm
@@ -71,8 +69,9 @@ $(NAME)$(BINEXT): resources $(SOURCES)
 	mkdir -p "build"
 	cp *.gresource.xml "build/"
 	cp -r "ui" "build"
+	cp src/*.c "build"
 	cd "build" && \
-		valac $(FLAGS) $(PACKAGES) --vapidir="../libs/vapi" --target-glib=2.38 --gresources=kvp.gresource.xml --header=kvp.h --use-header --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --Xcc="-I../libs/include" --compile ../src/*.vala ../src/entities/*.vala ../src/widgets/*.vala ../src/reports/*.vala ../src/resources.c
+		valac $(FLAGS) $(PACKAGES) --vapidir="../libs/vapi" --target-glib=2.38 --gresources=$(NAME).gresource.xml --header=$(NAME).h --use-header --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --Xcc="-I../libs/include" --compile ../src/*.vala ../src/entities/*.vala ../src/widgets/*.vala ../src/reports/*.vala resources.c main.c
 	$(CC) -o $(NAME)$(BINEXT) build/*.o libs/lib/db.$(LIBEXT) libs/lib/db-gtk.$(LIBEXT) libs/lib/ooxml.$(LIBEXT) libs/lib/archive.$(LIBEXT) $(LDFLAGS)
 
 

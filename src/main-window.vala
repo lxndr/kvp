@@ -35,11 +35,13 @@ class MainWindow : Gtk.ApplicationWindow {
 	private Building? current_building = null;
 
 	/*  */
-	private int current_period;
+	private Period current_period;
 
 
 	public MainWindow (Application app) {
 		Object (application: app);
+
+		current_period = new Period ();
 
 		/* UI: period */
 		current_period_popover = new CentralYearMonth (current_period_button);
@@ -203,8 +205,8 @@ class MainWindow : Gtk.ApplicationWindow {
 
 		/* the button label */
 		current_period_button.label = label;
-		bool changed = current_period != period;
-		current_period = period;
+		bool changed = current_period.ym != period;
+		current_period.ym = period;
 		if (changed) {
 			db.set_setting ("current_period", period.to_string ());
 			on_period_changed ();
@@ -221,7 +223,7 @@ class MainWindow : Gtk.ApplicationWindow {
 				app.db.fetch_int (AccountPeriod.table_name, "MIN(period)"),
 				app.db.fetch_int (AccountPeriod.table_name, "MAX(period)") + 1);
 		current_period_popover.locked_period = int.parse (app.db.get_setting ("locked_period"));
-		current_period_popover.period = current_period;
+		current_period_popover.period = (int) current_period.ym;
 		current_period_popover.show ();
 	}
 
@@ -344,12 +346,12 @@ class MainWindow : Gtk.ApplicationWindow {
 	 * Events and actions
 	 */
 	private void on_building_selection_changed () {
-		account_table.setup (current_building, current_period);
+		account_table.setup (current_building, (int) current_period.ym);
 	}
 
 
 	private void on_period_changed () {
-		account_table.setup (current_building, current_period);
+		account_table.setup (current_building, (int) current_period.ym);
 		on_account_selection_changed ();
 	}
 
