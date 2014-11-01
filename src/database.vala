@@ -14,15 +14,19 @@ public class Database : DB.SQLiteDatabase {
 		tax_calc_methods[TaxFormula05.id] = typeof (TaxFormula05);
 		tax_calc_methods[TaxFormula07.id] = typeof (TaxFormula07);
 
-		/* prepare the database */
-		var bytes = resources_lookup_data ("/org/lxndr/kvp/data/init.sql", ResourceLookupFlags.NONE);
-		unowned uint8[] data = bytes.get_data ();
-//		exec_sql ((string) data);
+		try {
+			/* prepare the database */
+			var bytes = resources_lookup_data ("/org/lxndr/kvp/data/init.sql", ResourceLookupFlags.NONE);
+			unowned uint8[] data = bytes.get_data ();
+//			exec_sql ((string) data);
+		} catch (Error e) {
+			error ("Error preparing database '%s': %s", file.get_path (), e.message);
+		}
 	}
 
 
-	public Database () {
-		Object (path: "./kvartplata.db");
+	public Database (File _file) {
+		Object (file: _file);
 	}
 
 

@@ -2,28 +2,26 @@ namespace DB {
 
 
 public class SQLiteDatabase : Object, Database {
-	public string path { get; construct set; }
+	public File file { get; construct set; }
 	private Sqlite.Database db;
 
 
 	construct {
-		int ret = Sqlite.Database.open_v2 (path, out db);
+		int ret = Sqlite.Database.open_v2 (file.get_path (), out db);
 		if (ret != Sqlite.OK)
 			error ("Error opening the database at '%s': (%d) %s",
-					path, db.errcode (), db.errmsg ());
+					file.get_path (), db.errcode (), db.errmsg ());
 	}
 
 
-	public SQLiteDatabase (string _path) {
-		Object (path: _path);
+	public SQLiteDatabase (File _file) {
+		Object (file: _file);
 	}
 
 
 	public void exec_sql (string sql, Sqlite.Callback? callback = null) {
 		string errmsg;
-// #if 1
-		stdout.printf ("%s\n", sql);
-// #endif
+		debug (sql);
 		if (db.exec (sql, callback, out errmsg) != Sqlite.OK)
 			error ("Error executing SQL statement: %s\n", errmsg);
 	}

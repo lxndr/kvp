@@ -1,15 +1,12 @@
 namespace Kv {
 
 
-public class Application : Gtk.Application
-{
+public class Application : Gtk.Application {
 	public Gee.Map<string, Type> reports;
-	public Database db;
 
 
-	public Application() {
-		Object (application_id: "org.lxndr.kvp",
-			flags: ApplicationFlags.FLAGS_NONE);
+	construct {
+		reports = new Gee.HashMap<string, Type> ();
 
 		Value.register_transform_func (typeof (string), typeof (int),
 				(ValueTransform) Utils.transform_string_to_int);
@@ -45,6 +42,12 @@ public class Application : Gtk.Application
 	}
 
 
+	public Application () {
+		Object (application_id: "org.lxndr.kvp",
+			flags: ApplicationFlags.FLAGS_NONE);
+	}
+
+
 	public override void startup () {
 		base.startup ();
 
@@ -58,23 +61,18 @@ public class Application : Gtk.Application
 		}
 
 		/* reports */
-		reports = new Gee.HashMap<string, Type> ();
-		reports.set (_("List of the tenants"), typeof (Report001));
-		reports.set (_("Account"), typeof (Report002));
-		reports.set (_("People and taxes"), typeof (Report003));
+		reports[_("Calculation sheet")] = typeof (Reports.CalculationSheet);
+		reports[_("Account")] = typeof (Report002);
+		reports[_("People and taxes")] = typeof (Report003);
 
 		/* database */
-		try {
-			db = new Database ();
-		} catch (Error e) {
-			stdout.printf ("Error preparing the database: %s\n", e.message);
-		}
+		var db = new Database (File.new_for_path ("./kvartplata.db"));
+		var win = new MainWindow (this, db);
+		win.show ();
 	}
 
 
 	public override void activate () {
-		var win = new MainWindow (this);
-		win.show ();
 	}
 }
 

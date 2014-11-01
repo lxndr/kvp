@@ -1,7 +1,7 @@
-namespace Kv {
+namespace Kv.Reports {
 
 
-public class Report001 : Report {
+public class CalculationSheet : Report {
 	private OOXML.Spreadsheet book;
 
 

@@ -5,6 +5,7 @@ NAME = db
 
 
 PACKAGES = \
+	--pkg=gio-2.0 \
 	--pkg=gee-0.8 \
 	--pkg=sqlite3
 

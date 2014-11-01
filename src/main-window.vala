@@ -2,7 +2,9 @@ namespace Kv {
 
 
 [GtkTemplate (ui = "/org/lxndr/kvp/ui/main-window.ui")]
-class MainWindow : Gtk.ApplicationWindow {
+public class MainWindow : Gtk.ApplicationWindow {
+	public Database db { get; construct set; }
+
 	/* period */
 	[GtkChild]
 	private Gtk.ToolButton current_period_button;
@@ -29,26 +31,26 @@ class MainWindow : Gtk.ApplicationWindow {
 	private TaxTable tax_table;
 
 	/*  */
-	private ServiceWindow? service_window = null;
-	private BuildingWindow? building_window = null;
-	private PeopleWindow? people_window = null;
-	private Building? current_building = null;
+	private Gee.Map<Type, Gtk.Window?> singleton_windows;
 
 	/*  */
+	private Building? current_building;
 	private Period current_period;
 
 
-	public MainWindow (Application app) {
-		Object (application: app);
+	public MainWindow (Application _app, Database _db) {
+		Object (application: _app,
+				db: _db);
 
 		current_period = new Period ();
+		singleton_windows = new Gee.HashMap<Type, Gtk.Window?> ();
 
 		/* UI: period */
 		current_period_popover = new CentralYearMonth (current_period_button);
 		current_period_popover.closed.connect (current_period_popover_closed);
 
 		/* UI: reports */
-		foreach (var r in app.reports.entries) {
+		foreach (var r in _app.reports.entries) {
 			if (r.value == Type.INVALID) {
 				report_menu.append (new Gtk.SeparatorMenuItem ());
 			} else {
@@ -61,20 +63,20 @@ class MainWindow : Gtk.ApplicationWindow {
 		}
 
 		/* UI: account list */
-		account_table = new AccountTable (app.db);
+		account_table = new AccountTable (db);
 		account_table.visible = true;
 		account_table.selection_changed.connect (on_account_selection_changed);
 		account_scroller.add (account_table);
 
 		/* UI: tenant list */
-		tenant_table = new TenantTable (app.db);
+		tenant_table = new TenantTable (db);
 		tenant_table.visible = true;
 //		tenant_table.entity_inserted.connect (on_tenant_list_changed);
 //		tenant_table.entity_deleted.connect (on_tenant_list_changed);
 		tenant_scroller.add (tenant_table);
 
 		/* UI: tax list */
-		tax_table = new TaxTable (app.db);
+		tax_table = new TaxTable (db);
 		tax_table.visible = true;
 		tax_table.total_changed.connect (on_tax_total_changed);
 		tax_scroller.add (tax_table);
@@ -103,8 +105,6 @@ class MainWindow : Gtk.ApplicationWindow {
 	 */
 	[GtkCallback]
 	private void buildings_clicked (Gtk.ToolButton button) {
-		unowned Database db = (application as Application).db;
-
 		var menu = new Gtk.Menu ();
 
 		var mi = new Gtk.RadioMenuItem.with_label (null, _("All buildings"));
@@ -154,8 +154,6 @@ class MainWindow : Gtk.ApplicationWindow {
 	 * Current period
 	 */
 	private void init_current_period () {
-		var db = (application as Application).db;
-
 		/* real world period is the default */
 		var now = new DateTime.now_local ();
 		int period = now.get_year () * 12 + now.get_month () - 1;
@@ -173,7 +171,6 @@ class MainWindow : Gtk.ApplicationWindow {
 
 
 	private void set_current_period (int period) {
-		var db = (application as Application).db;
 		var label = "%s %d".printf (Utils.month_to_string(period % 12), period / 12);
 
 		/* check if this is an empty period and we need to duplicate all the data */
@@ -220,9 +217,9 @@ class MainWindow : Gtk.ApplicationWindow {
 
 		/* set up popover widges */
 		current_period_popover.set_range (
-				app.db.fetch_int (AccountPeriod.table_name, "MIN(period)"),
-				app.db.fetch_int (AccountPeriod.table_name, "MAX(period)") + 1);
-		current_period_popover.locked_period = int.parse (app.db.get_setting ("locked_period"));
+				db.fetch_int (AccountPeriod.table_name, "MIN(period)"),
+				db.fetch_int (AccountPeriod.table_name, "MAX(period)") + 1);
+		current_period_popover.locked_period = int.parse (db.get_setting ("locked_period"));
 		current_period_popover.period = (int) current_period.ym;
 		current_period_popover.show ();
 	}
@@ -251,7 +248,6 @@ class MainWindow : Gtk.ApplicationWindow {
 			return;
 
 		
-		var db = (application as Application).db;
 		var report = Object.new (type,
 				"toplevel_window", this,
 				"db", db,
@@ -302,34 +298,36 @@ class MainWindow : Gtk.ApplicationWindow {
 	}
 
 
+	private void show_singleton_window (Type type) {
+		var window = singleton_windows[type];
+		if (window == null) {
+			window = Object.new (type, "transient_for", this) as Gtk.Window;
+			window.destroy.connect (() => {
+				singleton_windows[type] = null;
+			});
+			singleton_windows[type] = window;
+		}
+		window.present ();
+	}
+
+
 	[GtkCallback]
 	private void ref_services_clicked () {
-		if (service_window == null) {
-			service_window = new ServiceWindow (this, (application as Application).db);
-			service_window.destroy.connect (() => {
-				service_window = null;
-			});
-		}
-
-		service_window.present ();
+		show_singleton_window (typeof (ServiceWindow));
 	}
 
 
 	[GtkCallback]
 	private void ref_buildings_clicked () {
-		if (building_window == null) {
-			building_window = new BuildingWindow (this, (application as Application).db);
-			building_window.destroy.connect (() => {
-				building_window = null;
-			});
-		}
-
-		building_window.present ();
+		show_singleton_window (typeof (BuildingWindow));
 	}
 
 
 	[GtkCallback]
 	private void ref_people_clicked () {
+		show_singleton_window (typeof (PeopleWindow));
+
+/*
 		if (people_window == null) {
 			people_window = new PeopleWindow (this, (application as Application).db);
 			people_window.add_to_tenants.connect (tenant_table.add_tenant);
@@ -338,7 +336,7 @@ class MainWindow : Gtk.ApplicationWindow {
 			});
 		}
 
-		people_window.present ();
+		people_window.present ();*/
 	}
 
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-10-31 23:46+0300\n"
+"POT-Creation-Date: 2014-11-01 08:17+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -98,15 +98,15 @@ msgid ""
 "them or none. Create a building if needed."
 msgstr ""
 
-#: src/application.vala:62
-msgid "List of the tenants"
-msgstr "Список жилцов"
+#: src/application.vala:64
+msgid "Calculation sheet"
+msgstr ""
 
-#: src/application.vala:63
+#: src/application.vala:65
 msgid "Account"
 msgstr "Лицевой счёт"
 
-#: src/application.vala:64
+#: src/application.vala:66
 msgid "People and taxes"
 msgstr "Ведомость расчетов"
 
@@ -382,3 +382,6 @@ msgstr "Добавить"
 #: libs/src/db-gtk/view-table.vala:107
 msgid "Remove"
 msgstr "Удалить"
+
+#~ msgid "List of the tenants"
+#~ msgstr "Список жилцов"

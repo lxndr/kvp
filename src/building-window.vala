@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class BuildingWindow : Gtk.Window {
+public class BuildingWindow : Gtk.Window, SingletonWindow {
 	public Database db { get; construct set; }
 	private BuildingTable view_table;
 
