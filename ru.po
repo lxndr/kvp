@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-11-01 08:17+0300\n"
+"POT-Creation-Date: 2014-11-01 22:13+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -118,7 +118,7 @@ msgstr "Местоположение"
 msgid "street"
 msgstr "Улица"
 
-#: src/building-window.vala:10
+#: src/building-window.vala:9
 msgid "Reference - Buildings"
 msgstr "Справочник - Здания"
 

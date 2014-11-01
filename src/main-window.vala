@@ -301,7 +301,7 @@ public class MainWindow : Gtk.ApplicationWindow {
 	private void show_singleton_window (Type type) {
 		var window = singleton_windows[type];
 		if (window == null) {
-			window = Object.new (type, "transient_for", this) as Gtk.Window;
+			window = Object.new (type, "type", Gtk.WindowType.TOPLEVEL, "transient_for", this) as Gtk.Window;
 			window.destroy.connect (() => {
 				singleton_windows[type] = null;
 			});

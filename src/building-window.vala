@@ -2,14 +2,15 @@ namespace Kv {
 
 
 public class BuildingWindow : Gtk.Window, SingletonWindow {
-	public Database db { get; construct set; }
 	private BuildingTable view_table;
 
 
 	construct {
 		title = _("Reference - Buildings");
+		default_width = 500;
+		default_height = 300;
 
-		view_table = new BuildingTable (db);
+		view_table = new BuildingTable (get_database ());
 		view_table.refresh_view ();
 
 		var scrolled = new Gtk.ScrolledWindow (null, null);
@@ -17,16 +18,6 @@ public class BuildingWindow : Gtk.Window, SingletonWindow {
 		scrolled.show_all ();
 
 		add (scrolled);
-	}
-
-
-	public BuildingWindow (Gtk.Window parent, Database _db) {
-		Object (type: Gtk.WindowType.TOPLEVEL,
-				transient_for: parent,
-				default_width: 500,
-				default_height: 300,
-				window_position: Gtk.WindowPosition.CENTER_ON_PARENT,
-				db: _db);
 	}
 }
 
