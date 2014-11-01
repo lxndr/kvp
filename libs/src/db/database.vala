@@ -1,9 +1,17 @@
 namespace DB {
 
 
-public interface Database : Object {
+public abstract class Database : Object {
+	public ValueAdapter value_adapter { get; set; }
+
+
 	public abstract void exec_sql (string sql, Sqlite.Callback? callback = null);
 	public abstract int last_insert_rowid ();
+
+
+	construct {
+		value_adapter = new ValueAdapter ();
+	}
 
 
 	public string build_select_query (string table, string? columns = null,
@@ -114,10 +122,12 @@ public interface Database : Object {
 				}
 				dest_val.set_object (obj);
 			} else {
-				str_val.set_string (val);
-				if (str_val.transform (ref dest_val) == false)
-					warning ("Couldn't transform value '%s' from '%s' to '%s' for property '%s' of '%s'\n",
-							values[i], str_val.type ().name (), dest_val.type ().name (), prop_name, type.name ());
+				if (!value_adapter.convert_from (null, prop_name, val, ref dest_val)) {
+					str_val.set_string (val);
+					if (str_val.transform (ref dest_val) == false)
+						warning ("Couldn't transform value '%s' from '%s' to '%s' for property '%s' of '%s'\n",
+								values[i], str_val.type ().name (), dest_val.type ().name (), prop_name, type.name ());
+				}
 			}
 
 			ent.set_property (prop_name, dest_val);

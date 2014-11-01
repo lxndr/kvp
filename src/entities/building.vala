@@ -5,6 +5,9 @@ public class Building : DB.SimpleEntity {
 	public string location { get; set; }
 	public string street { get; set; }
 	public string number { get; set; }
+	public Period first_period { get; set; }
+	public Period last_period { get; set; }
+	public Period lock_period { get; set; }
 
 
 	public Building (Database _db) {
@@ -22,7 +25,10 @@ public class Building : DB.SimpleEntity {
 		const string[] fields = {
 			"location",
 			"street",
-			"number"
+			"number",
+			"start_period",
+			"end_period",
+			"locked_period"
 		};
 		return fields;
 	}

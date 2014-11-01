@@ -26,7 +26,8 @@ public class Database : DB.SQLiteDatabase {
 
 
 	public Database (File _file) {
-		Object (file: _file);
+		Object (file: _file,
+				value_adapter: new DatabaseValueAdapter ());
 	}
 
 

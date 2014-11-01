@@ -1,7 +1,7 @@
 namespace DB {
 
 
-public class SQLiteDatabase : Object, Database {
+public class SQLiteDatabase : Database {
 	public File file { get; construct set; }
 	private Sqlite.Database db;
 
@@ -19,7 +19,7 @@ public class SQLiteDatabase : Object, Database {
 	}
 
 
-	public void exec_sql (string sql, Sqlite.Callback? callback = null) {
+	public override void exec_sql (string sql, Sqlite.Callback? callback = null) {
 		string errmsg;
 		debug (sql);
 		if (db.exec (sql, callback, out errmsg) != Sqlite.OK)
@@ -27,7 +27,7 @@ public class SQLiteDatabase : Object, Database {
 	}
 
 
-	public int last_insert_rowid () {
+	public override int last_insert_rowid () {
 		return (int) db.last_insert_rowid ();
 	}
 }
