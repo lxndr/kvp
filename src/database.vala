@@ -76,7 +76,7 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	private string form_table_name_with_building (Building? building, string table_name) {
+	private string form_table_name_for_building (Building? building, string table_name) {
 		if (building == null)
 			return AccountPeriod.table_name;
 		return "%s JOIN account ON account.id=%s.account AND account.building=%d"
@@ -84,51 +84,31 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public bool is_empty_period (Building? building, int period) {
-		string from;
-
-		/* check if we've got any */
-		from = form_table_name_with_building (building, AccountPeriod.table_name);
-		if (query_count (from, "period=%d".printf (period)) > 0)
+	public bool is_period_empty (Building? building, Month period) {
+		string from = form_table_name_for_building (building, AccountPeriod.table_name);
+		if (query_count (from, "period=%u".printf (period.raw_value)) > 0)
 			return false;
-
-#if 0
-		/* check if we've got any people */
-		if (query_count (Person.table_name, where) > 0)
-			return false;
-
-		/* check if we've got any taxes */
-		if (query_count (Tax.table_name, where) > 0)
-			return false;
-#endif
-
 		return true;
 	}
 
 
-	public void prepare_for_period (Building? building, int period) {
-		int prev_period = period - 1;
+	public void prepare_period (Building? building, Month period) {
+		var prev_period = period.get_prev ();
 		string from;
 
 		begin_transaction ();
-		/* periodic */
-		from = form_table_name_with_building (building, AccountPeriod.table_name);
-		exec_sql ("INSERT INTO %s SELECT account,%d,apartment,n_rooms,area,total,0,0,0,param1,param2,param3 FROM %s WHERE period=%d"
-				.printf (AccountPeriod.table_name, period, from, prev_period), null);
 
-#if 0
-		/* people */
-		from = form_table_name_with_building (building, Person.table_name);
-		exec_sql ("INSERT INTO %s SELECT null,account,%d,name,birthday,relationship FROM %s WHERE period=%d"
-				.printf (Person.table_name, period, from, prev_period), null);
-#endif
+		/* periodic */
+		from = form_table_name_for_building (building, AccountPeriod.table_name);
+		exec_sql ("INSERT INTO %s SELECT account,%u,apartment,n_rooms,area,total,0,0,0,param1,param2,param3 FROM %s WHERE period=%u"
+				.printf (AccountPeriod.table_name, period.raw_value, from, prev_period.raw_value), null);
 
 		/* a little bit more tricky */
-		var price_list = get_price_list (building, period);
+		var price_list = get_price_list (building, (int) period.raw_value);
 		foreach (var price in price_list) {
-			from = form_table_name_with_building (building, Tax.table_name);
-			exec_sql ("INSERT INTO %s SELECT account,%d,service,apply,amount,total FROM %s WHERE period=%d AND service=%d"
-					.printf (Tax.table_name, period, from, prev_period, price.service.id), null);
+			from = form_table_name_for_building (building, Tax.table_name);
+			exec_sql ("INSERT INTO %s SELECT account,%u,service,apply,amount,total FROM %s WHERE period=%u AND service=%d"
+					.printf (Tax.table_name, period.raw_value, from, prev_period.raw_value, price.service.id), null);
 		}
 
 		commit_transaction ();

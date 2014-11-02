@@ -7,8 +7,8 @@ public class MonthPopover : Gtk.Popover {
 	protected Gtk.SpinButton year;
 	protected Gtk.Button prev;
 	protected Gtk.Button next;
-	protected Month first_month;
-	protected Month last_month;
+	protected Month? first_month;
+	protected Month? last_month;
 
 
 	construct {
@@ -37,7 +37,7 @@ public class MonthPopover : Gtk.Popover {
 		months.reverse ();
 
 		/* year */
-		year = new Gtk.SpinButton.with_range (1900.0, 10000.0, 1.0);
+		year = new Gtk.SpinButton.with_range (0.0, 10000.0, 1.0);
 		year.value_changed.connect (year_changed);
 		grid.attach (year, 0, 3, 4, 1);
 
@@ -70,22 +70,22 @@ public class MonthPopover : Gtk.Popover {
 
 	public Month month {
 		owned get {
-			uint _month = 0;
+			var _month = DateMonth.JANUARY;
 			unowned SList<Gtk.RadioButton> list = months;
 			while (list != null) {
 				if (list.data.active == true)
 					break;
-				_month++;
+				_month += 1;
 				list = list.next;
 			}
 
 			var _year = (DateYear) Math.lround (year.value);
-			return new Month.from_year_month (_year, (DateMonth) _month);
+			return new Month.from_year_month (_year, _month);
 		}
 
 		set {
-			months.nth_data (value.month).active = true;
-			year.value = (double) (value.year);
+			months.nth_data ((int) (value.month - 1)).active = true;
+			year.value = (double) value.year;
 			refresh_looks ();
 		}
 	}
@@ -94,10 +94,10 @@ public class MonthPopover : Gtk.Popover {
 	private void year_changed () {
 		var cur = month;
 
-		if (cur.compare (first_month) < 0)
-			month = (owned) first_month;
-		else if (cur.compare (last_month) > 0)
-			month = (owned) last_month;
+		if (first_month != null && cur.compare (first_month) < 0)
+			month = first_month;
+		else if (last_month != null && cur.compare (last_month) > 0)
+			month = last_month;
 		else
 			refresh_looks ();
 	}
@@ -121,24 +121,24 @@ public class MonthPopover : Gtk.Popover {
 
 	protected virtual void refresh_looks () {
 		var cur = month;
-		var m = cur.get_first_month ();
+		var it = cur.get_first_month ();
 
 		unowned SList<Gtk.RadioButton> list = months;
 		while (list != null) {
-			list.data.sensitive = month.in_range (first_month, last_month);
-			month.next ();
+			list.data.sensitive = it.in_range (first_month, last_month);
+			it.next ();
 			list = list.next;
 		}
 
-		prev.sensitive = first_month.compare (cur) < 0;
-		next.sensitive = cur.compare (last_month) < 0;
+		prev.sensitive = (first_month == null || first_month.compare (cur) < 0);
+		next.sensitive = (last_month == null || last_month.compare (cur) > 0);
 	}
 
 
-	public void set_range (owned Month first, owned Month last)
+	public void set_range (Month first, Month last)
 			requires (first.compare (last) <= 0) {
-		first_month = first;
-		last_month = last;
+		first_month = first.copy ();
+		last_month = last.copy ();
 		year.set_range ((double) first.year, (double) last.year);
 	}
 }

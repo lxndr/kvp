@@ -4,50 +4,40 @@ namespace Kv {
 [GtkTemplate (ui = "/org/lxndr/kvp/ui/main-window.ui")]
 public class MainWindow : Gtk.ApplicationWindow {
 	public Database db { get; construct set; }
+	private Building? current_building;
+	private Month current_period;
+	private Gee.Map<Type, Gtk.Window?> singleton_windows;
 
-	/* period */
-	[GtkChild]
-	private Gtk.ToolButton current_period_button;
-	private CentralMonthPopover current_month_popover;
+	/* currently selected period */
+	[GtkChild] private Gtk.ToolButton current_period_button;
+	private CentralMonthPopover current_period_popover;
 
-	/* reports */
-	[GtkChild]
-	private Gtk.Menu report_menu;
+	/* report menu */
+	[GtkChild] private Gtk.Menu report_menu;
 
-	/* references */
-	[GtkChild]
-	private Gtk.Menu reference_menu;
+	/* reference menu */
+	[GtkChild] private Gtk.Menu reference_menu;
 
 	/* tables */
-	[GtkChild]
-	private Gtk.ScrolledWindow account_scroller;
-	[GtkChild]
-	private Gtk.ScrolledWindow tenant_scroller;
-	[GtkChild]
-	private Gtk.ScrolledWindow tax_scroller;
+	[GtkChild] private Gtk.ScrolledWindow account_scroller;
+	[GtkChild] private Gtk.ScrolledWindow tenant_scroller;
+	[GtkChild] private Gtk.ScrolledWindow tax_scroller;
 
 	private AccountTable account_table;
 	private TenantTable tenant_table;
 	private TaxTable tax_table;
-
-	/*  */
-	private Gee.Map<Type, Gtk.Window?> singleton_windows;
-
-	/*  */
-	private Building? current_building;
-	private Month current_month;
 
 
 	public MainWindow (Application _app, Database _db) {
 		Object (application: _app,
 				db: _db);
 
-		current_month = new Month ();
+		current_period = new Month ();
 		singleton_windows = new Gee.HashMap<Type, Gtk.Window?> ();
 
 		/* UI: period */
-		current_month_popover = new CentralMonthPopover (current_period_button);
-		current_month_popover.closed.connect (current_period_popover_closed);
+		current_period_popover = new CentralMonthPopover (current_period_button);
+		current_period_popover.closed.connect (current_period_popover_closed);
 
 		/* UI: reports */
 		foreach (var r in _app.reports.entries) {
@@ -82,7 +72,10 @@ public class MainWindow : Gtk.ApplicationWindow {
 		tax_scroller.add (tax_table);
 
 		/*  */
-		init_current_period ();
+		Gdk.threads_add_idle (() => {
+			init_current_period ();
+			return false;
+		});
 	}
 
 
@@ -145,7 +138,7 @@ public class MainWindow : Gtk.ApplicationWindow {
 	private void building_clicked (Gtk.CheckMenuItem mi) {
 		if (mi.active == true) {
 			current_building = mi.get_data<Building> ("building");
-			on_building_selection_changed ();
+			set_period (current_building, current_period);
 		}
 	}
 
@@ -154,60 +147,17 @@ public class MainWindow : Gtk.ApplicationWindow {
 	 * Current period
 	 */
 	private void init_current_period () {
-		/* real world period is the default */
-		var now = new DateTime.now_local ();
-		int period = now.get_year () * 12 + now.get_month () - 1;
+		var period = new Month.now ();
 
 		/* load current year from the settings */
 		var setting = db.get_setting ("current_period");
 		if (setting != null) {
-			var val = (int) int64.parse (setting);
+			var val = (uint) uint64.parse (setting);
 			if (val > 0)
-				period = val;
+				period.raw_value = val;
 		}
 
-		set_current_period (period);
-	}
-
-
-	private void set_current_period (int period) {
-		var label = "%s %d".printf (Utils.month_to_string(period % 12), period / 12);
-
-		/* check if this is an empty period and we need to duplicate all the data */
-		if (db.is_empty_period (current_building, period) == true) {
-			var msg = new Gtk.MessageDialog (this, Gtk.DialogFlags.MODAL,
-					Gtk.MessageType.QUESTION, Gtk.ButtonsType.NONE,
-					"Period '%s' has empty data. Do you want to duplicate the last period to the new?", label);
-			msg.add_buttons ("Yes", Gtk.ResponseType.YES,
-							 "No", Gtk.ResponseType.NO,
-							 "Cancel", Gtk.ResponseType.CANCEL);
-			var resp = msg.run ();
-			msg.destroy ();
-
-			switch (resp) {
-			case Gtk.ResponseType.YES:
-				db.prepare_for_period (current_building, period);
-				/* find last period and copy everything needed */
-				break;
-			case Gtk.ResponseType.NO:
-				/* continue this function and do not copy anything */
-				break;
-			case Gtk.ResponseType.CANCEL:
-			case Gtk.ResponseType.CLOSE:
-			default:
-				/* do not do anything */
-				return;
-			}
-		}
-
-		/* the button label */
-		current_period_button.label = label;
-		bool changed = current_month.raw_value != period;
-		current_month.raw_value = period;
-		if (changed) {
-			db.set_setting ("current_period", period.to_string ());
-			on_period_changed ();
-		}
+		set_period (current_building, period);
 	}
 
 
@@ -216,17 +166,19 @@ public class MainWindow : Gtk.ApplicationWindow {
 		var app = application as Application;
 
 		/* set up popover widges */
-/*		current_month_popover.set_range (
+		
+
+/*		current_period_popover.set_range (
 				db.fetch_int (AccountPeriod.table_name, "MIN(period)"),
 				db.fetch_int (AccountPeriod.table_name, "MAX(period)") + 1);*/
 //		current_month_popover.locked_period = int.parse (db.get_setting ("locked_period"));
-		current_month_popover.month = current_month;
-		current_month_popover.show ();
+		current_period_popover.month = current_period;
+		current_period_popover.show ();
 	}
 
 
 	private void current_period_popover_closed () {
-		set_current_period ((int) current_month_popover.month);
+		set_period (current_building, current_period_popover.month);
 	}
 
 
@@ -342,14 +294,62 @@ public class MainWindow : Gtk.ApplicationWindow {
 	/*
 	 * Events and actions
 	 */
-	private void on_building_selection_changed () {
-		account_table.setup (current_building, (int) current_month.raw_value);
-	}
+	private void set_period (Building? new_building, Month period) {
+		if (new_building == current_building && period.equals (current_period))
+			return;
 
+		Gee.List<Building> buildings;
+		if (new_building == null) {
+			buildings = db.get_building_list ();
+		} else {
+			buildings = new Gee.ArrayList<Building> ();
+			buildings.add (new_building);
+		}
 
-	private void on_period_changed () {
-		account_table.setup (current_building, (int) current_month.raw_value);
-		on_account_selection_changed ();
+		foreach (var building in buildings) {
+			if (!period.in_range (building.first_period, building.last_period))
+				continue;
+
+			if (building.first_period.equals (period))
+				continue;
+
+			if (!db.is_period_empty (building, period))
+				continue;
+
+			if (db.is_period_empty (building, period.get_prev ())) {
+				var msg = new Gtk.MessageDialog (this, Gtk.DialogFlags.MODAL,
+						Gtk.MessageType.QUESTION, Gtk.ButtonsType.NONE,
+						_("No previous calculations for period '%s' of building '%s'."),
+						period.format (), building.number);
+				msg.add_buttons (_("OK"), Gtk.ResponseType.OK);
+				msg.run ();
+				msg.destroy ();
+				continue;
+			}
+
+			var msg = new Gtk.MessageDialog (this, Gtk.DialogFlags.MODAL,
+					Gtk.MessageType.QUESTION, Gtk.ButtonsType.NONE,
+					_("Period '%s' for building '%s' has no data. Do you want to duplicate the last period to the new?"),
+					period.format (), building.number);
+			msg.add_buttons (_("Yes"), Gtk.ResponseType.YES,
+							 _("No"), Gtk.ResponseType.NO,
+							 _("Cancel"), Gtk.ResponseType.CANCEL);
+			var resp = msg.run ();
+			msg.destroy ();
+
+			if (resp == Gtk.ResponseType.YES)
+				db.prepare_period (building, period);
+			else if (resp == Gtk.ResponseType.CANCEL || resp == Gtk.ResponseType.CLOSE)
+				return;
+		}
+
+		current_period_button.label = period.format ();
+		bool changed = !current_period.equals (period);
+		current_period = period;
+		if (changed) {
+			db.set_setting ("current_period", period.raw_value.to_string ());
+			account_table.setup (current_building, (int) current_period.raw_value);
+		}
 	}
 
 

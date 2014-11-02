@@ -33,6 +33,11 @@ public class Month {
 	}
 
 
+	public Month copy () {
+		return new Month.from_raw_value (raw_value);
+	}
+
+
 	public void prev () {
 		raw_value -= 1;
 	}
@@ -63,18 +68,25 @@ public class Month {
 	}
 
 
-	public uint compare (Month _month) {
-		return raw_value - _month.raw_value;
+	public int compare (Month _month) {
+		return (int) raw_value - (int) _month.raw_value;
 	}
 
 
-	public bool in_range (Month first_month, Month last_month) {
-		return first_month.compare (this) <= 0 && this.compare (last_month) <= 0;
+	public bool equals (Month _month) {
+		return compare (_month) == 0;
+	}
+
+
+	public bool in_range (Month? first_month, Month? last_month) {
+		return (first_month == null || this.compare (first_month) >= 0) &&
+				(last_month == null || this.compare (last_month) <= 0);
 	}
 
 
 	public unowned string month_name () {
 		const string[] names = {
+			null,
 			N_("January"),
 			N_("February"),
 			N_("March"),
@@ -95,6 +107,7 @@ public class Month {
 
 	public unowned string month_short_name () {
 		const string[] names = {
+			null,
 			N_("jan"),
 			N_("feb"),
 			N_("mar"),

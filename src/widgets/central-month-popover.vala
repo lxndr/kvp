@@ -5,6 +5,11 @@ public class CentralMonthPopover : MonthPopover {
 	public Month lock_month { get; set; }
 
 
+	construct {
+		lock_month = new Month ();
+	}
+
+
 	public CentralMonthPopover (Gtk.Widget _relative_to) {
 		Object (relative_to: _relative_to);
 	}
@@ -21,7 +26,7 @@ public class CentralMonthPopover : MonthPopover {
 			sc.remove_class ("new-month");
 			sc.remove_class ("lock-month");
 
-			if (it.compare (first_month) == 0)
+			if (first_month != null && it.equals (first_month))
 				sc.add_class ("new-month");
 			if (w.sensitive == true && it.compare (lock_month) <=0)
 				sc.add_class ("lock-month");

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-11-02 10:02+0300\n"
+"POT-Creation-Date: 2014-11-03 01:48+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -122,13 +122,42 @@ msgstr "Улица"
 msgid "Reference - Buildings"
 msgstr "Справочник - Здания"
 
-#: src/main-window.vala:110
+#: src/main-window.vala:103
 msgid "All buildings"
 msgstr "Все здания"
 
-#: src/main-window.vala:133
+#: src/main-window.vala:126
 msgid "Edit..."
 msgstr "Редактировать..."
+
+#: src/main-window.vala:322
+#, c-format
+msgid "No previous calculations for period '%s' of building '%s'."
+msgstr ""
+
+#: src/main-window.vala:324
+msgid "OK"
+msgstr ""
+
+#: src/main-window.vala:332
+#, c-format
+msgid ""
+"Period '%s' for building '%s' has no data. Do you want to duplicate the last "
+"period to the new?"
+msgstr ""
+
+#: src/main-window.vala:334
+msgid "Yes"
+msgstr ""
+
+#: src/main-window.vala:335
+msgid "No"
+msgstr ""
+
+#: src/main-window.vala:336
+#, fuzzy
+msgid "Cancel"
+msgstr "Остаток"
 
 #: src/people-table.vala:10 src/service-table.vala:8 src/tenant-table.vala:41
 msgid "name"
