@@ -8,7 +8,7 @@ public class MainWindow : Gtk.ApplicationWindow {
 	/* period */
 	[GtkChild]
 	private Gtk.ToolButton current_period_button;
-	private CentralYearMonth current_period_popover;
+	private CentralMonthPopover current_month_popover;
 
 	/* reports */
 	[GtkChild]
@@ -35,19 +35,19 @@ public class MainWindow : Gtk.ApplicationWindow {
 
 	/*  */
 	private Building? current_building;
-	private Period current_period;
+	private Month current_month;
 
 
 	public MainWindow (Application _app, Database _db) {
 		Object (application: _app,
 				db: _db);
 
-		current_period = new Period ();
+		current_month = new Month ();
 		singleton_windows = new Gee.HashMap<Type, Gtk.Window?> ();
 
 		/* UI: period */
-		current_period_popover = new CentralYearMonth (current_period_button);
-		current_period_popover.closed.connect (current_period_popover_closed);
+		current_month_popover = new CentralMonthPopover (current_period_button);
+		current_month_popover.closed.connect (current_period_popover_closed);
 
 		/* UI: reports */
 		foreach (var r in _app.reports.entries) {
@@ -202,8 +202,8 @@ public class MainWindow : Gtk.ApplicationWindow {
 
 		/* the button label */
 		current_period_button.label = label;
-		bool changed = current_period.ym != period;
-		current_period.ym = period;
+		bool changed = current_month.raw_value != period;
+		current_month.raw_value = period;
 		if (changed) {
 			db.set_setting ("current_period", period.to_string ());
 			on_period_changed ();
@@ -216,18 +216,17 @@ public class MainWindow : Gtk.ApplicationWindow {
 		var app = application as Application;
 
 		/* set up popover widges */
-		current_period_popover.set_range (
+/*		current_month_popover.set_range (
 				db.fetch_int (AccountPeriod.table_name, "MIN(period)"),
-				db.fetch_int (AccountPeriod.table_name, "MAX(period)") + 1);
-		current_period_popover.locked_period = int.parse (db.get_setting ("locked_period"));
-		current_period_popover.period = (int) current_period.ym;
-		current_period_popover.show ();
+				db.fetch_int (AccountPeriod.table_name, "MAX(period)") + 1);*/
+//		current_month_popover.locked_period = int.parse (db.get_setting ("locked_period"));
+		current_month_popover.month = current_month;
+		current_month_popover.show ();
 	}
 
 
 	private void current_period_popover_closed () {
-		int period = current_period_popover.period;
-		set_current_period (period);
+		set_current_period ((int) current_month_popover.month);
 	}
 
 
@@ -344,12 +343,12 @@ public class MainWindow : Gtk.ApplicationWindow {
 	 * Events and actions
 	 */
 	private void on_building_selection_changed () {
-		account_table.setup (current_building, (int) current_period.ym);
+		account_table.setup (current_building, (int) current_month.raw_value);
 	}
 
 
 	private void on_period_changed () {
-		account_table.setup (current_building, (int) current_period.ym);
+		account_table.setup (current_building, (int) current_month.raw_value);
 		on_account_selection_changed ();
 	}
 

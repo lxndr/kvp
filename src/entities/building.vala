@@ -5,9 +5,9 @@ public class Building : DB.SimpleEntity {
 	public string location { get; set; }
 	public string street { get; set; }
 	public string number { get; set; }
-	public Period first_period { get; set; }
-	public Period last_period { get; set; }
-	public Period lock_period { get; set; }
+	public Month first_period { get; set; }
+	public Month last_period { get; set; }
+	public Month lock_period { get; set; }
 
 
 	public Building (Database _db) {
@@ -26,9 +26,9 @@ public class Building : DB.SimpleEntity {
 			"location",
 			"street",
 			"number",
-			"start_period",
-			"end_period",
-			"locked_period"
+			"first_period",
+			"last_period",
+			"lock_period"
 		};
 		return fields;
 	}

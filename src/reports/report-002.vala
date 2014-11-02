@@ -8,27 +8,26 @@ private class AccountReportParameters : Gtk.Dialog {
 	[GtkChild]
 	private Gtk.Button to_button;
 
-	private YearMonth from_year_month;
-	private YearMonth to_year_month;
+	private MonthPopover from_year_month;
+	private MonthPopover to_year_month;
 
 
 	construct {
-		var now = new DateTime.now_local ();
-		var year = now.get_year ();
+		var now = new Month.now ();
 
 		from_button.always_show_image = true;
 		from_button.image = new Gtk.Image.from_icon_name ("x-office-calendar", Gtk.IconSize.BUTTON);
 
-		from_year_month = new YearMonth (from_button);
-		from_year_month.period = year * 12 + 0;
+		from_year_month = new MonthPopover (from_button);
+		from_year_month.month = now.get_first_month ();
 		from_year_month_closed ();
 		from_year_month.closed.connect (from_year_month_closed);
 
 		to_button.always_show_image = true;
 		to_button.image = new Gtk.Image.from_icon_name ("x-office-calendar", Gtk.IconSize.BUTTON);
 
-		to_year_month = new YearMonth (to_button);
-		to_year_month.period = year * 12 + 11;
+		to_year_month = new MonthPopover (to_button);
+		to_year_month.month = now.get_last_month ();
 		to_year_month_closed ();
 		to_year_month.closed.connect (to_year_month_closed);
 	}
@@ -46,10 +45,7 @@ private class AccountReportParameters : Gtk.Dialog {
 
 
 	private void from_year_month_closed () {
-		var period = from_year_month.period;
-		var year = period / 12;
-		var month = period % 12;
-		from_button.label = "%s %d".printf (Utils.month_to_string (month), year);
+		from_button.label = from_year_month.month.format ();
 	}
 
 
@@ -60,19 +56,16 @@ private class AccountReportParameters : Gtk.Dialog {
 
 
 	private void to_year_month_closed () {
-		var period = to_year_month.period;
-		var year = period / 12;
-		var month = period % 12;
-		to_button.label = "%s %d".printf (Utils.month_to_string (month), year);
+		to_button.label = to_year_month.month.format ();
 	}
 
 
 	public int start_month () {
-		return from_year_month.period;
+		return (int) from_year_month.month;
 	}
 
 	public int end_month () {
-		return to_year_month.period;
+		return (int) to_year_month.month;
 	}
 }
 

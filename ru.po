@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-11-01 22:13+0300\n"
+"POT-Creation-Date: 2014-11-02 10:02+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -274,63 +274,63 @@ msgstr "Ноябрь"
 msgid "December"
 msgstr "Декабрь"
 
-#: src/widgets/year-month.vala:32
+#: src/widgets/month-popover.vala:23
 msgid "jan"
 msgstr "янв"
 
-#: src/widgets/year-month.vala:32
+#: src/widgets/month-popover.vala:23
 msgid "feb"
 msgstr "фев"
 
-#: src/widgets/year-month.vala:32
+#: src/widgets/month-popover.vala:23
 msgid "mar"
 msgstr "мар"
 
-#: src/widgets/year-month.vala:32
+#: src/widgets/month-popover.vala:23
 msgid "apr"
 msgstr "апр"
 
-#: src/widgets/year-month.vala:33
+#: src/widgets/month-popover.vala:24
 msgid "may"
 msgstr "май"
 
-#: src/widgets/year-month.vala:33
+#: src/widgets/month-popover.vala:24
 msgid "jun"
 msgstr "июн"
 
-#: src/widgets/year-month.vala:33
+#: src/widgets/month-popover.vala:24
 msgid "jul"
 msgstr "июл"
 
-#: src/widgets/year-month.vala:33
+#: src/widgets/month-popover.vala:24
 msgid "aug"
 msgstr "авг"
 
-#: src/widgets/year-month.vala:34
+#: src/widgets/month-popover.vala:25
 msgid "sep"
 msgstr "сен"
 
-#: src/widgets/year-month.vala:34
+#: src/widgets/month-popover.vala:25
 msgid "oct"
 msgstr "окт"
 
-#: src/widgets/year-month.vala:34
+#: src/widgets/month-popover.vala:25
 msgid "nov"
 msgstr "ноя"
 
-#: src/widgets/year-month.vala:34
+#: src/widgets/month-popover.vala:25
 msgid "dec"
 msgstr "дек"
 
-#: src/widgets/year-month.vala:55
+#: src/widgets/month-popover.vala:46
 msgid "Previous month"
 msgstr "Предыдущий месяц"
 
-#: src/widgets/year-month.vala:60
+#: src/widgets/month-popover.vala:51
 msgid "This month"
 msgstr "Текущий месяц"
 
-#: src/widgets/year-month.vala:66
+#: src/widgets/month-popover.vala:57
 msgid "Next month"
 msgstr "Следующий месяц"
 

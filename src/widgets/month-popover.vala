@@ -1,26 +1,17 @@
 namespace Kv {
 
 
-public class YearMonth : Gtk.Popover {
+public class MonthPopover : Gtk.Popover {
 	protected Gtk.Grid grid;
 	protected SList<unowned Gtk.RadioButton> months;
 	protected Gtk.SpinButton year;
 	protected Gtk.Button prev;
 	protected Gtk.Button next;
-	protected int start_period;
-	protected int end_period;
-
-
-	public int period {
-		get { return _get_period (); }
-		set { _set_period (value); }
-	}
+	protected Month first_month;
+	protected Month last_month;
 
 
 	construct {
-		start_period = 1900 * 12;
-		end_period = 10000 * 12;
-
 		grid = new Gtk.Grid ();
 		grid.border_width = 4;
 		grid.column_spacing = 4;
@@ -72,39 +63,41 @@ public class YearMonth : Gtk.Popover {
 	}
 
 
-	public YearMonth (Gtk.Widget _relative_to) {
+	public MonthPopover (Gtk.Widget _relative_to) {
 		Object (relative_to: _relative_to);
 	}
 
 
-	private void _set_period (int period) {
-		months.nth_data (period % 12).active = true;
-		year.value = (double) (period / 12);
-		refresh_looks ();
-	}
+	public Month month {
+		owned get {
+			uint _month = 0;
+			unowned SList<Gtk.RadioButton> list = months;
+			while (list != null) {
+				if (list.data.active == true)
+					break;
+				_month++;
+				list = list.next;
+			}
 
-
-	private int _get_period () {
-		int _month = 0;
-		unowned SList<Gtk.RadioButton> list = months;
-		while (list != null) {
-			if (list.data.active == true)
-				break;
-			_month++;
-			list = list.next;
+			var _year = (DateYear) Math.lround (year.value);
+			return new Month.from_year_month (_year, (DateMonth) _month);
 		}
 
-		int _year = (int) Math.lround (year.value);
-		return _year * 12 + _month;
+		set {
+			months.nth_data (value.month).active = true;
+			year.value = (double) (value.year);
+			refresh_looks ();
+		}
 	}
 
 
 	private void year_changed () {
-		var p = _get_period ();
-		if (p < start_period)
-			period = start_period;
-		else if (p > end_period)
-			period = end_period;
+		var cur = month;
+
+		if (cur.compare (first_month) < 0)
+			month = (owned) first_month;
+		else if (cur.compare (last_month) > 0)
+			month = (owned) last_month;
 		else
 			refresh_looks ();
 	}
@@ -112,42 +105,41 @@ public class YearMonth : Gtk.Popover {
 
 	private void today_clicked () {
 		var now = new DateTime.now_local ();
-		period = now.get_year () * 12 + now.get_month () - 1;
+		month = new Month.now ();
 	}
 
 
 	private void prev_clicked () {
-		period--;
+		month.prev ();
 	}
 
 
 	private void next_clicked () {
-		period++;
+		month.next ();
 	}
 
 
 	protected virtual void refresh_looks () {
-		int p = period;
-		int month = p / 12 * 12;
+		var cur = month;
+		var m = cur.get_first_month ();
 
 		unowned SList<Gtk.RadioButton> list = months;
 		while (list != null) {
-			bool in_range = (start_period <= month && month <= end_period);
-			list.data.sensitive = in_range;
-			month++;
+			list.data.sensitive = month.in_range (first_month, last_month);
+			month.next ();
 			list = list.next;
 		}
 
-		prev.sensitive = start_period < p;
-		next.sensitive = p < end_period;
+		prev.sensitive = first_month.compare (cur) < 0;
+		next.sensitive = cur.compare (last_month) < 0;
 	}
 
 
-	public void set_range (int start, int end) {
-		assert (start <= end);
-		start_period = start;
-		end_period = end;
-		year.set_range ((double) (start / 12), (double) (end / 12));
+	public void set_range (owned Month first, owned Month last)
+			requires (first.compare (last) <= 0) {
+		first_month = first;
+		last_month = last;
+		year.set_range ((double) first.year, (double) last.year);
 	}
 }
 

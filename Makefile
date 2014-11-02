@@ -71,7 +71,7 @@ $(NAME)$(BINEXT): resources $(SOURCES)
 	cp -r "ui" "build"
 	cp src/*.c "build"
 	cd "build" && \
-		valac $(FLAGS) $(PACKAGES) --vapidir="../libs/vapi" --target-glib=2.38 --gresources=$(NAME).gresource.xml --header=$(NAME).h --use-header --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --Xcc="-I../libs/include" --compile ../src/*.vala ../src/entities/*.vala ../src/widgets/*.vala ../src/reports/*.vala resources.c main.c
+		valac $(FLAGS) $(PACKAGES) --vapidir="../libs/vapi" --target-glib=2.38 --gresources=$(NAME).gresource.xml --header=$(NAME).h --use-header --Xcc="-DGETTEXT_PACKAGE=\"kvp\"" --Xcc="-I../libs/include" --compile ../src/types/*.vala ../src/*.vala ../src/entities/*.vala ../src/widgets/*.vala ../src/reports/*.vala resources.c main.c
 	$(CC) -o $(NAME)$(BINEXT) build/*.o libs/lib/db.$(LIBEXT) libs/lib/db-gtk.$(LIBEXT) libs/lib/ooxml.$(LIBEXT) libs/lib/archive.$(LIBEXT) $(LDFLAGS)
 
 

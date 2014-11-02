@@ -3,12 +3,7 @@ CREATE TABLE IF NOT EXISTS `settings` (
 	`value`         TEXT
 );
 
-CREATE TABLE IF NOT EXISTS `buildings` (
-	`id`            INTEGER  PRIMARY KEY AUTOINCREMENT   NOT NULL,
-	`location`      TEXT                                 NOT NULL,
-	`street`        TEXT                                 NOT NULL,
-	`building`      TEXT                                 NOT NULL
-);
+CREATE TABLE IF NOT EXISTS building (id INTEGER PRIMARY KEY, location TEXT, street TEXT, number TEXT, first_period INTEGER NOT NULL, last_period INTEGER NOT NULL, lock_period INTEGER);
 
 CREATE TABLE IF NOT EXISTS `accounts` (
 	`id`            INTEGER  PRIMARY KEY AUTOINCREMENT   NOT NULL,
