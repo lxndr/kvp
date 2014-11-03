@@ -80,57 +80,46 @@ public class MainWindow : Gtk.ApplicationWindow {
 
 
 	/*
-	 * Utils
-	 */
-	private void default_popup_menu_position (Gtk.Widget widget, out int x, out int y, out bool push_in) {
-		Gtk.Allocation alloc;
-		widget.get_toplevel ().get_window ().get_origin (out x, out y);
-		widget.get_allocation (out alloc);
-		x += alloc.x;
-		y += alloc.y;
-		y += alloc.height;
-		push_in = false;
-	}
-
-
-	/*
 	 * Buildings
 	 */
 	[GtkCallback]
 	private void buildings_clicked (Gtk.ToolButton button) {
 		var menu = new Gtk.Menu ();
-
-		var mi = new Gtk.RadioMenuItem.with_label (null, _("All buildings"));
-		mi.set_data<Building?> ("building", null);
-		mi.active = (current_building == null);
-		mi.toggled.connect (building_clicked);
-		menu.append (mi);
-
-		var mi_sep = new Gtk.SeparatorMenuItem ();
-		mi_sep.visible = true;
-		menu.append (mi_sep);
-
 		var buildings = db.fetch_entity_list<Building> (Building.table_name);
-		foreach (var building in buildings) {
-			mi = new Gtk.RadioMenuItem.with_label_from_widget ((Gtk.RadioMenuItem) mi,
-					"%s, %s".printf (building.street, building.number));
-			mi.set_data<Building?> ("building", building);
-			mi.active = (current_building != null && current_building.id == building.id);
-			mi.toggled.connect (building_clicked);
-			menu.append (mi);
+
+		if (unlikely (buildings.size == 0)) {
+			var item = new Gtk.MenuItem.with_label (_("No buildings"));
+			item.sensitive = false;
+			menu.append (item);
+		} else {
+			var item = new Gtk.RadioMenuItem.with_label (null, _("All buildings"));
+			item.active = (current_building == null);
+			item.set_data<Building?> ("building", null);
+			item.toggled.connect (building_clicked);
+			menu.append (item);
+
+			menu.append (new Gtk.SeparatorMenuItem ());
+
+			foreach (var building in buildings) {
+				item = new Gtk.RadioMenuItem.with_label_from_widget (item,
+						"%s, %s".printf (building.street, building.number));
+				item.active = (current_building != null && current_building.id == building.id);
+				item.set_data<Building?> ("building", building);
+				item.toggled.connect (building_clicked);
+				menu.append (item);
+			}
 		}
 
-		mi_sep = new Gtk.SeparatorMenuItem ();
-		menu.append (mi_sep);
+		menu.append (new Gtk.SeparatorMenuItem ());
 
-		var mi_edit = new Gtk.MenuItem.with_label (_("Edit..."));
-		mi_edit.activate.connect (ref_buildings_clicked);
-		menu.append (mi_edit);
+		var edit_item = new Gtk.MenuItem.with_label (_("Edit..."));
+		edit_item.activate.connect (ref_buildings_clicked);
+		menu.append (edit_item);
 
 		menu.show_all ();
 		menu.attach_to_widget (button, null);
 		menu.popup (null, null, (menu, out x, out y, out push_in) => {
-			default_popup_menu_position (button, out x, out y, out push_in);
+			Utils.default_popup_menu_position (button, out x, out y, out push_in);
 		}, 0, Gtk.get_current_event_time ());
 	}
 
@@ -163,15 +152,14 @@ public class MainWindow : Gtk.ApplicationWindow {
 
 	[GtkCallback]
 	private void current_period_button_clicked () {
-		var app = application as Application;
+		if (current_building == null) {
+			current_period_popover.set_range (null, null);
+			current_period_popover.lock_month = null;
+		} else {
+			current_period_popover.set_range (current_building.first_period, current_building.last_period);
+			current_period_popover.lock_month = current_building.lock_period;
+		}
 
-		/* set up popover widges */
-		
-
-/*		current_period_popover.set_range (
-				db.fetch_int (AccountPeriod.table_name, "MIN(period)"),
-				db.fetch_int (AccountPeriod.table_name, "MAX(period)") + 1);*/
-//		current_month_popover.locked_period = int.parse (db.get_setting ("locked_period"));
 		current_period_popover.month = current_period;
 		current_period_popover.show ();
 	}
@@ -188,7 +176,7 @@ public class MainWindow : Gtk.ApplicationWindow {
 	[GtkCallback]
 	private void reports_clicked (Gtk.ToolButton button) {
 		report_menu.popup (null, null, (menu, out x, out y, out push_in) => {
-			default_popup_menu_position (button, out x, out y, out push_in);
+			Utils.default_popup_menu_position (button, out x, out y, out push_in);
 		}, 0, Gtk.get_current_event_time ());
 	}
 
@@ -244,12 +232,12 @@ public class MainWindow : Gtk.ApplicationWindow {
 	[GtkCallback]
 	private void references_clicked (Gtk.ToolButton button) {
 		reference_menu.popup (null, null, (menu, out x, out y, out push_in) => {
-			default_popup_menu_position (button, out x, out y, out push_in);
+			Utils.default_popup_menu_position (button, out x, out y, out push_in);
 		}, 0, Gtk.get_current_event_time ());
 	}
 
 
-	private void show_singleton_window (Type type) {
+	private Gtk.Window show_singleton_window (Type type) {
 		var window = singleton_windows[type];
 		if (window == null) {
 			window = Object.new (type, "type", Gtk.WindowType.TOPLEVEL, "transient_for", this) as Gtk.Window;
@@ -259,6 +247,7 @@ public class MainWindow : Gtk.ApplicationWindow {
 			singleton_windows[type] = window;
 		}
 		window.present ();
+		return window;
 	}
 
 
@@ -276,18 +265,8 @@ public class MainWindow : Gtk.ApplicationWindow {
 
 	[GtkCallback]
 	private void ref_people_clicked () {
-		show_singleton_window (typeof (PeopleWindow));
-
-/*
-		if (people_window == null) {
-			people_window = new PeopleWindow (this, (application as Application).db);
-			people_window.add_to_tenants.connect (tenant_table.add_tenant);
-			people_window.destroy.connect (() => {
-				people_window = null;
-			});
-		}
-
-		people_window.present ();*/
+		var win = show_singleton_window (typeof (PeopleWindow));
+		((PeopleWindow) win).add_to_tenants.connect (tenant_table.add_tenant);
 	}
 
 
@@ -320,7 +299,7 @@ public class MainWindow : Gtk.ApplicationWindow {
 				var msg = new Gtk.MessageDialog (this, Gtk.DialogFlags.MODAL,
 						Gtk.MessageType.QUESTION, Gtk.ButtonsType.NONE,
 						_("No previous calculations for period '%s' of building '%s'."),
-						period.format (), building.number);
+						period.format (), building.full_name ());
 				msg.add_buttons (_("OK"), Gtk.ResponseType.OK);
 				msg.run ();
 				msg.destroy ();
@@ -330,7 +309,7 @@ public class MainWindow : Gtk.ApplicationWindow {
 			var msg = new Gtk.MessageDialog (this, Gtk.DialogFlags.MODAL,
 					Gtk.MessageType.QUESTION, Gtk.ButtonsType.NONE,
 					_("Period '%s' for building '%s' has no data. Do you want to duplicate the last period to the new?"),
-					period.format (), building.number);
+					period.format (), building.full_name ());
 			msg.add_buttons (_("Yes"), Gtk.ResponseType.YES,
 							 _("No"), Gtk.ResponseType.NO,
 							 _("Cancel"), Gtk.ResponseType.CANCEL);

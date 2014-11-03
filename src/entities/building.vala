@@ -32,6 +32,11 @@ public class Building : DB.SimpleEntity {
 		};
 		return fields;
 	}
+
+
+	public string full_name () {
+		return "%s, %s".printf (street, number);
+	}
 }
 
 

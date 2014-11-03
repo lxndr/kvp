@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-11-03 01:48+0300\n"
+"POT-Creation-Date: 2014-11-03 11:40+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -122,39 +122,44 @@ msgstr "Улица"
 msgid "Reference - Buildings"
 msgstr "Справочник - Здания"
 
-#: src/main-window.vala:103
+#: src/main-window.vala:91
+#, fuzzy
+msgid "No buildings"
+msgstr "Все здания"
+
+#: src/main-window.vala:95
 msgid "All buildings"
 msgstr "Все здания"
 
-#: src/main-window.vala:126
+#: src/main-window.vala:115
 msgid "Edit..."
 msgstr "Редактировать..."
 
-#: src/main-window.vala:322
+#: src/main-window.vala:301
 #, c-format
 msgid "No previous calculations for period '%s' of building '%s'."
 msgstr ""
 
-#: src/main-window.vala:324
+#: src/main-window.vala:303
 msgid "OK"
 msgstr ""
 
-#: src/main-window.vala:332
+#: src/main-window.vala:311
 #, c-format
 msgid ""
 "Period '%s' for building '%s' has no data. Do you want to duplicate the last "
 "period to the new?"
 msgstr ""
 
-#: src/main-window.vala:334
+#: src/main-window.vala:313
 msgid "Yes"
 msgstr ""
 
-#: src/main-window.vala:335
+#: src/main-window.vala:314
 msgid "No"
 msgstr ""
 
-#: src/main-window.vala:336
+#: src/main-window.vala:315
 #, fuzzy
 msgid "Cancel"
 msgstr "Остаток"

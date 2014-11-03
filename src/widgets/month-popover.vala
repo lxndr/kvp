@@ -135,11 +135,17 @@ public class MonthPopover : Gtk.Popover {
 	}
 
 
-	public void set_range (Month first, Month last)
-			requires (first.compare (last) <= 0) {
-		first_month = first.copy ();
-		last_month = last.copy ();
-		year.set_range ((double) first.year, (double) last.year);
+	public void set_range (Month? first, Month? last) {
+		first_month = first;
+		last_month = last;
+
+		double lower = 0.0;
+		if (first != null)
+			lower = (double) first.year;
+		double upper = 10000.0;
+		if (last != null)
+			upper = (double) last.year;
+		year.set_range (lower, upper);
 	}
 }
 

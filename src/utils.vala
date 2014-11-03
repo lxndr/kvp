@@ -312,6 +312,17 @@ public void clamp_date_range2 (ref Date? first, ref Date? last, Date? min, Date?
 }
 
 
+private void default_popup_menu_position (Gtk.Widget widget, out int x, out int y, out bool push_in) {
+	Gtk.Allocation alloc;
+	widget.get_toplevel ().get_window ().get_origin (out x, out y);
+	widget.get_allocation (out alloc);
+	x += alloc.x;
+	y += alloc.y;
+	y += alloc.height;
+	push_in = false;
+}
+
+
 }
 
 }

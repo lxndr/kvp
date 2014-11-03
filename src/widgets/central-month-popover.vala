@@ -28,7 +28,7 @@ public class CentralMonthPopover : MonthPopover {
 
 			if (first_month != null && it.equals (first_month))
 				sc.add_class ("new-month");
-			if (w.sensitive == true && it.compare (lock_month) <=0)
+			if (w.sensitive == true && lock_month != null && it.compare (lock_month) <=0)
 				sc.add_class ("lock-month");
 
 			it.next ();
