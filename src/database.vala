@@ -142,9 +142,7 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.List<AccountPeriod> get_account_period_list (Building? building, Month period) {
-		var month_last_day = Utils.get_month_last_day ((int) period.raw_value);
-
+	public Gee.List<AccountPeriod> get_account_period_list (Building? building, Month period, bool include_closed) {
 		/*
 		 * SELECT account_period.*, account.id AS account, ? AS period
 		 * FROM account LEFT JOIN account_period
@@ -153,13 +151,19 @@ public class Database : DB.SQLiteDatabase {
 		 */
 
 		var query = new DB.QueryBuilder ();
-		query.select ("account_period.*, account.id AS account, %u AS period".printf (period.raw_value))
-			.from ("account LEFT JOIN account_period")
-			.on ("account.id=account_period.account AND period=%u".printf (period.raw_value));
+		query.select ("account_period.*, account.id AS account, %d AS period".printf (period.raw_value))
+				.from ("account LEFT JOIN account_period")
+				.on ("account.id=account_period.account AND period=%d".printf (period.raw_value));
 
-		string where = "account.opened<=%u".printf (month_last_day);
+		var period_last_day = period.last_day;
+		string where = "(opened=NULL OR opened<=%d)".printf (period_last_day.get_days ());
 		if (building != null)
 			where += " AND account.building=%d".printf (building.id);
+
+		if (include_closed == false) {
+			var period_first_day = period.first_day;
+			where += " AND (closed=NULL OR closed>=%d)".printf (period_first_day.get_days ());
+		}
 		query.where (where);
 
 		return fetch_entity_list_ex (typeof (AccountPeriod), query) as Gee.List<AccountPeriod>;
@@ -212,7 +216,7 @@ public class Database : DB.SQLiteDatabase {
 					("account=%d AND period=%d AND service=%d")
 					.printf (account.id, period.raw_value, price.service.id));
 			if (tax == null)
-				tax = new Tax (this, account, period.raw_value, price.service);
+				tax = new Tax (this, account, period, price.service);
 			list.add (tax);
 		}
 		return list;

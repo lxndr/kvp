@@ -53,9 +53,9 @@ public class Account : DB.SimpleEntity {
 	}
 
 
-	public AccountPeriod? fetch_period (int period) {
+	public AccountPeriod? fetch_period (Month period) {
 		return db.fetch_entity<AccountPeriod> (AccountPeriod.table_name,
-				"account=%d AND period=%d".printf (id, period));
+				"account=%d AND period=%d".printf (id, period.raw_value));
 	}
 }
 

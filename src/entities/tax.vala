@@ -4,7 +4,7 @@ namespace Kv {
 public class Tax : DB.Entity, DB.Viewable
 {
 	public Account account { get; set; }
-	public int period { get; set; }
+	public Month period { get; set; }
 	public Service service { get; set; }
 	public bool apply { get; set; }
 	public double amount { get; set; }
@@ -19,7 +19,7 @@ public class Tax : DB.Entity, DB.Viewable
 	private Price _price;
 	public unowned Price price {
 		get {
-			if (_price == null && account != null && period > 0 && service != null)
+			if (_price == null && account != null && period.raw_value > 0 && service != null)
 				_price = service.get_price (account.building, period);
 			return _price;
 		}
@@ -81,7 +81,7 @@ public class Tax : DB.Entity, DB.Viewable
 	}
 
 
-	public Tax (Database _db, Account _account, int _period, Service _service) {
+	public Tax (Database _db, Account _account, Month _period, Service _service) {
 		Object (db: _db,
 				account: _account,
 				period: _period,

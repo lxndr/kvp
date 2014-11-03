@@ -28,9 +28,9 @@ public class Service : DB.SimpleEntity, DB.Viewable
 	public override void remove () {}
 
 
-	public Price get_price (Building building, int period) {
+	public Price get_price (Building building, Month period) {
 		return db.fetch_entity<Price> (Price.table_name,
-				"building=%d AND period=%d AND service=%d".printf (building.id, period, id));
+				"building=%d AND period=%d AND service=%d".printf (building.id, period.raw_value, id));
 	}
 }
 

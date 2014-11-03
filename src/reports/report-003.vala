@@ -56,7 +56,7 @@ public class Report003 : Report {
 			totals[i] = 0;
 
 		foreach (var ac in accounts) {
-			var periodic = ac.fetch_period (selected_account.period.raw_value);
+			var periodic = ac.fetch_period (selected_account.period);
 			if (periodic == null)
 				continue;
 

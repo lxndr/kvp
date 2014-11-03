@@ -1,4 +1,4 @@
-namespace Kv {
+namespace Kv.Reports {
 
 
 [GtkTemplate (ui = "/org/lxndr/kvp/ui/account-report-parameters.ui")]
@@ -71,7 +71,7 @@ private class AccountReportParameters : Gtk.Dialog {
 
 
 
-public class Report002 : Report {
+public class Account : Report {
 	private const int service_ids[] = { 5, 6, 1, 2, 7, 8, 4, 9 };
 
 	private OOXML.Spreadsheet book;

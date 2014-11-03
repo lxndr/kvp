@@ -17,9 +17,6 @@ public class MainWindow : Gtk.ApplicationWindow {
 	/* report menu */
 	[GtkChild] private Gtk.Menu report_menu;
 
-	/* reference menu */
-	[GtkChild] private Gtk.Menu reference_menu;
-
 	/* tables */
 	[GtkChild] private Gtk.ScrolledWindow account_scroller;
 	[GtkChild] private Gtk.ScrolledWindow tenant_scroller;

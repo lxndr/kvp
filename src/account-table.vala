@@ -106,7 +106,7 @@ public class AccountTable : DB.ViewTable {
 
 	protected override Gee.List<DB.Entity> get_entity_list () {
 		unowned Database dbase = (Database) db;
-		return dbase.get_account_period_list (current_building, current_period);
+		return dbase.get_account_period_list (current_building, current_period, false);
 	}
 
 
@@ -195,7 +195,7 @@ public class AccountTable : DB.ViewTable {
 		if (current_building != null)
 			where += " AND building=%d".printf (current_building.id);
 
-		var periods = db.fetch_entity_list<AccountPeriod> (AccountPeriod.table_name, where);
+//		var periods = db.fetch_entity_list<AccountPeriod> (AccountPeriod.table_name, where);
 //		foreach (var account_period in periods)
 //			recalculate_period (account_period);
 //		refresh_all ();

@@ -29,8 +29,8 @@ public class Month {
 		owned get {
 			if (unlikely (raw_value == 0))
 				return null;
-			else
-				return new Date.from_ymd (year, month, month.get_days_in_month (year));
+			var m = month;
+			return new Date.from_ymd (year, m, m.get_days_in_month (year));
 		}
 	}
 
@@ -51,8 +51,9 @@ public class Month {
 	}
 
 
-	public Month copy () {
-		return new Month.from_raw_value (raw_value);
+	public unowned Month assign (Month that) {
+		raw_value = that.raw_value;
+		return this;
 	}
 
 
@@ -77,12 +78,12 @@ public class Month {
 
 
 	public Month get_first_month () {
-		return new Month.from_year_month (this.year, DateMonth.JANUARY);
+		return new Month.from_year_month (year, DateMonth.JANUARY);
 	}
 
 
 	public Month get_last_month () {
-		return new Month.from_year_month (this.year, DateMonth.DECEMBER);
+		return new Month.from_year_month (year, DateMonth.DECEMBER);
 	}
 
 
