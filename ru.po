@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-11-03 11:40+0300\n"
+"POT-Creation-Date: 2014-11-03 13:38+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -122,44 +122,44 @@ msgstr "Улица"
 msgid "Reference - Buildings"
 msgstr "Справочник - Здания"
 
-#: src/main-window.vala:91
+#: src/main-window.vala:98
 #, fuzzy
 msgid "No buildings"
 msgstr "Все здания"
 
-#: src/main-window.vala:95
+#: src/main-window.vala:102
 msgid "All buildings"
 msgstr "Все здания"
 
-#: src/main-window.vala:115
+#: src/main-window.vala:122
 msgid "Edit..."
 msgstr "Редактировать..."
 
-#: src/main-window.vala:301
+#: src/main-window.vala:292
 #, c-format
 msgid "No previous calculations for period '%s' of building '%s'."
 msgstr ""
 
-#: src/main-window.vala:303
+#: src/main-window.vala:294
 msgid "OK"
 msgstr ""
 
-#: src/main-window.vala:311
+#: src/main-window.vala:302
 #, c-format
 msgid ""
 "Period '%s' for building '%s' has no data. Do you want to duplicate the last "
 "period to the new?"
 msgstr ""
 
-#: src/main-window.vala:313
+#: src/main-window.vala:304
 msgid "Yes"
 msgstr ""
 
-#: src/main-window.vala:314
+#: src/main-window.vala:305
 msgid "No"
 msgstr ""
 
-#: src/main-window.vala:315
+#: src/main-window.vala:306
 #, fuzzy
 msgid "Cancel"
 msgstr "Остаток"
@@ -377,37 +377,51 @@ msgstr "Человек"
 msgid "for %s %d year"
 msgstr "за %s %d г."
 
-#: ui/main-window.ui:7
-msgid "Kvartplata"
-msgstr "Квартплата"
+#: ui/main-window.ui:17
+msgid "Show future accounts"
+msgstr ""
 
-#: ui/main-window.ui:24 ui/main-window.ui:199
-msgid "Buildings"
-msgstr "Здания"
+#: ui/main-window.ui:25
+msgid "Show closed accounts"
+msgstr ""
 
-#: ui/main-window.ui:37
-msgid "Current period"
-msgstr "Текущий период"
-
-#: ui/main-window.ui:53
-msgid "Filter"
-msgstr "Фильтр"
-
-#: ui/main-window.ui:78
-msgid "References"
-msgstr "Справочники"
-
-#: ui/main-window.ui:92
-msgid "Reports"
-msgstr "Отчеты"
-
-#: ui/main-window.ui:190
+#: ui/main-window.ui:43
 msgid "Prices"
 msgstr "Тарифы"
 
-#: ui/main-window.ui:208
+#: ui/main-window.ui:52
+msgid "Buildings"
+msgstr "Здания"
+
+#: ui/main-window.ui:61
 msgid "People"
 msgstr "Люди"
+
+#: ui/main-window.ui:73
+msgid "Kvartplata"
+msgstr "Квартплата"
+
+#: ui/main-window.ui:123
+#, fuzzy
+msgid "Building"
+msgstr "Здания"
+
+#: ui/main-window.ui:142
+msgid "Current period"
+msgstr "Текущий период"
+
+#: ui/main-window.ui:184
+msgid "Filter"
+msgstr "Фильтр"
+
+#: ui/main-window.ui:257
+msgid "References"
+msgstr "Справочники"
+
+#: ui/main-window.ui:302
+#, fuzzy
+msgid "_Reports"
+msgstr "Отчеты"
 
 #: libs/src/db-gtk/view-table.vala:103
 msgid "Add"

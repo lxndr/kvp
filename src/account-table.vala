@@ -126,10 +126,10 @@ public class AccountTable : DB.ViewTable {
 */
 
 
-	public void setup (Building? building, int period) {
+	public void setup (Building? building, Month period) {
 		unowned Database dbase = (Database) db;
 		current_building = building;
-		current_period = period;
+		current_period = (int) period.raw_value;
 
 		/* refresh lock state */
 //		var locked_period = int.parse (dbase.get_setting ("locked_period"));

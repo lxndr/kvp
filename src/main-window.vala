@@ -4,13 +4,15 @@ namespace Kv {
 [GtkTemplate (ui = "/org/lxndr/kvp/ui/main-window.ui")]
 public class MainWindow : Gtk.ApplicationWindow {
 	public Database db { get; construct set; }
-	private Building? current_building;
-	private Month current_period;
 	private Gee.Map<Type, Gtk.Window?> singleton_windows;
 
-	/* currently selected period */
-	[GtkChild] private Gtk.ToolButton current_period_button;
+	/* building */
+	private Building? current_building;
+
+	/* period */
+	private Month current_period;
 	private CentralMonthPopover current_period_popover;
+	[GtkChild] private Gtk.Button current_period_button;
 
 	/* report menu */
 	[GtkChild] private Gtk.Menu report_menu;
@@ -83,8 +85,13 @@ public class MainWindow : Gtk.ApplicationWindow {
 	 * Buildings
 	 */
 	[GtkCallback]
-	private void buildings_clicked (Gtk.ToolButton button) {
-		var menu = new Gtk.Menu ();
+	private void building_menu_showed (Gtk.Widget _menu) {
+		unowned Gtk.Menu menu = (Gtk.Menu) _menu;
+
+		menu.foreach ((menu_item) => {
+			menu_item.destroy ();
+		});
+
 		var buildings = db.fetch_entity_list<Building> (Building.table_name);
 
 		if (unlikely (buildings.size == 0)) {
@@ -117,17 +124,17 @@ public class MainWindow : Gtk.ApplicationWindow {
 		menu.append (edit_item);
 
 		menu.show_all ();
-		menu.attach_to_widget (button, null);
+/*		menu.attach_to_widget (button, null);
 		menu.popup (null, null, (menu, out x, out y, out push_in) => {
 			Utils.default_popup_menu_position (button, out x, out y, out push_in);
-		}, 0, Gtk.get_current_event_time ());
+		}, 0, Gtk.get_current_event_time ());*/
 	}
 
 
 	private void building_clicked (Gtk.CheckMenuItem mi) {
 		if (mi.active == true) {
-			current_building = mi.get_data<Building> ("building");
-			set_period (current_building, current_period);
+			var building = mi.get_data<Building> ("building");
+			set_period (building, current_period);
 		}
 	}
 
@@ -173,14 +180,6 @@ public class MainWindow : Gtk.ApplicationWindow {
 	/*
 	 * Reports
 	 */
-	[GtkCallback]
-	private void reports_clicked (Gtk.ToolButton button) {
-		report_menu.popup (null, null, (menu, out x, out y, out push_in) => {
-			Utils.default_popup_menu_position (button, out x, out y, out push_in);
-		}, 0, Gtk.get_current_event_time ());
-	}
-
-
 	private void report_menu_clicked (Gtk.MenuItem mi) {
 		var type = mi.get_data<Type> ("report-type");
 		if (type == Type.INVALID)
@@ -229,14 +228,6 @@ public class MainWindow : Gtk.ApplicationWindow {
 	/*
 	 * 
 	 */
-	[GtkCallback]
-	private void references_clicked (Gtk.ToolButton button) {
-		reference_menu.popup (null, null, (menu, out x, out y, out push_in) => {
-			Utils.default_popup_menu_position (button, out x, out y, out push_in);
-		}, 0, Gtk.get_current_event_time ());
-	}
-
-
 	private Gtk.Window show_singleton_window (Type type) {
 		var window = singleton_windows[type];
 		if (window == null) {
@@ -322,13 +313,14 @@ public class MainWindow : Gtk.ApplicationWindow {
 				return;
 		}
 
-		current_period_button.label = period.format ();
-		bool changed = !current_period.equals (period);
+		current_building = new_building;
+		db.set_setting ("current_building", period.raw_value.to_string ());
+
 		current_period = period;
-		if (changed) {
-			db.set_setting ("current_period", period.raw_value.to_string ());
-			account_table.setup (current_building, (int) current_period.raw_value);
-		}
+		current_period_button.label = period.format ();
+		db.set_setting ("current_period", period.raw_value.to_string ());
+
+		account_table.setup (current_building, current_period);
 	}
 
 

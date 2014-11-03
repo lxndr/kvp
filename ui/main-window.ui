@@ -2,6 +2,72 @@
 <!-- Generated with glade 3.18.3 -->
 <interface>
   <requires lib="gtk+" version="3.12"/>
+  <object class="GtkMenu" id="building_menu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <signal name="show" handler="building_menu_showed" swapped="no"/>
+  </object>
+  <object class="GtkMenu" id="filter_menu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkCheckMenuItem" id="menuitem4">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Show future accounts</property>
+        <property name="use_underline">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkCheckMenuItem" id="menuitem5">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Show closed accounts</property>
+        <property name="use_underline">True</property>
+      </object>
+    </child>
+  </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixel_size">24</property>
+    <property name="icon_name">x-office-calendar</property>
+  </object>
+  <object class="GtkMenu" id="reference_menu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="menuitem2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Prices</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="ref_services_clicked" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="menuitem1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Buildings</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="ref_buildings_clicked" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="menuitem3">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">People</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="ref_people_clicked" swapped="no"/>
+      </object>
+    </child>
+  </object>
+  <object class="GtkMenu" id="report_menu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+  </object>
   <template class="KvMainWindow" parent="GtkApplicationWindow">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Kvartplata</property>
@@ -16,43 +82,124 @@
           <object class="GtkToolbar" id="toolbar1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="show_arrow">False</property>
             <child>
-              <object class="GtkToolButton" id="building_button">
+              <object class="GtkToolItem" id="toolbutton2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="is_important">True</property>
-                <property name="label" translatable="yes">Buildings</property>
-                <property name="icon_name">emblem-photos</property>
-                <signal name="clicked" handler="buildings_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="current_period_button">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Current period</property>
-                <property name="halign">end</property>
-                <property name="is_important">True</property>
-                <property name="icon_name">x-office-calendar</property>
-                <signal name="clicked" handler="current_period_button_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="toolbutton1">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="is_important">True</property>
-                <property name="label" translatable="yes">Filter</property>
-                <property name="use_underline">True</property>
-                <property name="icon_name">preferences-desktop-font</property>
+                <child>
+                  <object class="GtkBox" id="box2">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkMenuButton" id="menubutton1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="popup">building_menu</property>
+                        <child>
+                          <object class="GtkBox" id="box4">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="spacing">4</property>
+                            <child>
+                              <object class="GtkImage" id="image1">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="pixel_size">24</property>
+                                <property name="icon_name">emblem-photos</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label1">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Building</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="current_period_button">
+                        <property name="label" translatable="yes">Current period</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="image">image2</property>
+                        <property name="always_show_image">True</property>
+                        <signal name="clicked" handler="current_period_button_clicked" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkMenuButton" id="menubutton2">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="popup">filter_menu</property>
+                        <child>
+                          <object class="GtkBox" id="box5">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="spacing">4</property>
+                            <child>
+                              <object class="GtkImage" id="image3">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="pixel_size">24</property>
+                                <property name="icon_name">preferences-desktop-font</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label2">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Filter</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -71,28 +218,107 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToolButton" id="reference_button">
+              <object class="GtkToolItem" id="toolbutton4">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="is_important">True</property>
-                <property name="label" translatable="yes">References</property>
-                <property name="icon_name">x-office-address-book</property>
-                <signal name="clicked" handler="references_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="report_button">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="is_important">True</property>
-                <property name="label" translatable="yes">Reports</property>
-                <property name="use_underline">True</property>
-                <property name="icon_name">x-office-document</property>
-                <signal name="clicked" handler="reports_clicked" swapped="no"/>
+                <child>
+                  <object class="GtkBox" id="box3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkMenuButton" id="menubutton3">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="popup">reference_menu</property>
+                        <child>
+                          <object class="GtkBox" id="box6">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="spacing">4</property>
+                            <child>
+                              <object class="GtkImage" id="image4">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="pixel_size">24</property>
+                                <property name="icon_name">x-office-address-book</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label3">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">References</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkMenuButton" id="menubutton4">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="popup">report_menu</property>
+                        <child>
+                          <object class="GtkBox" id="box8">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="spacing">4</property>
+                            <child>
+                              <object class="GtkImage" id="image5">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="pixel_size">24</property>
+                                <property name="icon_name">x-office-document</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label4">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">_Reports</property>
+                                <property name="use_underline">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -180,39 +406,4 @@
       </object>
     </child>
   </template>
-  <object class="GtkMenu" id="reference_menu">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <child>
-      <object class="GtkMenuItem" id="menuitem2">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Prices</property>
-        <property name="use_underline">True</property>
-        <signal name="activate" handler="ref_services_clicked" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="menuitem1">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Buildings</property>
-        <property name="use_underline">True</property>
-        <signal name="activate" handler="ref_buildings_clicked" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="menuitem3">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">People</property>
-        <property name="use_underline">True</property>
-        <signal name="activate" handler="ref_people_clicked" swapped="no"/>
-      </object>
-    </child>
-  </object>
-  <object class="GtkMenu" id="report_menu">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-  </object>
 </interface>
