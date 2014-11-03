@@ -158,7 +158,7 @@ public class TaxFormula05 : TaxCalculation {
 				1.0000
 			};
 
-			int month = ac.period % 12;
+			int month = ac.period.raw_value % 12;
 			amount_coef = coef[month];
 		}
 

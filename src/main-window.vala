@@ -124,10 +124,6 @@ public class MainWindow : Gtk.ApplicationWindow {
 		menu.append (edit_item);
 
 		menu.show_all ();
-/*		menu.attach_to_widget (button, null);
-		menu.popup (null, null, (menu, out x, out y, out push_in) => {
-			Utils.default_popup_menu_position (button, out x, out y, out push_in);
-		}, 0, Gtk.get_current_event_time ());*/
 	}
 
 
@@ -148,7 +144,7 @@ public class MainWindow : Gtk.ApplicationWindow {
 		/* load current year from the settings */
 		var setting = db.get_setting ("current_period");
 		if (setting != null) {
-			var val = (uint) uint64.parse (setting);
+			var val = int.parse (setting);
 			if (val > 0)
 				period.raw_value = val;
 		}

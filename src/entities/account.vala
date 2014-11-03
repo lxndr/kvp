@@ -1,24 +1,12 @@
 namespace Kv {
 
 
-public class Account : DB.SimpleEntity
-{
+public class Account : DB.SimpleEntity {
 	public Building building { get; construct set; }
-	public string number { get; set; default = "000"; }
-	public Date opened { get; set; }
-	public Date closed { get; set; }
-	public string? comment { get; set; }
-
-
-	construct {
-		var now = new DateTime.now_local ();
-		Date date;
-		date.set_dmy ((DateDay) now.get_day_of_month (), now.get_month (), (DateYear) now.get_year ());
-		opened = date;
-
-		date.set_julian (1);
-		closed = date;
-	}
+	public string number { get; set; default = ""; }
+	public Date? opened { get; set; default = new Date.now (); }
+	public Date? closed { get; set; default = null; }
+	public string? comment { get; set; default = null; }
 
 
 	public static unowned string table_name = "account";

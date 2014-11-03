@@ -57,7 +57,7 @@ public string format_double (double n, int max_digits) {
 }
 
 
-public string format_date (Date date) {
+public string format_date (GLib.Date date) {
 	char s[16];
 	date.strftime (s, "%x");
 	return (string) s;
@@ -101,38 +101,21 @@ public void transform_money_to_string (Value src_value, ref Value dest_value) {
 }
 
 
-public void transform_string_to_date (Value src_value, ref Value dest_value) {
-	var n = (uint) uint64.parse (src_value.get_string ());
-	var date = Date ();
-	date.set_julian (n);
-	dest_value.set_boxed (&date);
-}
-
-public void transform_date_to_string (Value src_value, ref Value dest_value) {
-	var date = (Date*) src_value.get_boxed ();
-	dest_value.set_string (date.get_julian ().to_string ());
-}
-
-
 /*
  * Adapter <-> Date
  */
 public void transform_date_to_property_adapter (Value src_value, ref Value dest_value) {
 	DB.PropertyAdapter ad = { null };
-
-	var date = (Date*) src_value.get_boxed ();
-	if (date.valid () == true && date.get_julian () > 1) {
-		char buf[32];
-		date.strftime (buf, "%x");
-		ad.val = (string) buf;
-	}
-
+	var date = (Date) src_value.peek_pointer ();
+	if (date != null)
+		ad.val = date.format ();
 	dest_value.set_boxed (&ad);
 }
 
+
 public void transform_property_adapter_to_date (Value src_value, ref Value dest_value) {
 	var ad = (DB.PropertyAdapter*) src_value.get_boxed ();
-	var date = Date ();
+	var date = GLib.Date ();
 	if (ad.val != null)
 		date.set_parse (ad.val);
 	if (date.valid () == false)
@@ -205,7 +188,7 @@ private string shorten_name (string? name) {
 
 
 public uint get_month_first_day (int month) {
-	var date = Date ();
+	var date = GLib.Date ();
 	date.set_dmy ((DateDay) 1, (month % 12) + 1, (DateYear) month / 12);
 	return date.get_julian ();
 }
@@ -213,7 +196,7 @@ public uint get_month_first_day (int month) {
 
 public uint get_month_last_day (int month) {
 	month++;
-	var date = Date ();
+	var date = GLib.Date ();
 	date.set_dmy ((DateDay) 1, (month % 12) + 1, (DateYear) month / 12);
 	return date.get_julian () - 1;
 }
@@ -277,37 +260,6 @@ public void clamp_date_range (ref uint first_day, ref uint last_day, uint min, u
 
 		if (last_day == 1 || last_day > max)
 			last_day = max;
-	}
-}
-
-
-public void clamp_date_range2 (ref Date? first, ref Date? last, Date? min, Date? max)
-		requires ((first == null || last == null) && first.compare (last) < 1)
-		requires ((min == null || max == null) && min.compare (max) < 1) {
-	/* no dates */
-	if (first == null && last == null)
-		return;
-
-	if (min != null) {
-		if (last != null && last.compare (min) < 0) {
-			/* out of range */
-			first = null;
-			last = null;
-		}
-
-		if (first == null || first.compare (min) < 0)
-			first = min;
-	}
-
-	if (max != null) {
-		if (first != null && first.compare (max) > 0) {
-			/* out of range */
-			first = null;
-			last = null;
-		}
-
-		if (last == null || last.compare (max) > 0)
-			last = max;
 	}
 }
 

@@ -2,34 +2,52 @@ namespace Kv {
 
 
 public class Month {
-	public uint raw_value { get; set; }
+	public int raw_value { get; set; }
+
 
 	public DateYear year {
 		get { return (DateYear) (raw_value / 12); }
 	}
+
 
 	public DateMonth month {
 		get { return (DateMonth) (raw_value % 12 + 1); }
 	}
 
 
-	public Date? first_day { get; private set; }
-	public Date? last_day { get; private set; }
+	public Date? first_day {
+		owned get {
+			if (unlikely (raw_value == 0))
+				return null;
+			else
+				return new Date.from_ymd (year, month, 1);
+		}
+	}
 
 
-	public Month.from_raw_value (uint _value) {
+	public Date? last_day {
+		owned get {
+			if (unlikely (raw_value == 0))
+				return null;
+			else
+				return new Date.from_ymd (year, month, month.get_days_in_month (year));
+		}
+	}
+
+
+	public Month.from_raw_value (int _value) {
 		raw_value = _value;
 	}
 
 
 	public Month.from_year_month (DateYear _year, DateMonth _month) {
-		raw_value = (uint) _year * 12 + (uint) _month - 1;
+		raw_value = (int) _year * 12 + (int) _month - 1;
 	}
 
 
 	public Month.now () {
 		var date = new DateTime.now_local ();
-		raw_value = (uint) date.get_year () * 12 + (uint) date.get_month () - 1;
+		raw_value = (int) date.get_year () * 12 + (int) date.get_month () - 1;
 	}
 
 
@@ -69,7 +87,7 @@ public class Month {
 
 
 	public int compare (Month _month) {
-		return (int) raw_value - (int) _month.raw_value;
+		return raw_value - _month.raw_value;
 	}
 
 

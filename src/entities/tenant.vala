@@ -5,8 +5,8 @@ public class Tenant : DB.Entity, DB.Viewable
 {
 	public Account account { get; set; }
 	public Person person { get; set; }
-	public Date move_in { get; set; }
-	public Date move_out { get; set; }
+	public Date? move_in { get; set; default = new Date.now (); }
+	public Date? move_out { get; set; default = null; }
 	public Relationship? relation { get; set; default = null; }
 
 
@@ -16,21 +16,9 @@ public class Tenant : DB.Entity, DB.Viewable
 	}
 
 
-	public Date birthday {
+	public Date? birthday {
 		get { return person.birthday; }
 		set { person.birthday = value; }
-	}
-
-
-	construct {
-		Date date;
-
-		var now = new DateTime.now_local ();
-		date.set_dmy ((DateDay) now.get_day_of_month (), now.get_month (), (DateYear) now.get_year ());
-		move_in = date;
-
-		date.set_julian (1);
-		move_out = date;
 	}
 
 

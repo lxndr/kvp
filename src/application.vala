@@ -21,10 +21,6 @@ public class Application : Gtk.Application {
 				(ValueTransform) Utils.transform_string_to_money);
 		Value.register_transform_func (typeof (Money), typeof (string),
 				(ValueTransform) Utils.transform_money_to_string);
-		Value.register_transform_func (typeof (string), typeof (Date),
-				(ValueTransform) Utils.transform_string_to_date);
-		Value.register_transform_func (typeof (Date), typeof (string),
-				(ValueTransform) Utils.transform_date_to_string);
 
 		Value.register_transform_func (typeof (double), typeof (DB.PropertyAdapter),
 				(ValueTransform) Utils.transform_double_to_property_adapter);
@@ -37,8 +33,6 @@ public class Application : Gtk.Application {
 
 		Value.register_transform_func (typeof (Date), typeof (DB.PropertyAdapter),
 				(ValueTransform) Utils.transform_date_to_property_adapter);
-		Value.register_transform_func (typeof (DB.PropertyAdapter), typeof (Date),
-				(ValueTransform) Utils.transform_property_adapter_to_date);
 	}
 
 

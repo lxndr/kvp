@@ -24,13 +24,10 @@ public class CalculationSheet : Report {
 			string birthday_string = "";
 			double row_height = 0.0;
 
-			var people = db.get_people_list (selected_account.account, selected_account.period);
+			var people = db.get_people_list (selected_account.account, selected_account.period.raw_value);
 			foreach (var person in people) {
 				people_string += person.name + "\n";
-				if (person.birthday.valid () == false)
-					birthday_string += "\n";
-				else
-					birthday_string += Utils.format_date (person.birthday) + "\n";
+				birthday_string += (person.birthday.format () ?? "") + "\n";
 				row_height += 15.0;
 			}
 

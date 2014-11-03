@@ -30,11 +30,11 @@ public class Report003 : Report {
 
 		/* month */
 		sheet.put_string ("A2", _("for %s %d year")
-				.printf (Utils.month_to_string (selected_account.period % 12).down (), selected_account.period / 12));
+				.printf (Utils.month_to_string (selected_account.period.raw_value % 12).down (), selected_account.period.raw_value / 12));
 
 		/* tax prices */
 		var prices = db.fetch_int_int64_map (Price.table_name, "service", "value",
-				"building=%d AND period=%d".printf (selected_account.account.building.id, selected_account.period));
+				"building=%d AND period=%d".printf (selected_account.account.building.id, selected_account.period.raw_value));
 		foreach (var id in service_ids)
 			if (prices[id] == null) prices[id] = 0;
 
@@ -56,7 +56,7 @@ public class Report003 : Report {
 			totals[i] = 0;
 
 		foreach (var ac in accounts) {
-			var periodic = ac.fetch_period (selected_account.period);
+			var periodic = ac.fetch_period (selected_account.period.raw_value);
 			if (periodic == null)
 				continue;
 
@@ -74,7 +74,7 @@ public class Report003 : Report {
 			row.get_cell (6).put_string (n_people.to_string ()).style = cstyles[5];
 
 			var taxes = db.fetch_int_int64_map (Tax.table_name, "service", "total",
-					"account=%d AND period=%d".printf (ac.id, selected_account.period));
+					"account=%d AND period=%d".printf (ac.id, selected_account.period.raw_value));
 
 			OOXML.Cell cell;
 

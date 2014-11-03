@@ -115,8 +115,16 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.List<Building> get_building_list () {
-		return fetch_entity_list<Building> (Building.table_name);
+	public Gee.List<Building> get_building_list (Month? active_period = null) {
+		string? where = null;
+
+		if (active_period != null) {
+			var val = active_period.raw_value;
+			where = "(first_period=NULL OR first_period<=%u) AND (last_period=NULL OR last_period>=%u)"
+					.printf (val, val);
+		}
+
+		return fetch_entity_list<Building> (Building.table_name, where);
 	}
 
 
@@ -134,8 +142,8 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.List<AccountPeriod> get_account_period_list (Building? building, int period) {
-		var month_last_day = Utils.get_month_last_day (period);
+	public Gee.List<AccountPeriod> get_account_period_list (Building? building, Month period) {
+		var month_last_day = Utils.get_month_last_day ((int) period.raw_value);
 
 		/*
 		 * SELECT account_period.*, account.id AS account, ? AS period
@@ -145,9 +153,9 @@ public class Database : DB.SQLiteDatabase {
 		 */
 
 		var query = new DB.QueryBuilder ();
-		query.select ("account_period.*, account.id AS account, %d AS period".printf (period))
+		query.select ("account_period.*, account.id AS account, %u AS period".printf (period.raw_value))
 			.from ("account LEFT JOIN account_period")
-			.on ("account.id=account_period.account AND period=%d".printf (period));
+			.on ("account.id=account_period.account AND period=%u".printf (period.raw_value));
 
 		string where = "account.opened<=%u".printf (month_last_day);
 		if (building != null)
@@ -194,17 +202,17 @@ public class Database : DB.SQLiteDatabase {
 	public Gee.List<Tax> get_tax_list (AccountPeriod periodic) {
 		unowned Account account = periodic.account;
 		unowned Building building = account.building;
-		int period = periodic.period;
+		unowned Month period = periodic.period;
 
 		var prices = fetch_entity_list<Price> (Price.table_name,
-				("building=%d AND period=%d").printf (building.id, period));
+				("building=%d AND period=%d").printf (building.id, period.raw_value));
 		var list = new Gee.ArrayList<Tax> ();
 		foreach (var price in prices) {
 			var tax = fetch_entity<Tax> (Tax.table_name,
 					("account=%d AND period=%d AND service=%d")
-					.printf (account.id, period, price.service.id));
+					.printf (account.id, period.raw_value, price.service.id));
 			if (tax == null)
-				tax = new Tax (this, account, period, price.service);
+				tax = new Tax (this, account, period.raw_value, price.service);
 			list.add (tax);
 		}
 		return list;

@@ -3,7 +3,7 @@ namespace Kv {
 
 public class AccountTable : DB.ViewTable {
 	private Building? current_building;
-	private int current_period;
+	private Month current_period;
 
 	private int balance_foreground_model_column;
 	private Gtk.MenuItem recalc_menu_item;
@@ -105,7 +105,7 @@ public class AccountTable : DB.ViewTable {
 
 
 	protected override Gee.List<DB.Entity> get_entity_list () {
-		unowned Database dbase = db as Database;
+		unowned Database dbase = (Database) db;
 		return dbase.get_account_period_list (current_building, current_period);
 	}
 
@@ -115,21 +115,10 @@ public class AccountTable : DB.ViewTable {
 	}
 
 
-/*
-	public Account? get_selected_account () {
-		var periodic = get_selected_entity ();
-		if (periodic == null)
-			return null;
-
-		return ((AccountPeriod) periodic).account;
-	}
-*/
-
-
 	public void setup (Building? building, Month period) {
-		unowned Database dbase = (Database) db;
+//		unowned Database dbase = (Database) db;
 		current_building = building;
-		current_period = (int) period.raw_value;
+		current_period = period;
 
 		/* refresh lock state */
 //		var locked_period = int.parse (dbase.get_setting ("locked_period"));
@@ -202,7 +191,7 @@ public class AccountTable : DB.ViewTable {
 	public void recalculate_period_clicked () {
 		db.begin_transaction ();
 
-		var where = "period=%d".printf (current_period);
+		var where = "period=%u".printf (current_period.raw_value);
 		if (current_building != null)
 			where += " AND building=%d".printf (current_building.id);
 

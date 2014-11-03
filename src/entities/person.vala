@@ -4,16 +4,9 @@ namespace Kv {
 public class Person : DB.SimpleEntity, DB.Viewable
 {
 	public string name { get; set; default = _("A person"); }
-	public Date birthday { get; set; }
+	public Date? birthday { get; set; default = null; }
 	public bool gender { get; set; default = false; }
 	public string? real_life_id { get; set; default = null; }
-
-
-	construct {
-		Date date;
-		date.set_julian (1);
-		birthday = date;
-	}
 
 
 	public Person (DB.Database _db) {

@@ -193,7 +193,7 @@ public class Report002 : Report {
 
 		/* services and prices */
 		var sb = new StringBuilder ();
-		var price_list = db.get_price_list (building, general_periodic.period);
+		var price_list = db.get_price_list (building, general_periodic.period.raw_value);
 		foreach (var price in price_list)
 			sb.append_printf ("%s: %s\n", price.service.name, price.value.format ());
 		sheet.put_string ("A7", sb.str);
@@ -203,7 +203,7 @@ public class Report002 : Report {
 			var tenant = tenants[i];
 			unowned Person person = tenant.person;
 			sheet.get_row (14 + i).get_cell (27).put_string (person.name);
-			sheet.get_row (14 + i).get_cell (49).put_string (Utils.format_date (person.birthday));
+			sheet.get_row (14 + i).get_cell (49).put_string (person.birthday.format ());
 			if (tenant.relation != null)
 				sheet.get_row (14 + i).get_cell (57).put_string (tenant.relation.name);
 		}
@@ -223,9 +223,9 @@ public class Report002 : Report {
 		int row_number = 5;
 		foreach (var periodic in periodic_list) {
 			var taxes = db.fetch_int_entity_map<Tax> (Tax.table_name, "service", null,
-					"account=%d AND period=%d".printf (periodic.account.id, periodic.period));
+					"account=%d AND period=%d".printf (periodic.account.id, periodic.period.raw_value));
 
-			var month = periodic.period % 12;
+			var month = periodic.period.raw_value % 12;
 			var row = sheet.get_row (row_number);
 			row.get_cell (2).put_string (Utils.month_to_string (month));
 

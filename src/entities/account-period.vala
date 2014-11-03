@@ -4,7 +4,7 @@ namespace Kv {
 public class AccountPeriod : DB.Entity, DB.Viewable
 {
 	public Account account { get; set; }
-	public int period { get; set; }
+	public Month period { get; set; }
 	public string apartment { get; set; default = "000"; }
 	public int n_rooms { get; set; default = 1; }
 	public double area { get; set; default = 0.0; }
@@ -35,13 +35,13 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	}
 
 
-	public Date opened {
+	public Date? opened {
 		get { return account.opened; }
 		set { account.opened = value; }
 	}
 
 
-	public Date closed {
+	public Date? closed {
 		get { return account.closed; }
 		set { account.closed = value; }
 	}
@@ -52,11 +52,10 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	}
 
 
-	public AccountPeriod (DB.Database _db, Account _account, int _period) {
-		Object (db: _db);
-
-		account = _account;
-		period = _period;
+	public AccountPeriod (DB.Database _db, Account _account, Month _period) {
+		Object (db: _db,
+				account: _account,
+				period: _period);
 	}
 
 
@@ -101,24 +100,23 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 
 	public int64 number_of_people () {
-		uint month_last_day = Utils.get_month_last_day (period);
-
+		int month_last_day = period.last_day.get_days ();
 		return db.query_count (Tenant.table_name,
-				"account=%d AND move_in!=1 AND move_in<=%u AND (move_out=1 OR move_out>=%u)"
+				"account=%d AND move_in!=1 AND move_in<=%d AND (move_out=1 OR move_out>=%d)"
 				.printf (account.id, month_last_day, month_last_day));
 	}
 
 
 	public Money previuos_balance () {
 		var n = db.fetch_int64 (AccountPeriod.table_name, "balance",
-				"account=%d AND period=%d".printf (account.id, period - 1));
+				"account=%d AND period=%d".printf (account.id, period.get_prev ().raw_value));
 		return Money (n);
 	}
 
 
 	public void calc_total () {
 		total = Money (db.query_sum (Tax.table_name, "total",
-				"account=%d AND period=%d".printf (account.id, period)));
+				"account=%d AND period=%d".printf (account.id, period.raw_value)));
 	}
 
 
@@ -136,63 +134,47 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 
 	public Gee.List<Tenant> get_tenant_list () {
-		return ((Database) db).get_tenant_list (account, period);
+		return ((Database) db).get_tenant_list (account, period.raw_value);
 	}
 
 
 	public Gee.List<Tax> get_taxes () {
 		return db.fetch_entity_list<Tax> (Tax.table_name,
-				"account=%d AND period=%d".printf (account.id, period));
+				"account=%d AND period=%d".printf (account.id, period.raw_value));
 	}
 
 
 	public double period_coefficient () {
-		uint julian;
+		var first_day = period.first_day;
+		var last_day = period.last_day;
+		Date.clamp_range (ref first_day, ref last_day, account.opened, account.closed);
 
-		julian = account.opened.get_julian ();
-		uint first_day = Utils.get_month_first_day (period);
-		if (first_day < julian)
-			first_day = julian;
-
-		julian = account.closed.get_julian ();
-		uint last_day = Utils.get_month_last_day (period);
-		if (julian > 1 && last_day > julian)
-			last_day = julian;
-
-		var days = last_day - first_day + 1;
-		var days_in_month = ((DateMonth) (period % 12 + 1)).get_days_in_month ((DateYear) (period / 12));
-
-		var coef = (double) days / (double) days_in_month;
-		stdout.printf ("period_coef %f\n", coef);
-		return coef;
+		var days = first_day.diff (last_day) + 1;
+		var days_in_month = period.month.get_days_in_month (period.year);
+		return (double) days / (double) days_in_month;
 	}
 
 
 	public double tenant_coefficient () {
-		uint first_day = Utils.get_month_first_day (period);
-		uint last_day = Utils.get_month_last_day (period);
-
-		Utils.clamp_date_range (ref first_day, ref last_day,
-				account.opened.get_julian (), account.closed.get_julian ());
+		var first_day = period.first_day;
+		var last_day = period.last_day;
+		Date.clamp_range (ref first_day, ref last_day, account.opened, account.closed);
 
 		uint days = 0;
 		var tenant_list = get_tenant_list ();
 		foreach (var tenant in tenant_list) {
-			uint first = tenant.move_in.get_julian ();
-			uint last = tenant.move_out.get_julian ();
-			Utils.clamp_date_range (ref first, ref last, first_day, last_day);
+			var first = tenant.move_in;
+			var last = tenant.move_out;
+			Date.clamp_range (ref first, ref last, first_day, last_day);
 
 			/* no range at all */
-			if (first == 1 && last == 1)
+			if (first == null && last == null)
 				continue;
 
-			days += last - first + 1;
+			days += first_day.diff (last_day) + 1;
 		}
 
-		var year = (DateYear) (period / 12);
-		var month = (DateMonth) (period % 12 + 1);
-		var days_in_month = month.get_days_in_month (year);
-
+		var days_in_month = period.month.get_days_in_month (period.year);
 		return (double) days / (double) days_in_month;
 	}
 }
