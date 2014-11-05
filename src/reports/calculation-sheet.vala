@@ -24,7 +24,7 @@ public class CalculationSheet : Report {
 			string birthday_string = "";
 			double row_height = 0.0;
 
-			var people = db.get_people_list (selected_account.account, selected_account.period.raw_value);
+			var people = db.get_people_list (selected_account.account, selected_account.period);
 			foreach (var person in people) {
 				people_string += person.name + "\n";
 				birthday_string += (person.birthday.format () ?? "") + "\n";

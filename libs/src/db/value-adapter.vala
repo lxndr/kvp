@@ -29,13 +29,13 @@ public class ValueAdapter {
 	}
 
 
-	private ValueAdapterFromFunc? find_from_func (Type type, string? table, string? column) {
+	private Adapter? find_spec (Type type, string? table, string? column) {
 		foreach (var adapter in adapters)
 			if (adapter.from_func != null &&
 					(adapter.type == Type.INVALID || adapter.type == type) &&
 					(adapter.table == null || adapter.table == table) &&
 					(adapter.column == null || adapter.column == column))
-				return adapter.from_func;
+				return adapter;
 		return null;
 	}
 
@@ -52,18 +52,18 @@ public class ValueAdapter {
 
 
 	public bool convert_from (string? table, string? column, string s, ref Value v) {
-		var func = find_from_func (v.type (), table, column);
-		if (unlikely (func == null))
+		var spec = find_spec (v.type (), table, column);
+		if (unlikely (spec == null))
 			return false;
-		return func (s, ref v);
+		return spec.from_func (s, ref v);
 	}
 
 
 	public bool convert_to (string? table, string? column, ref Value v, out string? s) {
-		var func = find_to_func (v.type (), table, column);
-		if (unlikely (func == null))
+		var spec = find_spec (v.type (), table, column);
+		if (unlikely (spec == null))
 			return false;
-		return func (ref v, out s);
+		return spec.to_func (ref v, out s);
 	}
 }
 

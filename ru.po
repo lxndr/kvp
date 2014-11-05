@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-11-05 17:34+0300\n"
+"POT-Creation-Date: 2014-11-05 20:27+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -135,15 +135,6 @@ msgstr "Все здания"
 msgid "Edit..."
 msgstr "Редактировать..."
 
-#: src/main-window.vala:285
-#, c-format
-msgid "No previous calculations for period '%s' of building '%s'."
-msgstr ""
-
-#: src/main-window.vala:287
-msgid "OK"
-msgstr ""
-
 #: src/main-window.vala:295
 #, c-format
 msgid ""
@@ -164,11 +155,11 @@ msgstr ""
 msgid "Cancel"
 msgstr "Остаток"
 
-#: src/people-table.vala:10 src/service-table.vala:8 src/tenant-table.vala:41
+#: src/people-table.vala:10 src/service-table.vala:8 src/tenant-table.vala:32
 msgid "name"
 msgstr "Имя"
 
-#: src/people-table.vala:11 src/tenant-table.vala:42
+#: src/people-table.vala:11 src/tenant-table.vala:33
 msgid "birthday"
 msgstr "Дата рождения"
 
@@ -248,15 +239,15 @@ msgstr "Кол-во"
 msgid "price-value"
 msgstr "Стоимость"
 
-#: src/tenant-table.vala:43
+#: src/tenant-table.vala:34
 msgid "relation"
 msgstr "Отношение"
 
-#: src/tenant-table.vala:44
+#: src/tenant-table.vala:35
 msgid "move-in"
 msgstr "Прибыл"
 
-#: src/tenant-table.vala:45
+#: src/tenant-table.vala:36
 msgid "move-out"
 msgstr "Выбыл"
 

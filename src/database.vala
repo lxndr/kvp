@@ -104,7 +104,7 @@ public class Database : DB.SQLiteDatabase {
 				.printf (AccountPeriod.table_name, period.raw_value, from, prev_period.raw_value), null);
 
 		/* a little bit more tricky */
-		var price_list = get_price_list (building, (int) period.raw_value);
+		var price_list = get_price_list (building, period);
 		foreach (var price in price_list) {
 			from = form_table_name_for_building (building, Tax.table_name);
 			exec_sql ("INSERT INTO %s SELECT account,%u,service,apply,amount,total FROM %s WHERE period=%u AND service=%d"
@@ -170,9 +170,9 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.List<Person> get_people_list (Account account, int period) {
+	public Gee.List<Person> get_people_list (Account account, Month period) {
 		return fetch_entity_list<Person> (Person.table_name,
-				"account=%d AND period=%d".printf (account.id, period));
+				"account = %d AND period = %d".printf (account.id, period.raw_value));
 	}
 
 
@@ -194,10 +194,10 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.List<Price> get_price_list (Building? building, int period) {
-		string where = "period=%d".printf (period);
+	public Gee.List<Price> get_price_list (Building? building, Month period) {
+		string where = "period = %d".printf (period.raw_value);
 		if (building != null)
-			where += " AND building=%d".printf (building.id);
+			where += " AND building = %d".printf (building.id);
 
 		return fetch_entity_list<Price> (Price.table_name, where);
 	}

@@ -261,7 +261,7 @@ public abstract class Database : Object {
 	 * As an option we can convert a Value to some sort of adapter type.
 	 * Or we can have internal converter.
 	 */
-	private string? prepare_value (ref Value val) {
+	private string? prepare_value (ref Value val, string prop_name) {
 		var type = val.type ();
 
 		if (val.type ().is_a (typeof (Entity))) {
@@ -307,7 +307,7 @@ public abstract class Database : Object {
 			var val = Value (prop_spec.value_type);
 			entity.get_property (prop_name, ref val);
 
-			var s = prepare_value (ref val);
+			var s = prepare_value (ref val, prop_name);
 			if (s == null) {
 				warning ("Couldn't prepare the value of property '%s.%s' of type '%s' for using in SQL query",
 						entity.get_type ().name (), prop_name, val.type ().name ());
@@ -324,7 +324,7 @@ public abstract class Database : Object {
 			var val = Value (prop_spec.value_type);
 			entity.get_property (prop_name, ref val);
 
-			var s = prepare_value (ref val);
+			var s = prepare_value (ref val, prop_name);
 			if (s == null) {
 				warning ("Couldn't prepare the value of property '%s.%s' of type '%s' for using in SQL query",
 						entity.get_type ().name (), prop_name, val.type ().name ());

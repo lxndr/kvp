@@ -111,7 +111,7 @@ public class TaxTable : DB.ViewTable {
 
 		total_changed (tax);
 
-		/* persiste after calculations */
+		/* persiste AFTER calculations */
 		base.row_edited (tree_iter, entity, prop_name);
 	}
 }

@@ -8,15 +8,6 @@ public class TenantTable : DB.ViewTable {
 	private int foreground_model_column;
 
 
-	construct {
-/*		const Gtk.TargetEntry[] targets = {
-			{ "test", Gtk.TargetFlags.SAME_APP | Gtk.TargetFlags.OTHER_WIDGET, 0 }
-		};
-
-		enable_model_drag_dest (targets, Gdk.DragAction.LINK);*/
-	}
-
-
 	public TenantTable (Database _db) {
 		Object (db: _db,
 				object_type: typeof (Tenant));
@@ -79,24 +70,21 @@ public class TenantTable : DB.ViewTable {
 
 	protected override void row_refreshed (Gtk.TreeIter tree_iter, DB.Entity entity) {
 		unowned Tenant tenant = (Tenant) entity;
-#if 0
-		uint month_first_day = Utils.get_month_first_day (current_periodic.period.raw_value);
-		uint month_last_day = Utils.get_month_last_day (current_periodic.period.raw_value);
+
+		var first_day = current_periodic.period.first_day;
+		var last_day = current_periodic.period.last_day;
 
 		bool moved_out = false;
-		var move_out_day = tenant.move_out.get_julian ();
-		if (move_out_day > 1 && move_out_day < month_first_day)
+		if (tenant.move_out != null && tenant.move_out.compare (first_day) < 0)
 			moved_out = true;
 
 		unowned string? color = null;
-		var move_in_day = tenant.move_in.get_julian ();
-		if (moved_out == true || move_in_day == 1 || move_in_day > month_last_day)
+		if (moved_out == true || tenant.move_in == null || tenant.move_in.compare (last_day) > 0)
 			color = "grey";
 
 		list_store.set (tree_iter,
 				foreground_model_column, color,
 				strikethrough_model_column, moved_out);
-#endif
 	}
 
 
@@ -112,7 +100,7 @@ public class TenantTable : DB.ViewTable {
 
 
 	public void add_tenant (Person person) {
-		var n = db.query_count (Tenant.table_name, "account=%d AND person=%d"
+		var n = db.query_count (Tenant.table_name, "account = %d AND person = %d"
 				.printf (current_periodic.account.id, person.id));
 		if (n > 0)
 			return;

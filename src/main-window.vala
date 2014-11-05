@@ -280,13 +280,13 @@ public class MainWindow : Gtk.ApplicationWindow {
 				continue;
 
 			if (db.is_period_empty (building, period.get_prev ())) {
-				var msg = new Gtk.MessageDialog (this, Gtk.DialogFlags.MODAL,
+/*				var msg = new Gtk.MessageDialog (this, Gtk.DialogFlags.MODAL,
 						Gtk.MessageType.QUESTION, Gtk.ButtonsType.NONE,
 						_("No previous calculations for period '%s' of building '%s'."),
 						period.format (), building.full_name ());
 				msg.add_buttons (_("OK"), Gtk.ResponseType.OK);
 				msg.run ();
-				msg.destroy ();
+				msg.destroy ();*/
 				continue;
 			}
 
