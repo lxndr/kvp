@@ -17,11 +17,6 @@ public class Application : Gtk.Application {
 		Value.register_transform_func (typeof (string), typeof (bool),
 				(ValueTransform) Utils.transform_string_to_bool);
 
-		Value.register_transform_func (typeof (string), typeof (Money),
-				(ValueTransform) Utils.transform_string_to_money);
-		Value.register_transform_func (typeof (Money), typeof (string),
-				(ValueTransform) Utils.transform_money_to_string);
-
 		Value.register_transform_func (typeof (double), typeof (DB.PropertyAdapter),
 				(ValueTransform) Utils.transform_double_to_property_adapter);
 		Value.register_transform_func (typeof (DB.PropertyAdapter), typeof (double),

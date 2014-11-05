@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-11-03 22:51+0300\n"
+"POT-Creation-Date: 2014-11-05 17:34+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -98,15 +98,15 @@ msgid ""
 "them or none. Create a building if needed."
 msgstr ""
 
-#: src/application.vala:58
+#: src/application.vala:53
 msgid "Calculation sheet"
 msgstr ""
 
-#: src/application.vala:59
+#: src/application.vala:54
 msgid "Account"
 msgstr "Лицевой счёт"
 
-#: src/application.vala:60
+#: src/application.vala:55
 msgid "People and taxes"
 msgstr "Ведомость расчетов"
 
@@ -260,51 +260,51 @@ msgstr "Прибыл"
 msgid "move-out"
 msgstr "Выбыл"
 
-#: src/utils.vala:207
+#: src/utils.vala:194
 msgid "January"
 msgstr "Январь"
 
-#: src/utils.vala:208
+#: src/utils.vala:195
 msgid "February"
 msgstr "Февраль"
 
-#: src/utils.vala:209
+#: src/utils.vala:196
 msgid "March"
 msgstr "Март"
 
-#: src/utils.vala:210
+#: src/utils.vala:197
 msgid "April"
 msgstr "Апрель"
 
-#: src/utils.vala:211
+#: src/utils.vala:198
 msgid "May"
 msgstr "Май"
 
-#: src/utils.vala:212
+#: src/utils.vala:199
 msgid "June"
 msgstr "Июнь"
 
-#: src/utils.vala:213
+#: src/utils.vala:200
 msgid "July"
 msgstr "Июль"
 
-#: src/utils.vala:214
+#: src/utils.vala:201
 msgid "August"
 msgstr "Август"
 
-#: src/utils.vala:215
+#: src/utils.vala:202
 msgid "September"
 msgstr "Сентябрь"
 
-#: src/utils.vala:216
+#: src/utils.vala:203
 msgid "October"
 msgstr "Октябрь"
 
-#: src/utils.vala:217
+#: src/utils.vala:204
 msgid "November"
 msgstr "Ноябрь"
 
-#: src/utils.vala:218
+#: src/utils.vala:205
 msgid "December"
 msgstr "Декабрь"
 

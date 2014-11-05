@@ -153,17 +153,17 @@ public class Database : DB.SQLiteDatabase {
 		var query = new DB.QueryBuilder ();
 		query.select ("account_period.*, account.id AS account, %d AS period".printf (period.raw_value))
 				.from ("account LEFT JOIN account_period")
-				.on ("account.id=account_period.account AND period=%d".printf (period.raw_value));
+				.on ("account.id = account_period.account AND period = %d".printf (period.raw_value));
 
 		var period_last_day = period.last_day;
 		string where = "(opened=NULL OR opened<=%d)".printf (period_last_day.get_days ());
 		if (building != null)
-			where += " AND account.building=%d".printf (building.id);
+			where += " AND account.building = %d".printf (building.id);
 
-		if (include_closed == false) {
+/*		if (include_closed == false) {
 			var period_first_day = period.first_day;
 			where += " AND (closed=NULL OR closed>=%d)".printf (period_first_day.get_days ());
-		}
+		}*/
 		query.where (where);
 
 		return fetch_entity_list_ex (typeof (AccountPeriod), query) as Gee.List<AccountPeriod>;
@@ -178,7 +178,7 @@ public class Database : DB.SQLiteDatabase {
 
 	/**
 	 * Fetches a list of tenants fron the database.
-	 * @period: if greatee than 0 then only tenants that are actual to the @period are returned.
+	 * @period: if greater than 0 then only tenants that are actual to the @period are returned.
 	 */
 	public Gee.List<Tenant> get_tenant_list (Account account, int period) {
 		var sb = new StringBuilder.sized (64);
@@ -186,7 +186,7 @@ public class Database : DB.SQLiteDatabase {
 		if (period > 0) {
 			uint month_first_day = Utils.get_month_first_day (period);
 			uint month_last_day = Utils.get_month_last_day (period);
-			sb.append_printf (" AND (relation == 1 OR (move_in!=1 AND move_in<=%u AND (move_out=1 OR move_out>=%u)))",
+			sb.append_printf (" AND (relation = 1 OR (move_in!=1 AND move_in<=%u AND (move_out=1 OR move_out>=%u)))",
 					month_last_day, month_last_day);
 		}
 

@@ -4,9 +4,27 @@ namespace Kv {
 public class DatabaseValueAdapter : DB.ValueAdapter {
 	public DatabaseValueAdapter () {
 		base ();
-
+		register (typeof (Money), null, string_to_money, money_to_string);
 		register (typeof (Month), null, string_to_month, month_to_string);
 		register (typeof (Date), null, string_to_date, date_to_string);
+	}
+
+
+	/* Money */
+	private bool string_to_money (string? s, ref Value v) {
+		int64 val = 0;
+		if (s != null)
+			val = int64.parse (s);
+		var money = Money (val);
+		v.set_boxed (&money);
+		return true;
+	}
+
+
+	private bool money_to_string (ref Value v, out string? s) {
+		var money = (Money*) v.get_boxed ();
+		s = money->val.to_string ();
+		return true;
 	}
 
 

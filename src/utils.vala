@@ -88,19 +88,6 @@ public void transform_string_to_bool (Value src_value, ref Value dest_value) {
 }
 
 
-public void transform_string_to_money (Value src_value, ref Value dest_value) {
-	int64 n = int64.parse (src_value.get_string ());
-	var m = Money (n);
-	dest_value.set_boxed (&m);
-}
-
-
-public void transform_money_to_string (Value src_value, ref Value dest_value) {
-	Money* m = (Money*) src_value.get_boxed ();
-	dest_value.set_string (m->val.to_string ());
-}
-
-
 /*
  * Adapter <-> Date
  */

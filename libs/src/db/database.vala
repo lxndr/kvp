@@ -290,11 +290,14 @@ public abstract class Database : Object {
 				return "'%s'".printf (escape_string (s));
 		}
 
-		/* try to convert to a string using GLib Value transformator */
-		var str_val = Value (typeof (string));
-		if (val.transform (ref str_val) == false)
-			return null;
-		return str_val.get_string ();
+		string? s = null;
+		if (!value_adapter.convert_to (null, prop_name, ref val, out s)) {
+			/* try to convert to a string using GLib Value transformator */
+			var str_val = Value (typeof (string));
+			if (val.transform (ref str_val))
+				s = str_val.get_string ();
+		}
+		return s;
 	}
 
 
