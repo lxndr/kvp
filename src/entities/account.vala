@@ -39,17 +39,19 @@ public class Account : DB.SimpleEntity {
 
 
 	public override void remove () {
+		var where = "account = %d".printf (id);
+
 		db.begin_transaction ();
 		base.remove ();
-		db.delete_entity (AccountPeriod.table_name, "account=%d".printf (id));
-		db.delete_entity (Person.table_name, "account=%d".printf (id));
-		db.delete_entity (Tax.table_name, "account=%d".printf (id));
+		db.delete_entity (AccountPeriod.table_name, where);
+		db.delete_entity (Tenant.table_name, where);
+		db.delete_entity (Tax.table_name, where);
 		db.commit_transaction ();
 	}
 
 
 	public Gee.List<Tenant> get_tenant_list () {
-		return ((Database) db).get_tenant_list (this, 0);
+		return ((Database) db).get_tenant_list (this, null);
 	}
 
 

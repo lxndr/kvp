@@ -100,10 +100,13 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 
 	public int64 number_of_people () {
-		int month_last_day = period.last_day.get_days ();
+		var first_day = period.first_day;
+		var last_day = period.last_day;
+		Date.clamp_range (ref first_day, ref last_day, account.opened, account.closed);
+
 		return db.query_count (Tenant.table_name,
-				"account=%d AND move_in!=1 AND move_in<=%d AND (move_out=1 OR move_out>=%d)"
-				.printf (account.id, month_last_day, month_last_day));
+				"account = %d AND move_in IS NOT NULL AND move_in <= %d AND (move_out IS NULL OR move_out >= %d)"
+				.printf (account.id, last_day.get_days (), last_day.get_days ()));
 	}
 
 
@@ -134,7 +137,7 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 
 	public Gee.List<Tenant> get_tenant_list () {
-		return ((Database) db).get_tenant_list (account, period.raw_value);
+		return ((Database) db).get_tenant_list (account, period);
 	}
 
 

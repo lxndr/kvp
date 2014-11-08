@@ -102,8 +102,8 @@ public abstract class Database : Object {
 
 		for (var i = 0; i < n_fields; i++) {
 			unowned string? val = values[i];
-			if (val == null)
-				continue;
+//			if (val == null)
+//				continue;
 
 			unowned string prop_name = fields[i];
 			var prop = obj_class.find_property (prop_name);
@@ -121,6 +121,15 @@ public abstract class Database : Object {
 						obj = fetch_entity_full (prop_type, null, "id=%d".printf (obj_id));
 				}
 				dest_val.set_object (obj);
+			} else if (prop_type == typeof (double)) {
+				if (val != null)
+					dest_val.set_double (double.parse (val));
+			} else if (prop_type == typeof (bool)) {
+				if (val != null)
+					dest_val.set_boolean (int.parse (val) > 0);
+			} else if (prop_type == typeof (int)) {
+				if (val != null)
+					dest_val.set_int (int.parse (val));
 			} else {
 				if (!value_adapter.convert_from (null, prop_name, val, ref dest_val)) {
 					str_val.set_string (val);

@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class Tenant : DB.Entity, DB.Viewable
+public class Tenant : DB.SimpleEntity, DB.Viewable
 {
 	public Account account { get; set; }
 	public Person person { get; set; }
@@ -28,17 +28,10 @@ public class Tenant : DB.Entity, DB.Viewable
 	}
 
 
-	public override unowned string[] db_keys () {
-		const string[] keys = {
-			"account",
-			"person"
-		};
-		return keys;
-	}
-
-
 	public override unowned string[] db_fields () {
 		const string[] fields = {
+			"account",
+			"person",
 			"move_in",
 			"move_out",
 			"relation"
@@ -56,11 +49,6 @@ public class Tenant : DB.Entity, DB.Viewable
 
 	public string display_name {
 		get { return person.name; }
-	}
-
-
-	public override void remove () {
-		db.delete_entity (table_name, "account=%d AND person=%d".printf (account.id, person.id));
 	}
 }
 

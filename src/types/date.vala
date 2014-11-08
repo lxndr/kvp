@@ -23,10 +23,11 @@ public class Date {
 	public Date.now () {
 		int year;
 		int month;
+		int day;
 
 		var now = new DateTime.now_local ();
-		now.get_ymd (out year, out month, null);
-		date.set_dmy ((DateDay) 1, month, (DateYear) year);
+		now.get_ymd (out year, out month, out day);
+		date.set_dmy ((DateDay) day, month, (DateYear) year);
 	}
 
 

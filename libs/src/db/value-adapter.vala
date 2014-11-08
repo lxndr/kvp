@@ -51,7 +51,7 @@ public class ValueAdapter {
 	}
 
 
-	public bool convert_from (string? table, string? column, string s, ref Value v) {
+	public bool convert_from (string? table, string? column, string? s, ref Value v) {
 		var spec = find_spec (v.type (), table, column);
 		if (unlikely (spec == null))
 			return false;

@@ -156,7 +156,7 @@ public class Database : DB.SQLiteDatabase {
 				.on ("account.id = account_period.account AND period = %d".printf (period.raw_value));
 
 		var period_last_day = period.last_day;
-		string where = "(opened=NULL OR opened<=%d)".printf (period_last_day.get_days ());
+		string where = "(opened IS NULL OR opened <= %d)".printf (period_last_day.get_days ());
 		if (building != null)
 			where += " AND account.building = %d".printf (building.id);
 
@@ -178,16 +178,18 @@ public class Database : DB.SQLiteDatabase {
 
 	/**
 	 * Fetches a list of tenants fron the database.
-	 * @period: if greater than 0 then only tenants that are actual to the @period are returned.
+	 * @period: if null then only tenants that are actual for the @period are returned.
 	 */
-	public Gee.List<Tenant> get_tenant_list (Account account, int period) {
+	public Gee.List<Tenant> get_tenant_list (Account account, Month? period) {
 		var sb = new StringBuilder.sized (64);
-		sb.append_printf ("account=%d", account.id);
-		if (period > 0) {
-			uint month_first_day = Utils.get_month_first_day (period);
-			uint month_last_day = Utils.get_month_last_day (period);
-			sb.append_printf (" AND (relation = 1 OR (move_in!=1 AND move_in<=%u AND (move_out=1 OR move_out>=%u)))",
-					month_last_day, month_last_day);
+		sb.append_printf ("account = %d", account.id);
+
+		if (period != null) {
+			var first_day = period.first_day;
+			var last_day = period.last_day;
+			Date.clamp_range (ref first_day, ref last_day, account.opened, account.closed);
+			sb.append_printf (" AND (move_in IS NULL OR move_in <= %d) AND (move_out IS NULL OR move_out >= %d)",
+					last_day.get_days (), last_day.get_days ());
 		}
 
 		return fetch_entity_list<Tenant> (Tenant.table_name, sb.str);
