@@ -14,7 +14,7 @@ public abstract class TaxCalculation : Object {
 
 
 	public virtual Money get_price () {
-		return tax.price.value;
+		return tax.price.value1;
 	}
 
 
@@ -191,7 +191,7 @@ public class TaxFormula07 : TaxCalculation {
 		if (tax.periodic.param3)
 			return tax.price.value2;
 		else
-			return tax.price.value;
+			return tax.price.value1;
 	}
 
 

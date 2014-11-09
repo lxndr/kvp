@@ -49,7 +49,7 @@ public class Tax : DB.Entity, DB.Viewable
 	public TaxCalculation? calculation {
 		get {
 			if (_calculation == null)
-				_calculation = ((Database) db).create_tax_calculation (price.calc_id, this);
+				_calculation = ((Database) db).create_tax_calculation (price.calc_method, this);
 			return _calculation;
 		}
 	}

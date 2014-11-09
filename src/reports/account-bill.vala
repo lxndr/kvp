@@ -195,7 +195,7 @@ public class Account : Report {
 		var sb = new StringBuilder ();
 		var price_list = db.get_price_list (building, general_periodic.period);
 		foreach (var price in price_list)
-			sb.append_printf ("%s: %s\n", price.service.name, price.value.format ());
+			sb.append_printf ("%s: %s\n", price.service.name, price.value1.format ());
 		sheet.put_string ("A7", sb.str);
 
 		/* tenants */

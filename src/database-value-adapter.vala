@@ -4,26 +4,9 @@ namespace Kv {
 public class DatabaseValueAdapter : DB.ValueAdapter {
 	public DatabaseValueAdapter () {
 		base ();
-//		register (typeof (int), null, string_to_int, int_to_string);
 		register (typeof (Money), null, string_to_money, money_to_string);
 		register (typeof (Month), null, string_to_month, month_to_string);
 		register (typeof (Date), null, string_to_date, date_to_string);
-	}
-
-
-	/* Integer */
-	private bool string_to_int (string? s, ref Value v) {
-		int n = 0;
-		if (s != null)
-			n = int.parse (s);
-		v.set_int (n);
-		return true;
-	}
-
-
-	private bool int_to_string (ref Value v, out string? s) {
-		s = v.get_int ().to_string ();
-		return true;
 	}
 
 
@@ -47,10 +30,8 @@ public class DatabaseValueAdapter : DB.ValueAdapter {
 
 	/* Month */
 	private bool string_to_month (string? s, ref Value v) {
-		if (unlikely (s == null)) {
-//			v.set_pointer (null);
+		if (unlikely (s == null))
 			return true;
-		}
 
 		int result = int.parse (s);
 		var month = new Month.from_raw_value (result);
@@ -71,10 +52,8 @@ public class DatabaseValueAdapter : DB.ValueAdapter {
 
 	/* Date */
 	private bool string_to_date (string? s, ref Value v) {
-		if (s == null) {
-//			v.set_pointer (null);
+		if (s == null)
 			return true;
-		}
 
 		int result = int.parse (s);
 		var date = new Date.from_days (result);

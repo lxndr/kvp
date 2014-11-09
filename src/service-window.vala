@@ -185,10 +185,10 @@ class ServiceWindow : Gtk.Window {
 
 				var base_column = service_column_map[p.service.id];
 				model.set (iter,
-						base_column + PriceColumn.PRICE_VALUE, p.value.val,
-						base_column + PriceColumn.PRICE_TITLE, p.value.format (),
-						base_column + PriceColumn.METHOD_VALUE, p.method,
-						base_column + PriceColumn.METHOD_TITLE, method_names[p.method],
+						base_column + PriceColumn.PRICE_VALUE, p.value1.val,
+						base_column + PriceColumn.PRICE_TITLE, p.value1.format (),
+						base_column + PriceColumn.METHOD_VALUE, p.calc_method,
+//						base_column + PriceColumn.METHOD_TITLE, method_names[p.calc_method],
 						base_column + PriceColumn.METHOD_VISIBILITY, true);
 			}
 		}
