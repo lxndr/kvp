@@ -191,14 +191,10 @@ public class AccountTable : DB.ViewTable {
 	public void recalculate_period_clicked () {
 		db.begin_transaction ();
 
-		var where = "period=%u".printf (current_period.raw_value);
-		if (current_building != null)
-			where += " AND building=%d".printf (current_building.id);
-
-//		var periods = db.fetch_entity_list<AccountPeriod> (AccountPeriod.table_name, where);
-//		foreach (var account_period in periods)
-//			recalculate_period (account_period);
-//		refresh_all ();
+		var periods = ((Database) db).get_account_period_list (current_building, current_period, true);
+		foreach (var account_period in periods)
+			recalculate_period (account_period);
+		refresh_all ();
 
 		db.commit_transaction ();
 	}

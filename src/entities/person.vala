@@ -14,6 +14,14 @@ public class Person : DB.SimpleEntity, DB.Viewable
 	}
 
 
+	public override void remove () {
+		db.begin_transaction ();
+		base.remove ();
+		db.delete_entity (Tenant.table_name, "person = %d".printf (id));
+		db.commit_transaction ();
+	}
+
+
 	public static unowned string table_name = "person";
 	public override unowned string db_table () {
 		return table_name;

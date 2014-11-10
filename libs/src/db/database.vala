@@ -300,7 +300,10 @@ public abstract class Database : Object {
 		}
 
 		string? s = null;
-		if (!value_adapter.convert_to (null, prop_name, ref val, out s)) {
+		if (value_adapter.convert_to (null, prop_name, ref val, out s)) {
+			if (s == null)
+				s = "NULL";
+		} else {
 			/* try to convert to a string using GLib Value transformator */
 			var str_val = Value (typeof (string));
 			if (val.transform (ref str_val))
