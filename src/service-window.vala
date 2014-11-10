@@ -14,8 +14,7 @@ private enum PriceColumn {
 
 
 [GtkTemplate (ui = "/org/lxndr/kvp/ui/service-window.ui")]
-class ServiceWindow : Gtk.Window {
-	public Database db { get; construct set; }
+class ServiceWindow : Gtk.Window, SingletonWindow {
 	private int current_building = 1;
 	private Gee.Map<int, int> service_column_map;
 
@@ -33,15 +32,15 @@ class ServiceWindow : Gtk.Window {
 	private Gtk.ListStore method_list_store;
 
 
-	private const string method_names[] = {
+/*	private const string method_names[] = {
 		"N", "1", "Ar", "P", "Am", "F5", "F6", "F7"
-	};
+	};*/
 
 
 	construct {
 		service_column_map = new Gee.HashMap<int, int> ();
 
-		service_table = new ServiceTable (db);
+		service_table = new ServiceTable (get_database ());
 		service_table.read_only = true;
 		service_table.refresh_view ();
 		service_scrolled.add (service_table);
@@ -57,13 +56,12 @@ class ServiceWindow : Gtk.Window {
 				transient_for: parent,
 				default_width: 900,
 				default_height: 500,
-				window_position: Gtk.WindowPosition.CENTER_ON_PARENT,
-				db: _db);
+				window_position: Gtk.WindowPosition.CENTER_ON_PARENT);
 	}
 
 
 	public void update_building_list () {
-		var list = db.get_building_list ();
+		var list = get_database ().get_building_list ();
 
 		building_combo.remove_all ();
 		foreach (var building in list) {
@@ -89,7 +87,7 @@ class ServiceWindow : Gtk.Window {
 
 	private void update_service_list () {
 		Gtk.TreeViewColumn column;
-		var service_list = db.get_service_list ();
+		var service_list = get_database ().get_service_list ();
 
 		/* remove columns */
 		var columns = price_list.get_columns ();
@@ -177,8 +175,8 @@ class ServiceWindow : Gtk.Window {
 			model.append (out iter);
 			model.set (iter, 0, period, 1, period_title);
 
-			var list = db.fetch_entity_list<Price> (Price.table_name,
-					"building=%d AND period=%d".printf (current_building, period));
+			var list = get_database ().fetch_entity_list<Price> (Price.table_name,
+					"building = %d AND period = %d".printf (current_building, period));
 			foreach (var p in list) {
 				if (p == null)
 					continue;
@@ -241,17 +239,17 @@ class ServiceWindow : Gtk.Window {
 					base_column + PriceColumn.METHOD_VALUE, 0,
 					base_column + PriceColumn.METHOD_VISIBILITY, false);
 
-			db.delete_entity (Price.table_name,
+			get_database ().delete_entity (Price.table_name,
 					"building=%d AND period=%d AND service=%d"
 					.printf (current_building, period, service));
 		} else {
 			var m = Money (price);
 			model.set (tree_iter,
 					base_column + PriceColumn.PRICE_TITLE, m.format (),
-					base_column + PriceColumn.METHOD_TITLE, method_names[method],
+//					base_column + PriceColumn.METHOD_TITLE, method_names[method],
 					base_column + PriceColumn.METHOD_VISIBILITY, true);
 
-			db.exec_sql (("REPLACE INTO %s VALUES (%d, %d, %d, %" + int64.FORMAT + ", %d)")
+			get_database ().exec_sql (("REPLACE INTO %s VALUES (%d, %d, %d, %" + int64.FORMAT + ", %d)")
 					.printf (Price.table_name, current_building, period, service, price, method), null);
 		}
 	}
