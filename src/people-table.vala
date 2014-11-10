@@ -39,6 +39,9 @@ public class PeopleTable : DB.ViewTable {
 			ParamSpec prop, int model_column) {
 		base.create_list_column (column, out cell, prop, model_column);
 
+		if (prop.name == "name")
+			column.expand = true;
+
 		column.sort_column_id = model_column;
 	}
 

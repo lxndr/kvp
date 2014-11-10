@@ -31,6 +31,18 @@ public class Date {
 	}
 
 
+	public static Date? parse (string str) {
+		var tmp = GLib.Date ();
+		tmp.set_parse (str);
+		if (!tmp.valid ())
+			return null;
+
+		var date = new Date ();
+		date.date = tmp;
+		return date;
+	}
+
+
 	public int get_days () {
 		return (int) date.get_julian ();
 	}

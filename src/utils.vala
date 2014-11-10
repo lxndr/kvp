@@ -102,12 +102,10 @@ public void transform_date_to_property_adapter (Value src_value, ref Value dest_
 
 public void transform_property_adapter_to_date (Value src_value, ref Value dest_value) {
 	var ad = (DB.PropertyAdapter*) src_value.get_boxed ();
-	var date = GLib.Date ();
-	if (ad.val != null)
-		date.set_parse (ad.val);
-	if (date.valid () == false)
-		date.set_julian (1);
-	dest_value.set_boxed (&date);
+
+	var date = Date.parse (ad.val);
+	if (date != null)
+		dest_value.set_instance (date);
 }
 
 

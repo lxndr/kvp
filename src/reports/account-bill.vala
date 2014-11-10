@@ -61,11 +61,11 @@ private class AccountReportParameters : Gtk.Dialog {
 
 
 	public int start_month () {
-		return (int) from_year_month.month;
+		return from_year_month.month.raw_value;
 	}
 
 	public int end_month () {
-		return (int) to_year_month.month;
+		return to_year_month.month.raw_value;
 	}
 }
 

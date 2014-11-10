@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-11-05 20:27+0300\n"
+"POT-Creation-Date: 2014-11-10 21:09+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -98,17 +98,17 @@ msgid ""
 "them or none. Create a building if needed."
 msgstr ""
 
-#: src/application.vala:53
+#: src/application.vala:55
+msgid "Tenant list"
+msgstr ""
+
+#: src/application.vala:56
 msgid "Calculation sheet"
 msgstr ""
 
-#: src/application.vala:54
+#: src/application.vala:57
 msgid "Account"
 msgstr "Лицевой счёт"
-
-#: src/application.vala:55
-msgid "People and taxes"
-msgstr "Ведомость расчетов"
 
 #: src/building-table.vala:7
 msgid "location"
@@ -171,7 +171,7 @@ msgstr "Женщина"
 msgid "Add to tenants"
 msgstr "К списку жильцов"
 
-#: src/people-window.vala:13
+#: src/people-window.vala:12
 msgid "Reference - People"
 msgstr "Справочник - Люди"
 
@@ -251,51 +251,51 @@ msgstr "Прибыл"
 msgid "move-out"
 msgstr "Выбыл"
 
-#: src/utils.vala:194
+#: src/utils.vala:192
 msgid "January"
 msgstr "Январь"
 
-#: src/utils.vala:195
+#: src/utils.vala:193
 msgid "February"
 msgstr "Февраль"
 
-#: src/utils.vala:196
+#: src/utils.vala:194
 msgid "March"
 msgstr "Март"
 
-#: src/utils.vala:197
+#: src/utils.vala:195
 msgid "April"
 msgstr "Апрель"
 
-#: src/utils.vala:198
+#: src/utils.vala:196
 msgid "May"
 msgstr "Май"
 
-#: src/utils.vala:199
+#: src/utils.vala:197
 msgid "June"
 msgstr "Июнь"
 
-#: src/utils.vala:200
+#: src/utils.vala:198
 msgid "July"
 msgstr "Июль"
 
-#: src/utils.vala:201
+#: src/utils.vala:199
 msgid "August"
 msgstr "Август"
 
-#: src/utils.vala:202
+#: src/utils.vala:200
 msgid "September"
 msgstr "Сентябрь"
 
-#: src/utils.vala:203
+#: src/utils.vala:201
 msgid "October"
 msgstr "Октябрь"
 
-#: src/utils.vala:204
+#: src/utils.vala:202
 msgid "November"
 msgstr "Ноябрь"
 
-#: src/utils.vala:205
+#: src/utils.vala:203
 msgid "December"
 msgstr "Декабрь"
 
@@ -363,7 +363,7 @@ msgstr "Следующий месяц"
 msgid "A person"
 msgstr "Человек"
 
-#: src/reports/report-003.vala:32
+#: src/reports/calculation-sheet.vala:32
 #, c-format
 msgid "for %s %d year"
 msgstr "за %s %d г."
@@ -421,6 +421,9 @@ msgstr "Добавить"
 #: libs/src/db-gtk/view-table.vala:107
 msgid "Remove"
 msgstr "Удалить"
+
+#~ msgid "People and taxes"
+#~ msgstr "Ведомость расчетов"
 
 #~ msgid "List of the tenants"
 #~ msgstr "Список жилцов"

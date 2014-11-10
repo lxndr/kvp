@@ -1,8 +1,7 @@
 namespace Kv {
 
 
-public class PeopleWindow : Gtk.Window {
-	public Database db { get; construct set; }
+public class PeopleWindow : Gtk.Window, SingletonWindow {
 	private PeopleTable view_table;
 
 
@@ -11,8 +10,10 @@ public class PeopleWindow : Gtk.Window {
 
 	construct {
 		title = _("Reference - People");
+		default_width = 500;
+		default_height = 300;
 
-		view_table = new PeopleTable (db);
+		view_table = new PeopleTable (get_database ());
 		view_table.refresh_view ();
 		view_table.add_to_tenants.connect ((person) => {
 			add_to_tenants (person);
@@ -26,13 +27,12 @@ public class PeopleWindow : Gtk.Window {
 	}
 
 
-	public PeopleWindow (Gtk.Window parent, Database _db) {
+	public PeopleWindow (Gtk.Window parent) {
 		Object (type: Gtk.WindowType.TOPLEVEL,
 				transient_for: parent,
 				default_width: 500,
 				default_height: 300,
-				window_position: Gtk.WindowPosition.CENTER_ON_PARENT,
-				db: _db);
+				window_position: Gtk.WindowPosition.CENTER_ON_PARENT);
 	}
 }
 

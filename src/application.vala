@@ -28,6 +28,8 @@ public class Application : Gtk.Application {
 
 		Value.register_transform_func (typeof (Date), typeof (DB.PropertyAdapter),
 				(ValueTransform) Utils.transform_date_to_property_adapter);
+		Value.register_transform_func (typeof (DB.PropertyAdapter), typeof (Date),
+				(ValueTransform) Utils.transform_property_adapter_to_date);
 	}
 
 
@@ -50,9 +52,9 @@ public class Application : Gtk.Application {
 		}
 
 		/* reports */
+		reports[_("Tenant list")] = typeof (Reports.TenantList);
 		reports[_("Calculation sheet")] = typeof (Reports.CalculationSheet);
 		reports[_("Account")] = typeof (Reports.Account);
-		reports[_("People and taxes")] = typeof (Report003);
 
 		/* database */
 		var db = new Database (File.new_for_path ("./kvartplata.db"));

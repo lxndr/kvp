@@ -152,6 +152,9 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 		var last_day = period.last_day;
 		Date.clamp_range (ref first_day, ref last_day, account.opened, account.closed);
 
+		if (first_day == null)
+			return 0.0;
+
 		var days = first_day.diff (last_day) + 1;
 		var days_in_month = period.month.get_days_in_month (period.year);
 		return (double) days / (double) days_in_month;

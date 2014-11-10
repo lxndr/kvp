@@ -227,7 +227,7 @@ public class Database : DB.SQLiteDatabase {
 
 	public Gee.List<AccountPeriod> get_account_periods (Account account, int start_period, int end_period) {
 		return fetch_entity_list<AccountPeriod> (AccountPeriod.table_name,
-				("account=%d AND period>=%d AND period<=%d")
+				("account = %d AND period >= %d AND period <= %d")
 				.printf (account.id, start_period, end_period));
 	}
 }
