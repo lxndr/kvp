@@ -18,9 +18,9 @@ public class Account : DB.SimpleEntity {
 	public override unowned string[] db_fields () {
 		const string[] fields = {
 			"building",
-			"number",
 			"opened",
 			"closed",
+			"number",
 			"comment"
 		};
 		return fields;

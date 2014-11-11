@@ -104,6 +104,9 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 		var last_day = period.last_day;
 		Date.clamp_range (ref first_day, ref last_day, account.opened, account.closed);
 
+		if (last_day == null)
+			return 0;
+
 		return db.query_count (Tenant.table_name,
 				"account = %d AND move_in IS NOT NULL AND move_in <= %d AND (move_out IS NULL OR move_out >= %d)"
 				.printf (account.id, last_day.get_days (), last_day.get_days ()));

@@ -155,46 +155,4 @@
       </object>
     </child>
   </template>
-  <object class="GtkListStore" id="method_list_store">
-    <columns>
-      <!-- column-name name -->
-      <column type="gchararray"/>
-      <!-- column-name method -->
-      <column type="gint"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">Р</col>
-        <col id="1">0</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">1</col>
-        <col id="1">1</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">П</col>
-        <col id="1">2</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Ч</col>
-        <col id="1">3</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">К</col>
-        <col id="1">4</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Ф5</col>
-        <col id="1">5</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Ф6</col>
-        <col id="1">6</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Ф7</col>
-        <col id="1">7</col>
-      </row>
-    </data>
-  </object>
 </interface>

@@ -18,26 +18,17 @@ class ServiceWindow : Gtk.Window, SingletonWindow {
 	private int current_building = 1;
 	private Gee.Map<int, int> service_column_map;
 
-	[GtkChild]
-	private Gtk.ScrolledWindow service_scrolled;
+	[GtkChild] private Gtk.ScrolledWindow service_scrolled;
 	private ServiceTable service_table;
+	[GtkChild] private Gtk.ComboBoxText building_combo;
+	[GtkChild] private Gtk.TreeView price_list;
 
-	[GtkChild]
-	private Gtk.ComboBoxText building_combo;
-
-	[GtkChild]
-	private Gtk.TreeView price_list;
-
-	[GtkChild]
 	private Gtk.ListStore method_list_store;
 
 
-/*	private const string method_names[] = {
-		"N", "1", "Ar", "P", "Am", "F5", "F6", "F7"
-	};*/
-
-
 	construct {
+		method_list_store = new Gtk.ListStore (2, typeof (string), typeof (TaxCalculation));
+
 		service_column_map = new Gee.HashMap<int, int> ();
 
 		service_table = new ServiceTable (get_database ());
@@ -214,7 +205,7 @@ class ServiceWindow : Gtk.Window, SingletonWindow {
 		int service = cell.get_data<int> ("service");
 		int base_column = service_column_map[service];
 
-		int method;
+		TaxCalculation method;
 		method_list_store.get (combo_tree_iter, 1, out method);
 
 		Gtk.TreeIter tree_iter;
@@ -243,7 +234,7 @@ class ServiceWindow : Gtk.Window, SingletonWindow {
 					base_column + PriceColumn.METHOD_VISIBILITY, false);
 
 			get_database ().delete_entity (Price.table_name,
-					"building=%d AND period=%d AND service=%d"
+					"building = %d AND period = %d AND service = %d"
 					.printf (current_building, period, service));
 		} else {
 			unowned string? method_name = "-";
