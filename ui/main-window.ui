@@ -155,7 +155,6 @@
                     </child>
                     <child>
                       <object class="GtkMenuButton" id="menubutton2">
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="popup">filter_menu</property>

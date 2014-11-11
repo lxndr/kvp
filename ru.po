@@ -100,11 +100,11 @@ msgstr ""
 
 #: src/application.vala:55
 msgid "Tenant list"
-msgstr ""
+msgstr "Список жильцов"
 
 #: src/application.vala:56
 msgid "Calculation sheet"
-msgstr ""
+msgstr "Ведомость расчетов"
 
 #: src/application.vala:57
 msgid "Account"
@@ -123,9 +123,8 @@ msgid "Reference - Buildings"
 msgstr "Справочник - Здания"
 
 #: src/main-window.vala:95
-#, fuzzy
 msgid "No buildings"
-msgstr "Все здания"
+msgstr "Нет зданий"
 
 #: src/main-window.vala:99
 msgid "All buildings"
@@ -144,16 +143,15 @@ msgstr ""
 
 #: src/main-window.vala:297
 msgid "Yes"
-msgstr ""
+msgstr "Да"
 
 #: src/main-window.vala:298
 msgid "No"
-msgstr ""
+msgstr "Нет"
 
 #: src/main-window.vala:299
-#, fuzzy
 msgid "Cancel"
-msgstr "Остаток"
+msgstr "Отмена"
 
 #: src/people-table.vala:10 src/service-table.vala:8 src/tenant-table.vala:32
 msgid "name"
@@ -185,7 +183,7 @@ msgstr "Год, месяц"
 
 #: src/tax-calculation.vala:36
 msgid "Pr"
-msgstr ""
+msgstr "Ст"
 
 #: src/tax-calculation.vala:37
 msgid "total = price"
@@ -217,7 +215,7 @@ msgstr ""
 
 #: src/tax-calculation.vala:185
 msgid "Ts"
-msgstr ""
+msgstr "Жд"
 
 #: src/tax-calculation.vala:186
 msgid "total = tenant_coef * ?(shower, price2, price1)"
@@ -421,9 +419,3 @@ msgstr "Добавить"
 #: libs/src/db-gtk/view-table.vala:107
 msgid "Remove"
 msgstr "Удалить"
-
-#~ msgid "People and taxes"
-#~ msgstr "Ведомость расчетов"
-
-#~ msgid "List of the tenants"
-#~ msgstr "Список жилцов"
