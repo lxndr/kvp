@@ -77,6 +77,9 @@ public class AccountTable : DB.ViewTable {
 			cell.set ("xalign", 1.0f);
 		if (prop.name == "balance")
 			column.add_attribute (cell, "foreground", balance_foreground_model_column);
+
+		if (prop.name == "tenant")
+			column.sort_column_id = model_column;
 	}
 
 
@@ -190,13 +193,11 @@ public class AccountTable : DB.ViewTable {
 
 	public void recalculate_period_clicked () {
 		db.begin_transaction ();
-
 		var periods = ((Database) db).get_account_period_list (current_building, current_period, true);
 		foreach (var account_period in periods)
 			recalculate_period (account_period);
-		refresh_all ();
-
 		db.commit_transaction ();
+		refresh_all ();
 	}
 }
 

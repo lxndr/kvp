@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-11-10 23:50+0300\n"
+"POT-Creation-Date: 2014-11-11 14:02+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -91,7 +91,7 @@ msgstr "Пересчитать"
 msgid "Recalculate this period"
 msgstr "Пересчитать весь месяц"
 
-#: src/account-table.vala:87
+#: src/account-table.vala:90
 msgid ""
 "Every account has to be related to a building. Only one building has to be "
 "currently selected to add a new account. You have selected either all of "

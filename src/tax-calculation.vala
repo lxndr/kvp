@@ -2,7 +2,7 @@ namespace Kv {
 
 
 public abstract class TaxCalculation : Object {
-	public Tax tax { get; construct set; }
+	public Tax? tax { get; construct set; }
 	public unowned string name { get; protected set; }
 	public unowned string desc { get; protected set; }
 

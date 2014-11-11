@@ -103,11 +103,11 @@ class ServiceWindow : Gtk.Window, SingletonWindow {
 		types += typeof (string);
 
 		foreach (var service in service_list) {
-			types += typeof (int);
-			types += typeof (string);
-			types += typeof (int);
-			types += typeof (string);
-			types += typeof (bool);
+			types += typeof (int);				/* price value */
+			types += typeof (string);			/* price title */
+			types += typeof (TaxCalculation);	/* method value */
+			types += typeof (string);			/* title */
+			types += typeof (bool);				/* method visibility */
 		}
 
 		price_list.model = new Gtk.ListStore.newv (types);
@@ -181,12 +181,14 @@ class ServiceWindow : Gtk.Window, SingletonWindow {
 				if (p == null)
 					continue;
 
+				var method = get_database ().create_tax_calculation (p.calc_method, null);
+
 				var base_column = service_column_map[p.service.id];
 				model.set (iter,
 						base_column + PriceColumn.PRICE_VALUE, p.value1.val,
 						base_column + PriceColumn.PRICE_TITLE, p.value1.format (),
-						base_column + PriceColumn.METHOD_VALUE, p.calc_method,
-//						base_column + PriceColumn.METHOD_TITLE, method_names[p.calc_method],
+						base_column + PriceColumn.METHOD_VALUE, method,
+						base_column + PriceColumn.METHOD_TITLE, method.name,
 						base_column + PriceColumn.METHOD_VISIBILITY, true);
 			}
 		}
@@ -225,7 +227,8 @@ class ServiceWindow : Gtk.Window, SingletonWindow {
 
 
 	private void value_changed (Gtk.ListStore model, Gtk.TreeIter tree_iter, int service) {
-		int period, price, method;
+		int period, price;
+		TaxCalculation method;
 		int base_column = service_column_map[service];
 
 		model.get (tree_iter, 0, out period,
@@ -243,14 +246,21 @@ class ServiceWindow : Gtk.Window, SingletonWindow {
 					"building=%d AND period=%d AND service=%d"
 					.printf (current_building, period, service));
 		} else {
+			unowned string? method_name = "-";
+			string method_id = "NULL";
+			if (method != null) {
+				method_name = method.name;
+				method_id = "'%s'".printf (method.get_id ());
+			}
+
 			var m = Money (price);
 			model.set (tree_iter,
 					base_column + PriceColumn.PRICE_TITLE, m.format (),
-//					base_column + PriceColumn.METHOD_TITLE, method_names[method],
+					base_column + PriceColumn.METHOD_TITLE, method_name,
 					base_column + PriceColumn.METHOD_VISIBILITY, true);
 
-			get_database ().exec_sql (("REPLACE INTO %s VALUES (%d, %d, %d, %" + int64.FORMAT + ", %d)")
-					.printf (Price.table_name, current_building, period, service, price, method), null);
+			get_database ().exec_sql (("REPLACE INTO %s VALUES (%d, %d, %d, %" + int64.FORMAT + ", 0, %s)")
+					.printf (Price.table_name, current_building, period, service, price, method_id), null);
 		}
 	}
 }
