@@ -100,11 +100,11 @@ public class TenantTable : DB.ViewTable {
 
 
 	public void add_tenant (Person person) {
-		var n = db.query_count (Tenant.table_name, "account = %d AND person = %d"
+/*		var n = db.query_count (Tenant.table_name, "account = %d AND person = %d"
 				.printf (current_periodic.account.id, person.id));
 		if (n > 0)
 			return;
-
+*/
 		var tenant = new Tenant (db, current_periodic.account, person);
 		tenant.persist ();
 		refresh_view ();

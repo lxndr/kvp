@@ -3,7 +3,7 @@ namespace Kv.Reports {
 
 public class CalculationSheet : Report {
 	const int service_ids[] = {
-		5, 6, 1, 7, 8, 4, 9
+		5, 6, 4, 1, 2, 3, 7, 9
 	};
 
 
@@ -21,16 +21,19 @@ public class CalculationSheet : Report {
 		var sheet = book.sheet (0);
 
 		/* save sheet styles */
-		uint cstyles[17];
-		for (var i = 0; i < 17; i++)
-			cstyles[i] = sheet.get_row (11).get_cell (i + 1).style;
-		uint estyles[17];
-		for (var i = 0; i < 17; i++)
-			estyles[i] = sheet.get_row (12).get_cell (i + 1).style;
+		uint cstyles[18];
+		for (var i = 0; i < 18; i++)
+			cstyles[i] = sheet.get_row (12).get_cell (i + 1).style;
+		uint estyles[18];
+		for (var i = 0; i < 18; i++)
+			estyles[i] = sheet.get_row (13).get_cell (i + 1).style;
 
 		/* month */
 		sheet.put_string ("A2", _("for %s %d year")
 				.printf (Utils.month_to_string (selected_account.period.raw_value % 12).down (), selected_account.period.raw_value / 12));
+
+		/* address */
+		sheet.put_string ("A3", "Address");
 
 		/* tax prices */
 		var prices = db.fetch_int_int64_map (Price.table_name, "service", "value1",
@@ -38,21 +41,22 @@ public class CalculationSheet : Report {
 		foreach (var id in service_ids)
 			if (prices[id] == null) prices[id] = 0;
 
-		sheet.put_number ("D3", Money (prices[5]).to_real ());
-		sheet.put_number ("D4", Money (prices[6]).to_real ());
-		sheet.put_number ("D5", Money (prices[1]).to_real ());
-		sheet.put_number ("D6", Money (prices[7]).to_real ());
-		sheet.put_number ("J3", Money (prices[8]).to_real ());
-		sheet.put_number ("J4", Money (prices[4]).to_real ());
-		sheet.put_number ("J5", Money (prices[9]).to_real ());
+		sheet.put_number ("D4", Money (prices[5]).to_real ());
+		sheet.put_number ("D5", Money (prices[6]).to_real ());
+		sheet.put_number ("D6", Money (prices[4]).to_real ());
+		sheet.put_number ("D7", Money (prices[1]).to_real ());
+		sheet.put_number ("J4", Money (prices[2]).to_real ());
+		sheet.put_number ("J5", Money (prices[3]).to_real ());
+		sheet.put_number ("J6", Money (prices[7]).to_real ());
+		sheet.put_number ("J7", Money (prices[9]).to_real ());
 
 		/*  */
 		var accounts = db.get_account_list (selected_account.account.building);
 		OOXML.Row row = sheet.get_row(1);
-		int row_number = 10;
+		int row_number = 11;
 
-		int64 totals[17];
-		for (var i = 0; i < 17; i++)
+		int64 totals[18];
+		for (var i = 0; i < 18; i++)
 			totals[i] = 0;
 
 		foreach (var ac in accounts) {
@@ -74,11 +78,11 @@ public class CalculationSheet : Report {
 			row.get_cell (6).put_string (n_people.to_string ()).style = cstyles[5];
 
 			var taxes = db.fetch_int_int64_map (Tax.table_name, "service", "total",
-					"account=%d AND period=%d".printf (ac.id, selected_account.period.raw_value));
+					"account = %d AND period = %d".printf (ac.id, selected_account.period.raw_value));
 
 			OOXML.Cell cell;
 
-			for (var i = 0; i < 7; i++) {
+			for (var i = 0; i < 8; i++) {
 				var id = service_ids[i];
 				var val = taxes[id];
 
@@ -92,34 +96,34 @@ public class CalculationSheet : Report {
 
 			int64 val;
 			val = periodic.total.val;
-			totals[13] += val;
-			cell = row.get_cell (14);
-			cell.put_number (Money (val).to_real ());
-			cell.style = cstyles[13];
-
-			val = periodic.payment.val;
 			totals[14] += val;
 			cell = row.get_cell (15);
 			cell.put_number (Money (val).to_real ());
 			cell.style = cstyles[14];
 
-			val = periodic.previuos_balance ().val;
+			val = periodic.payment.val;
 			totals[15] += val;
 			cell = row.get_cell (16);
 			cell.put_number (Money (val).to_real ());
 			cell.style = cstyles[15];
 
-			val = periodic.balance.val;
+			val = periodic.previuos_balance ().val;
 			totals[16] += val;
 			cell = row.get_cell (17);
 			cell.put_number (Money (val).to_real ());
 			cell.style = cstyles[16];
 
+			val = periodic.balance.val;
+			totals[17] += val;
+			cell = row.get_cell (18);
+			cell.put_number (Money (val).to_real ());
+			cell.style = cstyles[17];
+
 			row_number++;
 		}
 
 		/* totals and ending style */
-		for (var i = 0; i < 17; i++) {
+		for (var i = 0; i < 18; i++) {
 			row = sheet.get_row (row_number);
 			var cell = row.get_cell (i+1);
 			cell.style = estyles[i];
