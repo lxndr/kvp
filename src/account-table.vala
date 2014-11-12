@@ -197,7 +197,7 @@ public class AccountTable : DB.ViewTable {
 		foreach (var account_period in periods)
 			recalculate_period (account_period);
 		db.commit_transaction ();
-		refresh_all ();
+		refresh_view ();
 	}
 }
 
