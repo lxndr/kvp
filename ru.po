@@ -391,7 +391,6 @@ msgid "Kvartplata"
 msgstr "Квартплата"
 
 #: ui/main-window.ui:123
-#, fuzzy
 msgid "Building"
 msgstr "Здания"
 
