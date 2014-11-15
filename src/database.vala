@@ -104,11 +104,11 @@ public class Database : DB.SQLiteDatabase {
 				.printf (AccountPeriod.table_name, period.raw_value, from, prev_period.raw_value), null);
 
 		/* a little bit more tricky */
-		var price_list = get_price_list (building, period);
-		foreach (var price in price_list) {
+		var service_list = get_period_services (building, period);
+		foreach (var service_id in service_list) {
 			from = form_table_name_for_building (building, Tax.table_name);
 			exec_sql ("INSERT INTO %s SELECT account,%u,service,apply,amount,total FROM %s WHERE period=%u AND service=%d"
-					.printf (Tax.table_name, period.raw_value, from, prev_period.raw_value, price.service.id), null);
+					.printf (Tax.table_name, period.raw_value, from, prev_period.raw_value, service_id), null);
 		}
 
 		commit_transaction ();
@@ -196,12 +196,28 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.List<Price> get_price_list (Building? building, Month period) {
-		string where = "period = %d".printf (period.raw_value);
-		if (building != null)
-			where += " AND building = %d".printf (building.id);
+	/*
+	 * Determine active services for a particular period.
+	 */
+	public Gee.List<int> get_period_services (Building building, Month period) {
+		return fetch_int_list (Price.table_name, "DISTINCT service",
+				"building = %d AND (first_day IS NULL OR first_day <= %d) AND (last_day IS NULL OR last_day >= %d)"
+				.printf (building.id, period.last_day.get_days (), period.first_day.get_days ()));
+	}
 
-		return fetch_entity_list<Price> (Price.table_name, where);
+
+	public Gee.List<Price> get_price_list (Building? building, Service? service, Month? period) {
+		string[] where = {};
+
+		if (building != null)
+			where += "building = %d".printf (building.id);
+		if (service != null)
+			where += "service = %d".printf (service.id);
+		if (period != null)
+			where += "(first_day IS NULL OR first_day <= %d) AND (last_day IS NULL OR last_day >= %d)"
+			.printf (period.last_day.get_days (), period.last_day.get_days ());
+
+		return fetch_entity_list<Price> (Price.table_name, string.joinv (" AND ", where));
 	}
 
 

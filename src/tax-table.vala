@@ -92,7 +92,7 @@ public class TaxTable : DB.ViewTable {
 		list_store.set (tree_iter,
 				foreground_model_column, color,
 				strikethrough_model_column, !apply,
-				visible_model_column, tax.price.calc_method != null);
+				visible_model_column, tax.price.method != null);
 	}
 
 

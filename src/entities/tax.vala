@@ -1,8 +1,7 @@
 namespace Kv {
 
 
-public class Tax : DB.Entity, DB.Viewable
-{
+public class Tax : DB.Entity, DB.Viewable {
 	public Account account { get; set; }
 	public Month period { get; set; }
 	public Service service { get; set; }
@@ -17,7 +16,7 @@ public class Tax : DB.Entity, DB.Viewable
 
 
 	private Price _price;
-	public unowned Price price {
+	public Price price {
 		get {
 			if (_price == null && account != null && period.raw_value > 0 && service != null)
 				_price = service.get_price (account.building, period);
@@ -27,7 +26,7 @@ public class Tax : DB.Entity, DB.Viewable
 
 
 	private AccountPeriod _periodic;
-	public unowned AccountPeriod periodic {
+	public AccountPeriod periodic {
 		get {
 			if (_periodic == null)
 				_periodic = account.fetch_period (period);
@@ -49,7 +48,7 @@ public class Tax : DB.Entity, DB.Viewable
 	public TaxCalculation? calculation {
 		get {
 			if (_calculation == null)
-				_calculation = ((Database) db).create_tax_calculation (price.calc_method, this);
+				_calculation = ((Database) db).create_tax_calculation (price.method, this);
 			return _calculation;
 		}
 	}

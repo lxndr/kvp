@@ -253,6 +253,21 @@ public abstract class Database : Object {
 	}
 
 
+	public Gee.List<int> fetch_int_list (string table, string column, string? where = null) {
+		var qb = build ();
+		qb.select (column).from (table);
+		if (where != null)
+			qb.where (where);
+
+		var list = new Gee.ArrayList<int> ();
+		exec_sql (qb.get_query (), (n_columns, values, column_names) => {
+			list.add (int.parse (values[0] ?? "0"));
+			return 0;
+		});
+		return list;
+	}
+
+
 	public void delete_entity (string table, string where) {
 		exec_sql ("DELETE FROM %s WHERE %s".printf (table, where), null);
 	}

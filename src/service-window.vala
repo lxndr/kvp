@@ -172,7 +172,7 @@ class ServiceWindow : Gtk.Window, SingletonWindow {
 				if (p == null)
 					continue;
 
-				var method = get_database ().create_tax_calculation (p.calc_method, null);
+				var method = get_database ().create_tax_calculation (p.method, null);
 
 				var base_column = service_column_map[p.service.id];
 				model.set (iter,
