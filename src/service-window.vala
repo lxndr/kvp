@@ -1,18 +1,6 @@
 namespace Kv {
 
 
-[Compact]
-private enum PriceColumn {
-	PRICE_VALUE,
-	PRICE_TITLE,
-	METHOD_VALUE,
-	METHOD_TITLE,
-	METHOD_VISIBILITY,
-	COUNT
-}
-
-
-
 [GtkTemplate (ui = "/org/lxndr/kvp/ui/service-window.ui")]
 class ServiceWindow : Gtk.Window, SingletonWindow {
 	private int current_building = 1;
@@ -21,9 +9,8 @@ class ServiceWindow : Gtk.Window, SingletonWindow {
 	[GtkChild] private Gtk.ScrolledWindow service_scrolled;
 	private ServiceTable service_table;
 	[GtkChild] private Gtk.ComboBoxText building_combo;
-	[GtkChild] private Gtk.TreeView price_list;
-
-	private Gtk.ListStore method_list_store;
+	[GtkChild] private Gtk.ScrolledWindow price_scrolled;
+	private ServiceTable price_table;
 
 
 	construct {
@@ -37,7 +24,10 @@ class ServiceWindow : Gtk.Window, SingletonWindow {
 		service_scrolled.add (service_table);
 		service_scrolled.show_all ();
 
-		update_service_list ();
+		price_table = new PriceTable (get_database ());
+		price_scrolled.add (price_table);
+		price_scrolled.show_al ();
+
 		update_building_list ();
 	}
 
@@ -73,76 +63,6 @@ class ServiceWindow : Gtk.Window, SingletonWindow {
 			current_building = int.parse (building_combo.active_id);
 
 		update_price_list ();
-	}
-
-
-	private void update_service_list () {
-		Gtk.TreeViewColumn column;
-		var service_list = get_database ().get_service_list ();
-
-		/* remove columns */
-		var columns = price_list.get_columns ();
-		unowned List<unowned Gtk.TreeViewColumn> icolumn = columns;
-		while (icolumn != null) {
-			price_list.remove_column (icolumn.data);
-			icolumn = icolumn.next;
-		}
-
-		/* store */
-		Type[] types = {};
-		types += typeof (int);
-		types += typeof (string);
-
-		foreach (var service in service_list) {
-			types += typeof (int);				/* price value */
-			types += typeof (string);			/* price title */
-			types += typeof (TaxCalculation);	/* method value */
-			types += typeof (string);			/* title */
-			types += typeof (bool);				/* method visibility */
-		}
-
-		price_list.model = new Gtk.ListStore.newv (types);
-
-		/* month column */
-		var text_cell = new Gtk.CellRendererText ();
-		text_cell.set ("background", "grey95");
-		column = new Gtk.TreeViewColumn.with_attributes (_("Year, month"), text_cell, "text", 1);
-		price_list.append_column (column);
-
-		/* service list */
-		var base_column = 2;
-		foreach (var service in service_list) {
-			column = new Gtk.TreeViewColumn ();
-			column.set ("title", service.name,
-						"resizable", true);
-
-			text_cell = new Gtk.CellRendererText ();
-			text_cell.set ("editable", true,
-							"xalign", 1.0,
-							"xpad", 3);
-			text_cell.set_data<int> ("service", service.id);
-			text_cell.edited.connect (price_edited);
-			column.pack_start (text_cell, true);
-			column.add_attribute (text_cell, "text", base_column + PriceColumn.PRICE_TITLE);
-
-			var combo_cell = new Gtk.CellRendererCombo ();
-			combo_cell.set ("editable", true,
-							"has_entry", false,
-							"model", method_list_store,
-							"text-column", 0,
-							"weight", 700,
-							"width", 25,
-							"xpad", 3);
-			combo_cell.set_data<int> ("service", service.id);
-			combo_cell.changed.connect (method_changed);
-			column.pack_start (combo_cell, false);
-			column.add_attribute (combo_cell, "text", base_column + PriceColumn.METHOD_TITLE);
-			column.add_attribute (combo_cell, "visible", base_column + PriceColumn.METHOD_VISIBILITY);
-
-			price_list.append_column (column);
-			service_column_map[service.id] = base_column;
-			base_column += PriceColumn.COUNT;
-		}
 	}
 
 

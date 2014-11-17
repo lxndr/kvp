@@ -206,7 +206,7 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public Gee.List<Price> get_price_list (Building? building, Service? service, Month? period) {
+	public Gee.List<Price> get_price_list (Building? building, Month? period, Service? service) {
 		string[] where = {};
 
 		if (building != null)
@@ -226,12 +226,11 @@ public class Database : DB.SQLiteDatabase {
 		unowned Building building = account.building;
 		unowned Month period = periodic.period;
 
-		var prices = fetch_entity_list<Price> (Price.table_name,
-				("building=%d AND period=%d").printf (building.id, period.raw_value));
+		var prices = get_price_list (building, period, null);
 		var list = new Gee.ArrayList<Tax> ();
 		foreach (var price in prices) {
 			var tax = fetch_entity<Tax> (Tax.table_name,
-					("account=%d AND period=%d AND service=%d")
+					("account = %d AND period = %d AND service = %d")
 					.printf (account.id, period.raw_value, price.service.id));
 			if (tax == null)
 				tax = new Tax (this, account, period, price.service);
