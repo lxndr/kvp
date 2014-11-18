@@ -52,10 +52,16 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkComboBoxText" id="building_combo">
+                  <object class="GtkComboBox" id="building_combo">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <signal name="changed" handler="building_changed" swapped="no"/>
+                    <child>
+                      <object class="GtkCellRendererText" id="cellrenderertext1"/>
+                      <attributes>
+                        <attribute name="text">0</attribute>
+                      </attributes>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">True</property>

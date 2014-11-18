@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-11-12 10:43+0300\n"
+"POT-Creation-Date: 2014-11-18 23:53+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -173,13 +173,34 @@ msgstr "К списку жильцов"
 msgid "Reference - People"
 msgstr "Справочник - Люди"
 
+#: src/price-table.vala:10
+#, fuzzy
+msgid "service"
+msgstr "Услуга"
+
+#: src/price-table.vala:11
+msgid "first_day"
+msgstr ""
+
+#: src/price-table.vala:12
+msgid "last_day"
+msgstr ""
+
+#: src/price-table.vala:13
+msgid "method"
+msgstr ""
+
+#: src/price-table.vala:14
+msgid "value1"
+msgstr ""
+
+#: src/price-table.vala:15
+msgid "value2"
+msgstr ""
+
 #: src/service-table.vala:7
 msgid "id"
 msgstr ""
-
-#: src/service-window.vala:109
-msgid "Year, month"
-msgstr "Год, месяц"
 
 #: src/tax-calculation.vala:36
 msgid "Pr"
@@ -418,3 +439,6 @@ msgstr "Добавить"
 #: libs/src/db-gtk/view-table.vala:107
 msgid "Remove"
 msgstr "Удалить"
+
+#~ msgid "Year, month"
+#~ msgstr "Год, месяц"
