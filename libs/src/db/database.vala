@@ -14,6 +14,22 @@ public abstract class Database : Object {
 	}
 
 
+	/*
+	 * Selection
+	 */
+	public Gee.List<Entity> fetch_entity_list (Type type, Query query) {
+		
+
+
+		var list = new Gee.ArrayList<Entity> ();
+		exec_sql (q.get_query (), (n_columns, values, column_names) => {
+			list.add (make_entity_full (type, n_columns, column_names, values, true));
+			return 0;
+		});
+		return list;
+	}
+
+
 	public string build_select_query (string table, string? columns = null,
 			string? where = null, string? order_by = null, int limit = -1,
 			string? extra = null) {
