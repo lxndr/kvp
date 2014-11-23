@@ -2,20 +2,20 @@ namespace Kv {
 
 
 public class Database : DB.SQLiteDatabase {
-	private Gee.Map<string, Type> tax_calc_methods;
+	private Gee.Map<string, TaxCalculation> tax_calc_methods;
 
 
 	construct {
 		/* tax colculation methods */
-		tax_calc_methods = new Gee.HashMap<string, Type> ();
-		tax_calc_methods[TaxFormula01.id] = typeof (TaxFormula01);
-		tax_calc_methods[TaxFormula02.id] = typeof (TaxFormula02);
-		tax_calc_methods[TaxFormula03.id] = typeof (TaxFormula03);
-		tax_calc_methods[TaxFormula05.id] = typeof (TaxFormula05);
-		tax_calc_methods[TaxFormula07.id] = typeof (TaxFormula07);
+		tax_calc_methods = new Gee.HashMap<string, TaxCalculation> ();
+		register_tax_calculation (typeof (TaxFormula01));
+		register_tax_calculation (typeof (TaxFormula02));
+		register_tax_calculation (typeof (TaxFormula03));
+		register_tax_calculation (typeof (TaxFormula05));
+		register_tax_calculation (typeof (TaxFormula07));
 
+		/* prepare the database */
 		try {
-			/* prepare the database */
 			var bytes = resources_lookup_data ("/org/lxndr/kvp/data/init.sql", ResourceLookupFlags.NONE);
 			unowned uint8[] data = bytes.get_data ();
 //			exec_sql ((string) data);
@@ -31,23 +31,27 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
-	public TaxCalculation? create_tax_calculation (string? id, Tax? tax) {
-		if (id == null)
-			return null;
-		return Object.new (tax_calc_methods[id], "tax", tax) as TaxCalculation;
+	/*
+	 * Tax calculation methods.
+	 */
+	public void register_tax_calculation (Type type) {
+		var method = Object.new (type) as TaxCalculation;
+		tax_calc_methods[method.id ()] = method;
 	}
 
 
+	public TaxCalculation? get_tax_calculation (string? id) {
+		if (id == null)
+			return null;
+		return tax_calc_methods[id];
+	}
+
+
+	/*
+	 * Settings.
+	 */
 	public string? get_setting (string key) {
-		var query = "SELECT value FROM settings WHERE key='%s'".printf (key);
-		string? val = null;
-
-		exec_sql (query, (n_columns, values, column_names) => {
-			val = values[0];
-			return 0;
-		});
-
-		return val;
+		return fetch_string ("settings", "value", "key = '%s'".printf (key));
 	}
 
 
@@ -57,6 +61,9 @@ public class Database : DB.SQLiteDatabase {
 	}
 
 
+	/*
+	 * Helper functions.
+	 */
 	public Gee.Map<int, int64?> fetch_int_int64_map (string table, string key_field,
 			string value_field, string? where = null) {
 		var sb = new StringBuilder ();
@@ -188,6 +195,10 @@ public class Database : DB.SQLiteDatabase {
 			var first_day = period.first_day;
 			var last_day = period.last_day;
 			Date.clamp_range (ref first_day, ref last_day, account.opened, account.closed);
+
+			if (last_day == null)	/* account is closed */
+				return new Gee.ArrayList<Tenant> ();
+
 			sb.append_printf (" AND (move_in IS NULL OR move_in <= %d) AND (move_out IS NULL OR move_out >= %d)",
 					last_day.get_days (), last_day.get_days ());
 		}

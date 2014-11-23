@@ -30,7 +30,8 @@ public class Service : DB.SimpleEntity, DB.Viewable
 
 	public Price get_price (Building building, Month period) {
 		return db.fetch_entity<Price> (Price.table_name,
-				"building=%d AND period=%d AND service=%d".printf (building.id, period.raw_value, id));
+				"building = %d AND service = %d AND (first_day IS NULL OR first_day <= %d) AND (last_day IS NULL OR last_day >= %d)"
+				.printf (building.id, id, period.last_day.get_days (), period.first_day.get_days ()));
 	}
 }
 

@@ -37,7 +37,8 @@ public class CalculationSheet : Report {
 
 		/* tax prices */
 		var prices = db.fetch_int_int64_map (Price.table_name, "service", "value1",
-				"building = %d AND period = %d".printf (selected_account.account.building.id, selected_account.period.raw_value));
+				"building = %d AND (first_day IS NULL OR first_day <= %d) AND (last_day IS NULL OR last_day >= %d)"
+				.printf (selected_account.account.building.id, selected_account.period.last_day.get_days (), selected_account.period.first_day.get_days ()));
 		foreach (var id in service_ids)
 			if (prices[id] == null) prices[id] = 0;
 

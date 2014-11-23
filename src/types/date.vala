@@ -74,6 +74,7 @@ public class Date {
 				/* out of range */
 				first = null;
 				last = null;
+				return;
 			}
 
 			if (first == null || first.compare (min) < 0)
@@ -85,6 +86,7 @@ public class Date {
 				/* out of range */
 				first = null;
 				last = null;
+				return;
 			}
 
 			if (last == null || last.compare (max) > 0)

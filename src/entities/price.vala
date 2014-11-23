@@ -14,6 +14,16 @@ public class Price : DB.SimpleEntity {
 	public string service_name { get { return service.name; } }
 
 
+	private TaxCalculation _calculation;
+	public TaxCalculation? calculation {
+		get {
+			if (_calculation == null && method != null)
+				_calculation = ((Database) db).get_tax_calculation (method);
+			return _calculation;
+		}
+	}
+
+
 	public Price (DB.Database _db, Building _building, Service _service) {
 		Object (db: _db,
 				building: _building,

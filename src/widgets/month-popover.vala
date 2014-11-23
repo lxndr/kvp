@@ -104,7 +104,6 @@ public class MonthPopover : Gtk.Popover {
 
 
 	private void today_clicked () {
-		var now = new DateTime.now_local ();
 		month = new Month.now ();
 	}
 

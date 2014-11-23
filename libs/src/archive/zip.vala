@@ -56,8 +56,6 @@ public class Zip : Object {
 			error ("Unsupported version");
 
 		var general_flags = fstm.read_uint16 ();
-		if ((general_flags & 0x00000004) > 0)
-			stdout.printf ("bit3\n");
 
 		var compression_method = fstm.read_uint16 ();
 		if (compression_method != cdir.compression_method)
@@ -85,8 +83,6 @@ public class Zip : Object {
 
 		var name_length = fstm.read_uint16 ();
 		var extra_length = fstm.read_uint16 ();
-		if (extra_length > 0)
-			stdout.printf ("Got extra field\n");
 
 		var file_name = read_string (fstm, name_length);
 		if (file_name != cdir.fname)
@@ -116,7 +112,6 @@ public class Zip : Object {
 
 
 	public FileIOStream add_from_stream (string path) throws GLib.Error {
-stdout.printf ("ZIP add_from_stream %s\n", path);
 		FileIOStream io;
 		var tmp = GLib.File.new_tmp (null, out io);
 		changed_files[path] = tmp;
@@ -282,11 +277,9 @@ stdout.printf ("ZIP add_from_stream %s\n", path);
 			unowned string fname = cdir.fname;
 
 			if (changed_files.has_key (fname) == true) {
-stdout.printf ("NEW FILE: %s %lu\n", fname, cdir.compressed_size);
 				var file = changed_files[fname];
 				var data = compress (file, cdir.compression_method, out cdir.crc32,
 						out cdir.compressed_size, out cdir.uncompressed_size);
-stdout.printf ("NILE: %lu\n", cdir.compressed_size);
 				write_entity (stm, cdir, data);
 			} else {
 				copy_entity (stm, cdir, fstm);

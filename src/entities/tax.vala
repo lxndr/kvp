@@ -37,19 +37,9 @@ public class Tax : DB.Entity, DB.Viewable {
 
 	public Money price_value {
 		get {
-			if (calculation == null)
+			if (price.calculation == null)
 				return Money (0);
-			return calculation.get_price ();
-		}
-	}
-
-
-	private TaxCalculation? _calculation;
-	public TaxCalculation? calculation {
-		get {
-			if (_calculation == null)
-				_calculation = ((Database) db).create_tax_calculation (price.method, this);
-			return _calculation;
+			return price.calculation.price (this);
 		}
 	}
 
@@ -102,14 +92,14 @@ public class Tax : DB.Entity, DB.Viewable {
 			return;
 		}
 
-		if (calculation != null)
-			amount = calculation.get_amount ();
+		if (price.calculation != null)
+			amount = price.calculation.amount (this);
 	}
 
 
 	public void calc_total () {
-		if (calculation != null)
-			total = calculation.get_total ();
+		if (price.calculation != null)
+			total = price.calculation.total (this);
 	}
 }
 

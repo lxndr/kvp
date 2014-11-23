@@ -1,113 +1,181 @@
 namespace Kv {
 
 
-public abstract class TaxCalculation : Object {
-	public Tax? tax { get; construct set; }
-	public unowned string name { get; protected set; }
-	public unowned string desc { get; protected set; }
+public interface TaxCalculation : Object {
+	public abstract unowned string id ();
+	public abstract unowned string name ();
+	public abstract unowned string description ();
 
 
-	public abstract unowned string get_id ();
+	public virtual double amount (Tax tax) {
+		return 1.0;
+	}
 
 
-	public abstract double get_amount ();
-
-
-	public virtual Money get_price () {
+	public virtual Money price (Tax tax) {
 		return tax.price.value1;
 	}
 
 
-	public virtual Money get_total () {
-		return Money (Math.llround (tax.amount * (double) get_price ().val));
+	public virtual Money total (Tax tax) {
+		var price = price (tax).val;
+		return Money (Math.llround (tax.amount * (double) price));
+	}
+
+
+	public double period_coefficient (Tax tax) {
+		unowned Month period = tax.period;
+		unowned Account account = tax.account;
+		unowned Price price = tax.price;
+
+		/* month range */
+		var first_day = period.first_day;
+		var last_day = period.last_day;
+
+		/* account range */
+		Date.clamp_range (ref first_day, ref last_day, account.opened, account.closed);
+
+		/* price range */
+		Date.clamp_range (ref first_day, ref last_day, price.first_day, last_day);
+
+		if (first_day == null && last_day == null)
+			return 0.0;
+
+		var days = first_day.diff (last_day) + 1;
+		var days_in_month = period.month.get_days_in_month (period.year);
+		return (double) days / (double) days_in_month;
+	}
+
+
+	public double tenant_coefficient (Tax tax) {
+		unowned AccountPeriod periodic = tax.periodic;
+		unowned Month period = tax.period;
+		unowned Account account = tax.account;
+
+		/* month range */
+		var first_day = period.first_day;
+		var last_day = period.last_day;
+
+		/* account range */
+		Date.clamp_range (ref first_day, ref last_day, account.opened, account.closed);
+
+		uint days = 0;
+		var tenant_list = periodic.get_tenant_list ();
+		foreach (var tenant in tenant_list) {
+			var first = tenant.move_in;
+			var last = tenant.move_out;
+			Date.clamp_range (ref first, ref last, first_day, last_day);
+
+			/* no range at all */
+			if (first == null && last == null)
+				continue;
+
+			days += first_day.diff (last_day) + 1;
+		}
+
+		var days_in_month = period.month.get_days_in_month (period.year);
+		return (double) days / (double) days_in_month;
 	}
 }
 
 
-
-public class TaxFormula01 : TaxCalculation {
-	public static unowned string id = "price-only";
-	public override unowned string get_id () {
-		return id;
+public class TaxFormula01 : Object, TaxCalculation {
+	public unowned string id () {
+		return "price-only";
 	}
 
 
-	construct {
-		name = N_("Pr");
-		desc = N_("total = price");
+	public unowned string name () {
+		return _("Pr");
 	}
 
 
-	public override double get_amount () {
+	public unowned string description () {
+		return _("total = price");
+	}
+
+
+	public double amount (Tax tax) {
 		return 0.0;
 	}
 
 
-	public override Money get_total () {
-		return get_price ();
+	public Money total (Tax tax) {
+		return price (tax);
 	}
 }
 
 
-public class TaxFormula02 : TaxCalculation {
-	public static unowned string id = "area";
-	public override unowned string get_id () {
-		return id;
+public class TaxFormula02 : Object, TaxCalculation {
+	public unowned string id () {
+		return "area";
 	}
 
 
-	construct {
-		name = N_("Ar");
-		desc = N_("total = area * price * day_coef");
+	public unowned string name () {
+		return _("Ar");
 	}
 
 
-	public override double get_amount () {
+	public unowned string description () {
+		return _("total = area * price * period_coef");
+	}
+
+
+	public double amount (Tax tax) {
 		return tax.periodic.area;
 	}
 
 
-	public override Money get_total () {
-		return Money (Math.llround (
-				tax.amount * (double) get_price ().val * tax.periodic.period_coefficient ()
-		));
+	public Money total (Tax tax) {
+		var price = price (tax).val;
+		var coef = period_coefficient (tax);
+		return Money (Math.llround (tax.amount * price * coef));
 	}
 }
 
 
-public class TaxFormula03 : TaxCalculation {
-	public static unowned string id = "tenants";
-	public override unowned string get_id () {
-		return id;
+public class TaxFormula03 : Object, TaxCalculation {
+	public unowned string id () {
+		return "tenants";
 	}
 
 
-	construct {
-		name = N_("Tn");
-		desc = N_("total = tenant_coef * price");
+	public unowned string name () {
+		return _("Tn");
 	}
 
 
-	public override double get_amount () {
-		return tax.periodic.tenant_coefficient ();
+	public unowned string description () {
+		return _("total = tenant_coef * price");
+	}
+
+
+	public double amount (Tax tax) {
+		return tenant_coefficient (tax);
 	}
 }
 
 
-public class TaxFormula05 : TaxCalculation {
-	public static unowned string id = "norm-el";
-	public override unowned string get_id () {
-		return id;
+public class TaxFormula05 : Object, TaxCalculation {
+	public unowned string id () {
+		return "norm-el";
 	}
 
 
-	construct {
-		name = N_("Ne");
-		desc = N_("total = norm * n_people * ");
+	public unowned string name () {
+		return _("Ne");
 	}
 
 
-	public override double get_amount () {
+	public unowned string description () {
+		return _("total = norm * n_people * tenant_coef");
+	}
+
+
+	public double amount (Tax tax) {
+		unowned AccountPeriod ac = tax.periodic;
+
 		/* oven/heater - rooms - people */
 		int[,,] norm = {{	/* no oven, no heater */
 			{  0,   0,   0,   0,  0,    0},
@@ -135,7 +203,6 @@ public class TaxFormula05 : TaxCalculation {
 			{  0, 297, 184, 143, 116, 101}
 		}};
 
-		unowned AccountPeriod ac = tax.periodic;
 		var norm_idx = (int) ac.param1 * 2 + (int) tax.periodic.param2;
 		int norm_rooms = (int) ac.n_rooms.clamp (0, 4);
 		int norm_people = (int) ac.n_people.clamp (0, 5);
@@ -166,37 +233,43 @@ public class TaxFormula05 : TaxCalculation {
 	}
 
 
-	public override Money get_total () {
-		return Money (Math.llround (
-				tax.amount * (double) get_price ().val * tax.periodic.period_coefficient ()
-		));
+	public Money total (Tax tax) {
+		var price = price (tax).val;
+		var coef = period_coefficient (tax);
+		return Money (Math.llround (tax.amount * (double) price * coef));
 	}
 }
 
 
-public class TaxFormula07 : TaxCalculation {
-	public static unowned string id = "tenants-shower";
-	public override unowned string get_id () {
-		return id;
+public class TaxFormula07 : Object, TaxCalculation {
+	public unowned string id () {
+		return "tenants-shower";
 	}
 
 
-	construct {
-		name = N_("Ts");
-		desc = N_("total = tenant_coef * ?(shower, price2, price1)");
+	public unowned string name () {
+		return _("Ts");
 	}
 
 
-	public override Money get_price () {
-		if (tax.periodic.param3)
-			return tax.price.value2;
+	public unowned string description () {
+		return _("total = tenant_coef * ?(shower, price2, price1)");
+	}
+
+
+	public Money price (Tax tax) {
+		unowned AccountPeriod periodic = tax.periodic;
+		unowned Price price = tax.price;
+
+		if (periodic.param3)
+			return price.value2;
 		else
-			return tax.price.value1;
+			return price.value1;
 	}
 
 
-	public override double get_amount () {
-		return tax.periodic.tenant_coefficient ();
+	public double amount (Tax tax) {
+		return tenant_coefficient (tax);
 	}
 }
 
