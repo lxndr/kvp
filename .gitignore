@@ -1,0 +1,5 @@
+src/resources.c
+libs/src/*/*.c
+build*/
+*.mo
+*.pot
