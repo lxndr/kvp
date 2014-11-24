@@ -3,6 +3,7 @@ namespace DB {
 
 public abstract class Database : Object {
 	public ValueAdapter value_adapter { get; set; }
+	private Gee.HashMap<Type, Gee.HashMap<int, Entity>> cache;
 
 
 	public abstract void exec_sql (string sql, Sqlite.Callback? callback = null);
@@ -11,22 +12,75 @@ public abstract class Database : Object {
 
 	construct {
 		value_adapter = new ValueAdapter ();
+		cache = new Gee.HashMap<Type, Gee.HashMap<int, Entity>> ();
+	}
+
+
+	/*
+	 * Cache
+	 */
+	public Entity? get_from_cache_simple (Type type, int id) {
+		var list = cache[type];
+		if (list == null)
+			return null;
+		return list[id];
+	}
+
+
+	public void set_cachable (Type type, bool cachable) {
+		if (cachable) {
+			if (cache[type] == null)
+				cache[type] = new Gee.HashMap<int, Entity> ();
+		} else {
+			cache.unset (type);
+		}
+	}
+
+
+	public void cache_entity_simple (SimpleEntity entity) {
+		var list = cache[entity.get_type ()];
+		if (list == null)
+			return;
+
+		assert (list.has_key (entity.id) == null);
+		list[entity.id] = entity;
 	}
 
 
 	/*
 	 * Selection
 	 */
-	public Gee.List<Entity> fetch_entity_list (Type type, Query query) {
-		
-
-
+	public Gee.List<Entity> fetch_entity_list_full (Type type, Query query) {
 		var list = new Gee.ArrayList<Entity> ();
-		exec_sql (q.get_query (), (n_columns, values, column_names) => {
+
+		exec_sql (query.sql (), (n_columns, values, column_names) => {
 			list.add (make_entity_full (type, n_columns, column_names, values, true));
 			return 0;
 		});
+
 		return list;
+	}
+
+
+	public Gee.List<T> fetch_entity_list<T> (string table, string? where = null,
+			string? order_by = null, int limit = -1, bool recursive = true) {
+		return fetch_entity_list_full (typeof (T), table, where, order_by, limit, recursive);
+	}
+
+
+	public Entity? fetch_simple_entity_full (Type type, int id, string? table = null) {
+		var entity = get_from_cache_simple (type, id);
+		if (entity != null)
+			return entity;
+
+		var query = new Query.select ().from (table);
+		query.where ("id = %d".printf (id));
+		return fetch_entity_full (type, query);
+	}
+
+
+	public T? fetch_simple_entity<T> (int id, string? table = null) {
+		return fetch_simple_entity_full (type, id, table);
 	}
 
 
@@ -185,11 +239,6 @@ public abstract class Database : Object {
 	}
 
 
-	public T? fetch_entity_by_id<T> (int id, string? table = null, bool recursive = true) {
-		return fetch_entity<T> (table, "id=%d".printf (id));
-	}
-
-
 	public Entity make_entity_full (Type type, int n_fields,
 			[CCode (array_length = false)] string[] fields,
 			[CCode (array_length = false)] string[] values,
@@ -233,12 +282,6 @@ public abstract class Database : Object {
 			return 0;
 		});
 		return list;
-	}
-
-
-	public Gee.List<T> fetch_entity_list<T> (string table, string? where = null,
-			string? order_by = null, int limit = -1, bool recursive = true) {
-		return fetch_entity_list_full (typeof (T), table, where, order_by, limit, recursive);
 	}
 
 
