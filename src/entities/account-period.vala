@@ -8,10 +8,10 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	public string apartment { get; set; default = ""; }
 	public int n_rooms { get; set; default = 1; }
 	public double area { get; set; default = 0.0; }
-	public Money total { get; set; default = Money (0); }
-	public Money payment { get; set; default = Money (0); }
-	public Money balance { get; set; default = Money (0); }
-	public Money extra { get; set; default = Money (0); }
+	public Money total { get; set; }
+	public Money payment { get; set; }
+	public Money balance { get; set; }
+	public Money extra { get; set; }
 	public bool param1 { get; set; default = false; }	/* water heater */
 	public bool param2 { get; set; default = false; }	/* electric oven */
 	public bool param3 { get; set; default = false; }	/* shower */
@@ -49,6 +49,14 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 	public int n_people {
 		get { return (int) number_of_people (); }
+	}
+
+
+	construct {
+		_total = new Money ();
+		_payment = new Money ();
+		_balance = new Money ();
+		_extra = new Money ();
 	}
 
 
@@ -116,19 +124,20 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	public Money previuos_balance () {
 		var n = db.fetch_int64 (AccountPeriod.table_name, "balance",
 				"account=%d AND period=%d".printf (account.id, period.get_prev ().raw_value));
-		return Money (n);
+		return new Money.from_raw_integer (n);
 	}
 
 
 	public void calc_total () {
-		total = Money (db.query_sum (Tax.table_name, "total",
-				"account=%d AND period=%d".printf (account.id, period.raw_value)));
+		var n = db.query_sum (Tax.table_name, "total",
+				"account=%d AND period=%d".printf (account.id, period.raw_value));
+		total = new Money.from_raw_integer (n);
 	}
 
 
 	public void calc_balance () {
-		var prev = previuos_balance ();
-		balance = Money (prev.val + total.val + extra.val - payment.val);
+		balance.assign (previuos_balance ())
+			.add (total).add (extra).sub (payment);
 	}
 
 

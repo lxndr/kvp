@@ -2,7 +2,7 @@ namespace Kv {
 
 
 public class FixedPoint {
-	protected int64 integer;
+	public int64 integer;
 	protected int8 precision;
 
 
