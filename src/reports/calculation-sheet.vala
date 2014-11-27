@@ -56,11 +56,7 @@ public class CalculationSheet : Report {
 		OOXML.Row row = sheet.get_row(1);
 		int row_number = 11;
 
-		var totals = new Money[18];
-
-//		int64 totals[18];
-//		for (var i = 0; i < 18; i++)
-//			totals[i] = 0;
+		Money totals[18];
 
 		foreach (var ac in accounts) {
 			var periodic = ac.fetch_period (selected_account.period);
@@ -91,35 +87,31 @@ public class CalculationSheet : Report {
 
 				cell = row.get_cell (7 + i);
 				if (val != null && val > 0) {
-					totals[6 + i] += val;
+					totals[6 + i].integer += val;
 					cell.put_number (new Money.from_raw_integer (val).to_real ());
 				}
 				cell.style = cstyles[6 + i];
 			}
 
-			int64 val;
-			val = periodic.total.val;
-			totals[14] += val;
+			totals[14].add (periodic.total);
 			cell = row.get_cell (15);
-			cell.put_number (Money (val).to_real ());
+			cell.put_number (periodic.total.to_real ());
 			cell.style = cstyles[14];
 
-			val = periodic.payment.val;
-			totals[15] += val;
+			totals[15].add (periodic.payment);
 			cell = row.get_cell (16);
-			cell.put_number (Money (val).to_real ());
+			cell.put_number (periodic.payment.to_real ());
 			cell.style = cstyles[15];
 
-			val = periodic.previuos_balance ().val;
-			totals[16] += val;
+			var prev_balance = periodic.previuos_balance ();
+			totals[16].add (prev_balance);
 			cell = row.get_cell (17);
-			cell.put_number (Money (val).to_real ());
+			cell.put_number (prev_balance.to_real ());
 			cell.style = cstyles[16];
 
-			val = periodic.balance.val;
-			totals[17] += val;
+			totals[17].add (periodic.balance);
 			cell = row.get_cell (18);
-			cell.put_number (Money (val).to_real ());
+			cell.put_number (periodic.balance.to_real ());
 			cell.style = cstyles[17];
 
 			row_number++;
@@ -132,11 +124,11 @@ public class CalculationSheet : Report {
 			cell.style = estyles[i];
 
 			if (i == 3)
-				cell.put_string (totals[i].to_string ());
+				cell.put_string (totals[i].integer.to_string ());
 			else if (i == 5)
 				cell.put_string ("-");
 			else if (i >= 6)
-				cell.put_number (Money (totals[i]).to_real ());
+				cell.put_number (totals[i].to_real ());
 		}
 	}
 

@@ -7,6 +7,10 @@ public class Money : FixedPoint {
 	}
 
 
+	public Money.parse (string in_str) {
+	}
+
+
 	public string format () {
 		var x = Utils.pow_integer (10, precision);
 		var sb = new StringBuilder ();
