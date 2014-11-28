@@ -63,7 +63,7 @@ public class CalculationSheet : Report {
 			if (periodic == null)
 				continue;
 
-			if (periodic.total.integer == 0 && periodic.balance.integer == 0)
+			if (periodic.total.is_zero () && periodic.balance.is_zero ())
 				continue;
 
 			row = sheet.get_row (row_number);
