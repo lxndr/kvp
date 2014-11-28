@@ -239,7 +239,7 @@ public class Account : Report {
 			row.get_cell (12).put_number (periodic.total.to_real ());
 			totals[9].add (periodic.payment);
 			row.get_cell (13).put_number (periodic.payment.to_real ());
-			totals[10].add (periodic.balance);
+			totals[10].assign (periodic.balance);
 			row.get_cell (14).put_number (periodic.balance.to_real ());
 
 			row_number++;
