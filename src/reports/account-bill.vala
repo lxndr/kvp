@@ -231,26 +231,26 @@ public class Account : Report {
 				var tax = taxes[service_ids[j]];
 				if (tax != null) {
 					totals[j].add (tax.total);
-					row.get_cell (3 + j).put_number (tax.total.to_real ());
+					row.get_cell (3 + j).put_number (tax.total.real);
 				}
 			}
 
 			totals[8].add (periodic.total);
-			row.get_cell (12).put_number (periodic.total.to_real ());
+			row.get_cell (12).put_number (periodic.total.real);
 			totals[9].add (periodic.payment);
-			row.get_cell (13).put_number (periodic.payment.to_real ());
+			row.get_cell (13).put_number (periodic.payment.real);
 			totals[10].assign (periodic.balance);
-			row.get_cell (14).put_number (periodic.balance.to_real ());
+			row.get_cell (14).put_number (periodic.balance.real);
 
 			row_number++;
 		}
 
 		var row = sheet.get_row (17);
 		for (var j = 0; j < 8; j++)
-			row.get_cell (3 + j).put_number (totals[j].to_real ());
-		row.get_cell (12).put_number (totals[8].to_real ());
-		row.get_cell (13).put_number (totals[9].to_real ());
-		row.get_cell (14).put_number (totals[10].to_real ());
+			row.get_cell (3 + j).put_number (totals[j].real);
+		row.get_cell (12).put_number (totals[8].real);
+		row.get_cell (13).put_number (totals[9].real);
+		row.get_cell (14).put_number (totals[10].real);
 	}
 
 

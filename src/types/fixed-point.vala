@@ -88,9 +88,11 @@ public class FixedPoint {
 	}
 
 
-	public double to_real () {
-		var x = Utils.pow_integer (10, precision);
-		return (double) integer / (double) x;
+	public double real {
+		get {
+			var x = Utils.pow_integer (10, precision);
+			return (double) integer / (double) x;
+		}
 	}
 
 

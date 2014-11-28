@@ -42,14 +42,14 @@ public class CalculationSheet : Report {
 		foreach (var id in service_ids)
 			if (prices[id] == null) prices[id] = 0;
 
-		sheet.put_number ("D4", new Money.from_raw_integer (prices[5]).to_real ());
-		sheet.put_number ("D5", new Money.from_raw_integer (prices[6]).to_real ());
-		sheet.put_number ("D6", new Money.from_raw_integer (prices[4]).to_real ());
-		sheet.put_number ("D7", new Money.from_raw_integer (prices[1]).to_real ());
-		sheet.put_number ("J4", new Money.from_raw_integer (prices[2]).to_real ());
-		sheet.put_number ("J5", new Money.from_raw_integer (prices[3]).to_real ());
-		sheet.put_number ("J6", new Money.from_raw_integer (prices[7]).to_real ());
-		sheet.put_number ("J7", new Money.from_raw_integer (prices[9]).to_real ());
+		sheet.put_number ("D4", new Money.from_raw_integer (prices[5]).real);
+		sheet.put_number ("D5", new Money.from_raw_integer (prices[6]).real);
+		sheet.put_number ("D6", new Money.from_raw_integer (prices[4]).real);
+		sheet.put_number ("D7", new Money.from_raw_integer (prices[1]).real);
+		sheet.put_number ("J4", new Money.from_raw_integer (prices[2]).real);
+		sheet.put_number ("J5", new Money.from_raw_integer (prices[3]).real);
+		sheet.put_number ("J6", new Money.from_raw_integer (prices[7]).real);
+		sheet.put_number ("J7", new Money.from_raw_integer (prices[9]).real);
 
 		/*  */
 		var accounts = db.get_account_list (selected_account.account.building);
@@ -88,30 +88,30 @@ public class CalculationSheet : Report {
 				cell = row.get_cell (7 + i);
 				if (val != null && val > 0) {
 					totals[6 + i].integer += val;
-					cell.put_number (new Money.from_raw_integer (val).to_real ());
+					cell.put_number (new Money.from_raw_integer (val).real);
 				}
 				cell.style = cstyles[6 + i];
 			}
 
 			totals[14].add (periodic.total);
 			cell = row.get_cell (15);
-			cell.put_number (periodic.total.to_real ());
+			cell.put_number (periodic.total.real);
 			cell.style = cstyles[14];
 
 			totals[15].add (periodic.payment);
 			cell = row.get_cell (16);
-			cell.put_number (periodic.payment.to_real ());
+			cell.put_number (periodic.payment.real);
 			cell.style = cstyles[15];
 
 			var prev_balance = periodic.previuos_balance ();
 			totals[16].add (prev_balance);
 			cell = row.get_cell (17);
-			cell.put_number (prev_balance.to_real ());
+			cell.put_number (prev_balance.real);
 			cell.style = cstyles[16];
 
 			totals[17].add (periodic.balance);
 			cell = row.get_cell (18);
-			cell.put_number (periodic.balance.to_real ());
+			cell.put_number (periodic.balance.real);
 			cell.style = cstyles[17];
 
 			row_number++;
@@ -128,7 +128,7 @@ public class CalculationSheet : Report {
 			else if (i == 5)
 				cell.put_string ("-");
 			else if (i >= 6)
-				cell.put_number (totals[i].to_real ());
+				cell.put_number (totals[i].real);
 		}
 	}
 
