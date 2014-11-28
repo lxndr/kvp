@@ -12,6 +12,16 @@ public class FixedPoint {
 	}
 
 
+	public FixedPoint.parse_raw_integer (string? _text, int8 _precision) {
+		precision = _precision;
+
+		if (_text != null)
+			integer = int64.parse (_text);
+		else
+			integer = 0;
+	}
+
+
 	public FixedPoint.parse (string in_str) {
 		var clean_str = clean (in_str);
 

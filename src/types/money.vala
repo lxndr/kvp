@@ -7,7 +7,13 @@ public class Money : FixedPoint {
 	}
 
 
-	public Money.parse (string in_str) {
+	public Money.parse_raw_integer (string? _text) {
+		base.parse_raw_integer (_text, 3);
+	}
+
+
+	public Money.parse (string str) {
+		base.parse (str);
 	}
 
 

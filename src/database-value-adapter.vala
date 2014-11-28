@@ -12,11 +12,8 @@ public class DatabaseValueAdapter : DB.ValueAdapter {
 
 	/* Money */
 	private bool string_to_money (string? s, ref Value v) {
-		int64 n = 0;
-		if (s != null)
-			n = int64.parse (s);
-		var money = new Money.from_raw_integer (n);
-		v.set_instance (money);
+		var m = new Money.parse_raw_integer (s);
+		v.set_instance (m);
 		return true;
 	}
 
