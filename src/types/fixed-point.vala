@@ -22,28 +22,28 @@ public class FixedPoint {
 	}
 
 
-	public FixedPoint.parse (string in_str) {
-		var clean_str = clean (in_str);
+	public FixedPoint.parse (string _text) {
+		var str = clean (_text);
 
 		/* if the value is negative */
 		bool negative = false;
 
-		if (clean_str[0] == '-') {
+		if (str[0] == '-') {
 			negative = true;
-			clean_str = clean_str[1:clean_str.length];
+			str = str[1:str.length];
 		}
 
 		/* split */
 		string p1;
 		string p2;
 
-		var p = clean_str.index_of_char ('.');
+		var p = str.index_of_char ('.');
 		if (p == -1) {
-			p1 = clean_str;
+			p1 = str;
 			p2 = "";
 		} else {
-			p1 = clean_str[0:p];
-			p2 = clean_str[p+1:clean_str.length];
+			p1 = str[0:p];
+			p2 = str[p+1:str.length];
 		}
 
 		/* prepare */
