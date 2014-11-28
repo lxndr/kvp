@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-11-28 09:56+0300\n"
+"POT-Creation-Date: 2014-11-22 21:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -202,43 +202,43 @@ msgstr ""
 msgid "id"
 msgstr ""
 
-#: src/tax-calculation.vala:90
+#: src/tax-calculation.vala:89
 msgid "Pr"
 msgstr "Ст"
 
-#: src/tax-calculation.vala:95
+#: src/tax-calculation.vala:94
 msgid "total = price"
 msgstr ""
 
-#: src/tax-calculation.vala:117
+#: src/tax-calculation.vala:116
 msgid "Ar"
 msgstr "Пл"
 
-#: src/tax-calculation.vala:122
+#: src/tax-calculation.vala:121
 msgid "total = area * price * period_coef"
 msgstr ""
 
-#: src/tax-calculation.vala:147
+#: src/tax-calculation.vala:145
 msgid "Tn"
 msgstr "Жл"
 
-#: src/tax-calculation.vala:152
+#: src/tax-calculation.vala:150
 msgid "total = tenant_coef * price"
 msgstr ""
 
-#: src/tax-calculation.vala:169
+#: src/tax-calculation.vala:167
 msgid "Ne"
 msgstr ""
 
-#: src/tax-calculation.vala:174
+#: src/tax-calculation.vala:172
 msgid "total = norm * n_people * tenant_coef"
 msgstr ""
 
-#: src/tax-calculation.vala:254
+#: src/tax-calculation.vala:251
 msgid "Ts"
 msgstr "Жд"
 
-#: src/tax-calculation.vala:259
+#: src/tax-calculation.vala:256
 msgid "total = tenant_coef * ?(shower, price2, price1)"
 msgstr ""
 

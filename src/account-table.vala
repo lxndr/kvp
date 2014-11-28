@@ -140,11 +140,11 @@ public class AccountTable : DB.ViewTable {
 		unowned Money balance = periodic.balance;
 
 		unowned string? color = null;
-		if (balance.is_negative ())
+		if (balance.integer < 0)
 			color = "green";
-		else if (balance.is_zero ())
+		else if (balance.integer == 0)
 			color = "blue";
-		else if (total.is_zero () && balance.is_positive ())
+		else if (total.integer == 0 && balance.integer > 0)
 			color = "red";
 
 		list_store.set (tree_iter,

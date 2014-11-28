@@ -84,27 +84,6 @@ public class FixedPoint {
 	}
 
 
-	public inline bool is_negative () {
-		return integer < 0;
-	}
-
-
-	public inline bool is_zero () {
-		return integer == 0;
-	}
-
-
-	public inline bool is_positive () {
-		return integer > 0;
-	}
-
-
-	public inline int64 compare (Money that)
-			requires (precision == that.precision) {
-		return integer - that.integer;
-	}
-
-
 	public unowned FixedPoint assign (FixedPoint that) {
 		integer = that.integer;
 		precision = that.precision;
