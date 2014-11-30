@@ -16,6 +16,18 @@ public abstract class Database : Object {
 	}
 
 
+
+	/*
+	 * Helpers.
+	 */
+	private string? escape_string (string? s) {
+		if (s == null)
+			return null;
+		return s.replace ("'", "''");
+	}
+
+
+
 	/*
 	 * Cache
 	 */
@@ -47,8 +59,9 @@ public abstract class Database : Object {
 	}
 
 
+
 	/*
-	 * Selection
+	 * Selection.
 	 */
 	public Gee.List<Entity> fetch_entity_list_full (Type type, Query query) {
 		var list = new Gee.ArrayList<Entity> ();
@@ -64,6 +77,19 @@ public abstract class Database : Object {
 
 	public Gee.List<T> fetch_entity_list<T> (Query query) {
 		return fetch_entity_list_full (typeof (T), table, where, order_by, limit, recursive);
+	}
+
+
+	public Entity? fetch_entity_full (Type type, Query query) {
+		var list = fetch_entity_list_full (type, query);
+		if (list.size > 0)
+			return list[0];
+		return null;
+	}
+
+
+	public T? fetch_entity<T> (Query query) {
+		return fetch_entity_full (typeof (T), query);
 	}
 
 
@@ -125,8 +151,7 @@ public abstract class Database : Object {
 	 */
 	private void prepare_entity (Entity ent, int n_fields,
 			[CCode (array_length = false)] string[] fields,
-			[CCode (array_length = false)] string[] values,
-			bool recursive = true) {
+			[CCode (array_length = false)] string[] values) {
 		var type = ent.get_type ();
 		var obj_class = (ObjectClass) type.class_ref ();
 
@@ -147,10 +172,10 @@ public abstract class Database : Object {
 
 			if (prop_type.is_a (typeof (Entity))) {
 				Entity? obj = null;
-				if (val != null && recursive == true) {
+				if (val != null) {
 					var obj_id = int.parse (val);
 					if (obj_id > 0)
-						obj = fetch_entity_full (prop_type, null, "id=%d".printf (obj_id));
+						obj = fetch_entity_full (prop_type, null, "id = %d".printf (obj_id));
 				}
 				dest_val.set_object (obj);
 			} else if (prop_type == typeof (double)) {
@@ -176,28 +201,24 @@ public abstract class Database : Object {
 	}
 
 
-	public Entity? fetch_entity_full (Type type, Query query) {
-		bool found = false;
-		var ent = Object.new (type, "db", this) as Entity;
+	private void assemble_value (ref Value val, string? str) {
+		var type = val.type ();
 
-		if (table == null)
-			table = ent.db_table ();
+		/* Entity */
+		if (type.is_a (typeof (Entity))) {
+			Entity? entity = null;
+			if (val != null) {
+				var entity_id = int.parse (val);
+				if (entity_id > 0)
+					entity = fetch_simple_entity_full (type, entity_id);
+			}
+			val.set_object (entity);
+			return;
+		}
 
-		var query = build_select_query (table, null, where, null, 1);
-		exec_sql (query, (n_columns, values, column_names) => {
-			prepare_entity (ent, n_columns, column_names, values, recursive);
-			found = true;
-			return 0;
-		});
+		
 
-		if (found == false)
-			return null;
-		return ent;
-	}
-
-
-	public T? fetch_entity<T> (Query query) {
-		return fetch_entity_full (typeof (T), query);
+		val.unset ();
 	}
 
 
@@ -289,15 +310,20 @@ public abstract class Database : Object {
 	}
 
 
-	public void delete_entity (string table, string where) {
-		exec_sql ("DELETE FROM %s WHERE %s".printf (table, where), null);
-	}
+	/*
+		Deleteion
+	*/
+	public void delete_entity (Entity entity) {
+		var query = new Query.delete ()
+			.from (entity.db_table ());
 
+		if (entity is SimpleEntity) {
+			query.where ("id = %d".printf (((SimpleEntity) entity).id));
+		} else {
+			/* TODO: composite key */
+		}
 
-	private string? escape_string (string? s) {
-		if (s == null)
-			return null;
-		return s.replace ("'", "''");
+		exec_sql (query.sql (), null);
 	}
 
 
@@ -429,6 +455,10 @@ public abstract class Database : Object {
 	}
 
 
+
+	/*
+	 *	Transaction control.
+	 */
 	public void begin_transaction () {
 		exec_sql ("BEGIN TRANSACTION");
 	}

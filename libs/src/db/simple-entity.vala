@@ -22,7 +22,7 @@ public abstract class SimpleEntity : Entity {
 		if (id == 0)
 			error ("The entity being removed is not present in the database.");
 
-		db.delete_entity (db_table (), "id=%d".printf (id));
+		db.delete_entity (this);
 	}
 }
 
