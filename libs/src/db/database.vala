@@ -62,8 +62,7 @@ public abstract class Database : Object {
 	}
 
 
-	public Gee.List<T> fetch_entity_list<T> (string table, string? where = null,
-			string? order_by = null, int limit = -1, bool recursive = true) {
+	public Gee.List<T> fetch_entity_list<T> (Query query) {
 		return fetch_entity_list_full (typeof (T), table, where, order_by, limit, recursive);
 	}
 
@@ -80,39 +79,16 @@ public abstract class Database : Object {
 
 
 	public T? fetch_simple_entity<T> (int id, string? table = null) {
-		return fetch_simple_entity_full (type, id, table);
+		return fetch_simple_entity_full (typeof (T), id, table);
 	}
 
 
-	public string build_select_query (string table, string? columns = null,
-			string? where = null, string? order_by = null, int limit = -1,
-			string? extra = null) {
-		var sb = new StringBuilder.sized (64);
-
-		if (columns == null)
-			sb.append_printf ("SELECT * FROM %s", table);
-		else
-			sb.append_printf ("SELECT %s FROM %s", columns, table);
-
-		if (where != null)
-			sb.append_printf (" WHERE %s", where);
-		if (order_by != null)
-			sb.append_printf (" ORDER BY %s", order_by);
-		if (limit > -1)
-			sb.append_printf (" LIMIT %d", limit);
-		if (extra != null)
-			sb.append_printf (" %s", extra);
-
-		return sb.str;
+	public bool fetch_value (ref Value val, Query query) {
+		
 	}
 
 
-	public QueryBuilder build () {
-		return new QueryBuilder ();
-	}
-
-
-	public string? fetch_string (string table, string column, string? where = null) {
+	public string? fetch_string (Query query) {
 		string? result = null;
 
 		var query = build_select_query (table, column, where, null, 1);
@@ -125,7 +101,7 @@ public abstract class Database : Object {
 	}
 
 
-	public int fetch_int (string table, string column, string? where = null) {
+	public int fetch_int (Query query) {
 		int n = 0;
 		var s = fetch_string (table, column, where);
 		if (s != null)
@@ -134,7 +110,7 @@ public abstract class Database : Object {
 	}
 
 
-	public int64 fetch_int64 (string table, string column, string? where = null) {
+	public int64 fetch_int64 (Query query) {
 		int64 n = 0;
 		var s = fetch_string (table, column, where);
 		if (s != null)
