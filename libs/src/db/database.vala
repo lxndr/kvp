@@ -42,7 +42,7 @@ public abstract class Database : Object {
 		if (list == null)
 			return;
 
-		assert (list.has_key (entity.id) == null);
+		assert (!list.has_key (entity.id));
 		list[entity.id] = entity;
 	}
 
@@ -83,39 +83,25 @@ public abstract class Database : Object {
 	}
 
 
-	public bool fetch_value (ref Value val, Query query) {
-		
+	public T fetch_value<T> (Query query, T def) {
+		var v = Value (typeof (T));
+		if (!fetch_value_full (ref v, query))
+			return def;
 	}
 
 
-	public string? fetch_string (Query query) {
-		string? result = null;
-
-		var query = build_select_query (table, column, where, null, 1);
-		exec_sql (query, (n_columns, values, column_names) => {
-			result = values[0];
-			return 0;
-		});
-
-		return result;
+	public string? fetch_string (Query query, string? def) {
+		return fetch_value<string?> (query, def);
 	}
 
 
-	public int fetch_int (Query query) {
-		int n = 0;
-		var s = fetch_string (table, column, where);
-		if (s != null)
-			n = int.parse (s);
-		return n;
+	public int fetch_int (Query query, int def) {
+		return fetch_value<int> (query, def);
 	}
 
 
-	public int64 fetch_int64 (Query query) {
-		int64 n = 0;
-		var s = fetch_string (table, column, where);
-		if (s != null)
-			n = int64.parse (s);
-		return n;
+	public int64 fetch_int64 (Query query, int64 def) {
+		return fetch_value<int64> (query, def);
 	}
 
 
@@ -190,7 +176,7 @@ public abstract class Database : Object {
 	}
 
 
-	private Entity? fetch_entity_full (Type type, string? table, string where, bool recursive = true) {
+	public Entity? fetch_entity_full (Type type, Query query) {
 		bool found = false;
 		var ent = Object.new (type, "db", this) as Entity;
 
@@ -210,8 +196,8 @@ public abstract class Database : Object {
 	}
 
 
-	public T? fetch_entity<T> (string? table, string where, bool recursive = true) {
-		return fetch_entity_full (typeof (T), table, where, recursive);
+	public T? fetch_entity<T> (Query query) {
+		return fetch_entity_full (typeof (T), query);
 	}
 
 
@@ -232,7 +218,7 @@ public abstract class Database : Object {
 		return make_entity_full (typeof (T), n_fields, fields, values, recursive);
 	}
 
-
+/*
 	public Gee.List<Entity> fetch_entity_list_ex (Type type, QueryBuilder q) {
 		var list = new Gee.ArrayList<Entity> ();
 		exec_sql (q.get_query (), (n_columns, values, column_names) => {
@@ -259,7 +245,7 @@ public abstract class Database : Object {
 		});
 		return list;
 	}
-
+*/
 
 	public Gee.Map<int, T> fetch_int_entity_map<T> (string table, string key_field,
 			string? columns = null, string? where = null) {
