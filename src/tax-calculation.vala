@@ -274,4 +274,26 @@ public class TaxFormula07 : Object, TaxCalculation {
 }
 
 
+public class TaxFormula08 : Object, TaxCalculation {
+	public unowned string id () {
+		return "amount";
+	}
+
+
+	public unowned string name () {
+		return _("Am");
+	}
+
+
+	public unowned string description () {
+		return _("total = amount * price1");
+	}
+
+
+	public double amount (Tax tax) {
+		return tax.amount;
+	}
+}
+
+
 }

@@ -13,6 +13,7 @@ public class Database : DB.SQLiteDatabase {
 		register_tax_calculation (typeof (TaxFormula03));
 		register_tax_calculation (typeof (TaxFormula05));
 		register_tax_calculation (typeof (TaxFormula07));
+		register_tax_calculation (typeof (TaxFormula08));
 
 		/* prepare the database */
 		try {
