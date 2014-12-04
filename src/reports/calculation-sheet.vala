@@ -3,7 +3,7 @@ namespace Kv.Reports {
 
 public class CalculationSheet : Report {
 	const int service_ids[] = {
-		5, 6, 4, 1, 2, 3, 7, 9
+		5, 6, 4, 1, 2, 3, 7, 9, 10
 	};
 
 
@@ -86,6 +86,8 @@ public class CalculationSheet : Report {
 			for (var i = 0; i < 8; i++) {
 				var id = service_ids[i];
 				var val = taxes[id];
+				if (id == 4) /* FIXME: this is a workaround */
+					val += taxes[10];
 
 				cell = row.get_cell (7 + i);
 				if (val != null && val > 0) {

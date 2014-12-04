@@ -203,7 +203,8 @@ public class Account : Report {
 			var tenant = tenants[i];
 			unowned Person person = tenant.person;
 			sheet.get_row (14 + i).get_cell (27).put_string (person.name);
-			sheet.get_row (14 + i).get_cell (49).put_string (person.birthday.format ());
+			if (person.birthday != null)
+				sheet.get_row (14 + i).get_cell (49).put_string (person.birthday.format ());
 			if (tenant.relation != null)
 				sheet.get_row (14 + i).get_cell (57).put_string (tenant.relation.name);
 		}
@@ -232,8 +233,15 @@ public class Account : Report {
 			for (var j = 0; j < 8; j++) {
 				var tax = taxes[service_ids[j]];
 				if (tax != null) {
-					totals[j] += tax.total.val;
-					row.get_cell (3 + j).put_number (tax.total.to_real ());
+					if (tax.service.id == 4) {
+						Money m = tax.total;
+						m.val += taxes[10].total.val;
+						totals[j] += m.val;
+						row.get_cell (3 + j).put_number (m.to_real ());
+					} else {
+						totals[j] += tax.total.val;
+						row.get_cell (3 + j).put_number (tax.total.to_real ());
+					}
 				}
 			}
 
