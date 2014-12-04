@@ -233,7 +233,7 @@ public class Account : Report {
 			for (var j = 0; j < 8; j++) {
 				var tax = taxes[service_ids[j]];
 				if (tax != null) {
-					if (tax.service.id == 4) {
+					if (tax.service.id == 4 && taxes.has_key (10)) {
 						Money m = tax.total;
 						m.val += taxes[10].total.val;
 						totals[j] += m.val;

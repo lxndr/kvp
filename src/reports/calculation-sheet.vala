@@ -86,7 +86,7 @@ public class CalculationSheet : Report {
 			for (var i = 0; i < 8; i++) {
 				var id = service_ids[i];
 				var val = taxes[id];
-				if (id == 4) /* FIXME: this is a workaround */
+				if (id == 4 && taxes.has_key (10)) /* FIXME: this is a workaround */
 					val += taxes[10];
 
 				cell = row.get_cell (7 + i);
