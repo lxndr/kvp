@@ -216,7 +216,7 @@ public class TaxFormula05 : Object, TaxCalculation {
 				1.2084,
 				1.3434,
 				1.0214,
-				1.0156,
+				1.0214, /* they mistook, gotta be 1.0156 */
 				0.9860,
 				1.1038,
 				1.0912,
