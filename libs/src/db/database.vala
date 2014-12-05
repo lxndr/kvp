@@ -3,6 +3,7 @@ namespace DB {
 
 public abstract class Database : Object {
 	public ValueAdapter value_adapter { get; set; }
+	private Gee.HashMap<Type, EntitySpec> entity_types;
 	private Gee.HashMap<Type, Gee.HashMap<int, Entity>> cache;
 
 
@@ -29,7 +30,27 @@ public abstract class Database : Object {
 
 
 	/*
-	 * Cache
+	 * Entity specs registry.
+	 */
+	public EntitySpec register_entity_type (Type type, string table_name) {
+		entity_types[type] = new EntitySpec (type, table_name);
+		return entity_types[type];
+	}
+
+
+	public void unregister_entity_type (Type type) {
+		entity_types.unset (type);
+	}
+
+
+	public EntitySpec find_entity_spec (Type type) {
+		return entity_types[type];
+	}
+
+
+
+	/*
+	 * Cache.
 	 */
 	public Entity? get_from_cache_simple (Type type, int id) {
 		var list = cache[type];
@@ -155,88 +176,97 @@ public abstract class Database : Object {
 		var type = ent.get_type ();
 		var obj_class = (ObjectClass) type.class_ref ();
 
-		var str_val = Value (typeof (string));
-
 		for (var i = 0; i < n_fields; i++) {
 			unowned string? val = values[i];
-//			if (val == null)
-//				continue;
-
 			unowned string prop_name = fields[i];
 			var prop = obj_class.find_property (prop_name);
 			if (prop == null)
-				error ("Could not find propery '%s' in '%s'", prop_name, type.name ());
+				error ("Could not find propery '%s.%s'", type.name (), prop_name);
 			var prop_type = prop.value_type;
 
 			var dest_val = Value (prop_type);
-
-			if (prop_type.is_a (typeof (Entity))) {
-				Entity? obj = null;
-				if (val != null) {
-					var obj_id = int.parse (val);
-					if (obj_id > 0)
-						obj = fetch_entity_full (prop_type, null, "id = %d".printf (obj_id));
-				}
-				dest_val.set_object (obj);
-			} else if (prop_type == typeof (double)) {
-				if (val != null)
-					dest_val.set_double (double.parse (val));
-			} else if (prop_type == typeof (bool)) {
-				if (val != null)
-					dest_val.set_boolean (int.parse (val) > 0);
-			} else if (prop_type == typeof (int)) {
-				if (val != null)
-					dest_val.set_int (int.parse (val));
-			} else {
-				if (!value_adapter.convert_from (null, prop_name, val, ref dest_val)) {
-					str_val.set_string (val);
-					if (str_val.transform (ref dest_val) == false)
-						warning ("Couldn't transform value '%s' from '%s' to '%s' for property '%s' of '%s'\n",
-								values[i], str_val.type ().name (), dest_val.type ().name (), prop_name, type.name ());
-				}
-			}
+			if (!assemble_value (ref dest_val, val))
+				warning ("Could not convert value '%s' from 'string' to '%s' for property '%s.%s'\n",
+						val, prop_type.name (), type.name (), prop_name);
 
 			ent.set_property (prop_name, dest_val);
 		}
 	}
 
 
-	private void assemble_value (ref Value val, string? str) {
+	private bool assemble_value (ref Value val, string? str) {
 		var type = val.type ();
 
 		/* Entity */
 		if (type.is_a (typeof (Entity))) {
 			Entity? entity = null;
-			if (val != null) {
-				var entity_id = int.parse (val);
+			if (str != null) {
+				var entity_id = int.parse (str);
 				if (entity_id > 0)
 					entity = fetch_simple_entity_full (type, entity_id);
 			}
 			val.set_object (entity);
-			return;
+			return true;
 		}
 
-		
+		/* Integer */
+		if (type == typeof (int)) {
+			if (str != null)
+				val.set_int (int.parse (str));
+			return true;
+		}
+
+		/* Integer 64 */
+		if (type == typeof (int64)) {
+			if (str != null)
+				val.set_int64 (int64.parse (str));
+			return true;
+		}
+
+		/* Boolean */
+		if (type == typeof (bool)) {
+			if (str != null)
+				val.set_boolean (int.parse (str) > 0);
+			return true;
+		}
+
+		/* Double */
+		if (type == typeof (double)) {
+			if (str != null)
+				val.set_double (double.parse (str));
+			return true;
+		}
+
+		/* Adapter */
+		if (value_adapter.convert_from (null, null, str, ref val))
+			return true;
+
+		/* GLib transformer */
+		if (str != null) {
+			var tmp = Value (typeof (string));
+			tmp.set_string (str);
+			if (tmp.transform (ref val))
+				return true;
+		}
 
 		val.unset ();
+		return false;
 	}
 
 
 	public Entity make_entity_full (Type type, int n_fields,
 			[CCode (array_length = false)] string[] fields,
-			[CCode (array_length = false)] string[] values,
-			bool recursive = true) {
+			[CCode (array_length = false)] string[] values) {
 		var ent = Object.new (type, "db", this) as Entity;
-		prepare_entity (ent, n_fields, fields, values, recursive);
+		prepare_entity (ent, n_fields, fields, values);
 		return ent;
 	}
 
 
 	public T make_entity<T> (int n_fields,
 			[CCode (array_length = false)] string[] fields,
-			[CCode (array_length = false)] string[] values,
-			bool recursive = true) {
-		return make_entity_full (typeof (T), n_fields, fields, values, recursive);
+			[CCode (array_length = false)] string[] values) {
+		return make_entity_full (typeof (T), n_fields, fields, values);
 	}
 
 /*
