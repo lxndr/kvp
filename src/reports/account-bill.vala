@@ -217,9 +217,7 @@ public class Account : Report {
 		sheet.put_string ("L1", selected_account.account.number);
 
 		/* services & taxes */
-		int64 totals[11];
-		for (var j = 0; j < 11; j++)
-			totals[j] = 0;
+		Money totals[11];
 
 		int row_number = 5;
 		foreach (var periodic in periodic_list) {
@@ -234,33 +232,34 @@ public class Account : Report {
 				var tax = taxes[service_ids[j]];
 				if (tax != null) {
 					if (tax.service.id == 4 && taxes.has_key (10)) {
-						Money m = tax.total;
-						m.val += taxes[10].total.val;
-						totals[j] += m.val;
-						row.get_cell (3 + j).put_number (m.to_real ());
+						var m = new Money ()
+							.assign (tax.total)
+							.add (taxes[10].total);
+						totals[j].add (m);
+						row.get_cell (3 + j).put_number (m.real);
 					} else {
-						totals[j] += tax.total.val;
-						row.get_cell (3 + j).put_number (tax.total.to_real ());
+						totals[j].add (tax.total);
+						row.get_cell (3 + j).put_number (tax.total.real);
 					}
 				}
 			}
 
-			totals[8] += periodic.total.val;
-			row.get_cell (12).put_number (periodic.total.to_real ());
-			totals[9] += periodic.payment.val;
-			row.get_cell (13).put_number (periodic.payment.to_real ());
-			totals[10] = periodic.balance.val;
-			row.get_cell (14).put_number (periodic.balance.to_real ());
+			totals[8].add (periodic.total);
+			row.get_cell (12).put_number (periodic.total.real);
+			totals[9].add (periodic.payment);
+			row.get_cell (13).put_number (periodic.payment.real);
+			totals[10].assign (periodic.balance);
+			row.get_cell (14).put_number (periodic.balance.real);
 
 			row_number++;
 		}
 
 		var row = sheet.get_row (17);
 		for (var j = 0; j < 8; j++)
-			row.get_cell (3 + j).put_number (Money (totals[j]).to_real ());
-		row.get_cell (12).put_number (Money (totals[8]).to_real ());
-		row.get_cell (13).put_number (Money (totals[9]).to_real ());
-		row.get_cell (14).put_number (Money (totals[10]).to_real ());
+			row.get_cell (3 + j).put_number (totals[j].real);
+		row.get_cell (12).put_number (totals[8].real);
+		row.get_cell (13).put_number (totals[9].real);
+		row.get_cell (14).put_number (totals[10].real);
 	}
 
 

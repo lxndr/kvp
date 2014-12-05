@@ -18,8 +18,9 @@ public interface TaxCalculation : Object {
 
 
 	public virtual Money total (Tax tax) {
-		var price = price (tax).val;
-		return Money (Math.llround (tax.amount * (double) price));
+		return (Money) new Money ()
+			.assign (price (tax))
+			.mul_float (tax.amount);
 	}
 
 
@@ -128,9 +129,10 @@ public class TaxFormula02 : Object, TaxCalculation {
 
 
 	public Money total (Tax tax) {
-		var price = price (tax).val;
-		var coef = period_coefficient (tax);
-		return Money (Math.llround (tax.amount * price * coef));
+		return (Money) new Money ()
+			.assign (price (tax))
+			.mul_float (tax.amount)
+			.mul_float (period_coefficient (tax));
 	}
 }
 
@@ -234,9 +236,10 @@ public class TaxFormula05 : Object, TaxCalculation {
 
 
 	public Money total (Tax tax) {
-		var price = price (tax).val;
-		var coef = period_coefficient (tax);
-		return Money (Math.llround (tax.amount * (double) price * coef));
+		return (Money) new Money ()
+			.assign (price (tax))
+			.mul_float (tax.amount)
+			.mul_float (period_coefficient (tax));
 	}
 }
 
