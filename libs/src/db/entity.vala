@@ -6,7 +6,7 @@ public abstract class Entity : Object {
 
 
 	public unowned string db_table () {
-		db.find_entity_spec (get_type ()).table_name;
+		return db.find_entity_spec (get_type ()).table_name;
 	}
 
 
@@ -24,8 +24,8 @@ public abstract class Entity : Object {
 
 [Compact]
 public class EntitySpec {
-	public Type type { get; construct set; }
-	public string table_name { get; construct set; }
+	public Type type;
+	public string table_name;
 
 
 	public EntitySpec (Type _type, string _table_name) {

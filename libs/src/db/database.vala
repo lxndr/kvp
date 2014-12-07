@@ -88,7 +88,7 @@ public abstract class Database : Object {
 		var list = new Gee.ArrayList<Entity> ();
 
 		exec_sql (query.sql (), (n_columns, values, column_names) => {
-			list.add (make_entity_full (type, n_columns, column_names, values, true));
+			list.add (make_entity_full (type, n_columns, column_names, values));
 			return 0;
 		});
 
@@ -97,7 +97,7 @@ public abstract class Database : Object {
 
 
 	public Gee.List<T> fetch_entity_list<T> (Query query) {
-		return fetch_entity_list_full (typeof (T), table, where, order_by, limit, recursive);
+		return fetch_entity_list_full (typeof (T), query);
 	}
 
 
@@ -119,8 +119,9 @@ public abstract class Database : Object {
 		if (entity != null)
 			return entity;
 
-		var query = new Query.select ().from (table);
-		query.where ("id = %d".printf (id));
+		var query = new Query.select ();
+		query.from (table)
+			.where ("id = %d".printf (id));
 		return fetch_entity_full (type, query);
 	}
 
@@ -129,14 +130,40 @@ public abstract class Database : Object {
 		return fetch_simple_entity_full (typeof (T), id, table);
 	}
 
-
+/*
 	public T fetch_value<T> (Query query, T def) {
 		var v = Value (typeof (T));
 		if (!fetch_value_full (ref v, query))
 			return def;
 	}
+*/
+/*
+	public bool fetch_value_full (ref Value val, Query query) {
+		var list = fetch_value_list_full (query);
 
+		if (!assemble_value (ref val, str))
+			warning ("");
 
+		
+		return
+	}
+*/
+
+	public Gee.List<Variant> fetch_value_list<T> (Query query) {
+		var list = new Gee.ArrayList<T> ();
+
+		exec_sql (query.sql (), (n_columns, values, column_names) => {
+			var val = Value (typeof(T));
+			if (!assemble_value (ref val, values[0]))
+				warning ("");
+			list.add (val);
+			return 0;
+		});
+
+		return list;
+	}
+
+/*
 	public string? fetch_string (Query query, string? def) {
 		return fetch_value<string?> (query, def);
 	}
@@ -160,7 +187,7 @@ public abstract class Database : Object {
 	public int64 query_sum (string table, string column, string where) {
 		return fetch_int64 (table, "SUM(%s)".printf (column), where);
 	}
-
+*/
 
 	/**
 	 * One of most important functions in DB library.
@@ -297,7 +324,7 @@ public abstract class Database : Object {
 		return list;
 	}
 */
-
+/*
 	public Gee.Map<int, T> fetch_int_entity_map<T> (string table, string key_field,
 			string? columns = null, string? where = null) {
 		int key_column = -1;
@@ -338,14 +365,14 @@ public abstract class Database : Object {
 		});
 		return list;
 	}
-
+*/
 
 	/*
 		Deleteion
 	*/
 	public void delete_entity (Entity entity) {
-		var query = new Query.delete ()
-			.from (entity.db_table ());
+		var query = new Query.delete ();
+		query.from (entity.db_table ());
 
 		if (entity is SimpleEntity) {
 			query.where ("id = %d".printf (((SimpleEntity) entity).id));

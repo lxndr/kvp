@@ -3,9 +3,9 @@ namespace DB {
 
 [Compact]
 public class Query {
-	private StringBuilder sb;
-	private bool have_where;
-	private bool have_on;
+	public StringBuilder sb;
+	public bool have_where;
+	public bool have_on;
 
 
 	public Query.select (string? expr = null) {
