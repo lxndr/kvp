@@ -8,6 +8,13 @@ public class Building : DB.SimpleEntity {
 	public Month first_period { get; set; }
 	public Month last_period { get; set; }
 	public Month lock_period { get; set; }
+	public string? comment { get; set; }
+
+
+	construct {
+		first_period = new Month.now ();
+		last_period = new Month.now ();
+	}
 
 
 	public Building (Database _db) {
@@ -28,7 +35,8 @@ public class Building : DB.SimpleEntity {
 			"number",
 			"first_period",
 			"last_period",
-			"lock_period"
+			"lock_period",
+			"comment"
 		};
 		return fields;
 	}

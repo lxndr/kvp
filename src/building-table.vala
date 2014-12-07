@@ -6,10 +6,11 @@ public class BuildingTable : DB.ViewTable {
 		const string props[] = {
 			N_("location"),
 			N_("street"),
-			N_("number")/*,
-			N_("first-period"),
+			N_("number"),
+			/*N_("first-period"),
 			N_("last-period"),
 			N_("lock_period")*/
+			N_("comment")
 		};
 		return props;
 	}
