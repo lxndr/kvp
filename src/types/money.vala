@@ -13,7 +13,7 @@ public class Money : FixedPoint {
 
 
 	public Money.parse (string str) {
-		base.parse (str);
+		base.parse (str, 3);
 	}
 
 

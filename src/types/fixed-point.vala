@@ -22,7 +22,8 @@ public class FixedPoint {
 	}
 
 
-	public FixedPoint.parse (string _text) {
+	public FixedPoint.parse (string _text, int8 _precision) {
+		precision = _precision;
 		var str = clean (_text);
 
 		/* if the value is negative */
@@ -53,7 +54,7 @@ public class FixedPoint {
 				sb.append_c ('0');
 			p2 = sb.str;
 		} else {
-			p2 = p2[0:3];
+			p2 = p2[0:precision];
 		}
 
 		p1 = Utils.string_remove_leading (p1 + p2, '0');
