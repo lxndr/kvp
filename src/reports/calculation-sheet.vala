@@ -57,6 +57,8 @@ public class CalculationSheet : Report {
 		int row_number = 11;
 
 		Money totals[18];
+		for (var i = 0; i < 18; i++)
+			totals[i] = new Money ();
 
 		foreach (var ac in accounts) {
 			var periodic = ac.fetch_period (selected_account.period);

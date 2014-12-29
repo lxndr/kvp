@@ -72,7 +72,7 @@ private class AccountReportParameters : Gtk.Dialog {
 
 
 public class Account : Report {
-	private const int service_ids[] = { 5, 6, 1, 2, 7, 8, 4, 9 };
+	private const int service_ids[] = { 5, 6, 1, 2, 7, 8, 3, 4, 9 };
 
 	private OOXML.Spreadsheet book;
 	private int start_period;
@@ -217,7 +217,9 @@ public class Account : Report {
 		sheet.put_string ("L1", selected_account.account.number);
 
 		/* services & taxes */
-		Money totals[11];
+		Money totals[12];
+		for (var i = 0; i < 12; i++)
+			totals[i] = new Money ();
 
 		int row_number = 5;
 		foreach (var periodic in periodic_list) {
@@ -228,7 +230,7 @@ public class Account : Report {
 			var row = sheet.get_row (row_number);
 			row.get_cell (2).put_string (Utils.month_to_string (month));
 
-			for (var j = 0; j < 8; j++) {
+			for (var j = 0; j < 9; j++) {
 				var tax = taxes[service_ids[j]];
 				if (tax != null) {
 					if (tax.service.id == 4 && taxes.has_key (10)) {
@@ -244,22 +246,22 @@ public class Account : Report {
 				}
 			}
 
-			totals[8].add (periodic.total);
-			row.get_cell (12).put_number (periodic.total.real);
-			totals[9].add (periodic.payment);
-			row.get_cell (13).put_number (periodic.payment.real);
-			totals[10].assign (periodic.balance);
-			row.get_cell (14).put_number (periodic.balance.real);
+			totals[9].add (periodic.total);
+			row.get_cell (13).put_number (periodic.total.real);
+			totals[10].add (periodic.payment);
+			row.get_cell (14).put_number (periodic.payment.real);
+			totals[11].assign (periodic.balance);
+			row.get_cell (15).put_number (periodic.balance.real);
 
 			row_number++;
 		}
 
 		var row = sheet.get_row (17);
-		for (var j = 0; j < 8; j++)
+		for (var j = 0; j < 9; j++)
 			row.get_cell (3 + j).put_number (totals[j].real);
-		row.get_cell (12).put_number (totals[8].real);
 		row.get_cell (13).put_number (totals[9].real);
 		row.get_cell (14).put_number (totals[10].real);
+		row.get_cell (15).put_number (totals[11].real);
 	}
 
 

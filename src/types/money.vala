@@ -2,6 +2,11 @@ namespace Kv {
 
 
 public class Money : FixedPoint {
+	public Money() {
+		base.from_raw_integer (0, 3);
+	}
+
+
 	public Money.from_raw_integer (int64 _raw_integer) {
 		base.from_raw_integer (_raw_integer, 3);
 	}
