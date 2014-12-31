@@ -20,6 +20,8 @@ public class DatabaseValueAdapter : DB.ValueAdapter {
 
 	private bool money_to_string (ref Value v, out string? s) {
 		var money = (Money*) v.peek_pointer ();
+		if (money == null)
+			money = new Money ();
 		s = money->integer.to_string ();
 		return true;
 	}

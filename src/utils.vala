@@ -129,6 +129,8 @@ public void transform_property_adapter_to_double (Value src_value, ref Value des
  */
 public void transform_money_to_property_adapter (Value src_value, ref Value dest_value) {
 	var m = (Money*) src_value.peek_pointer ();
+	if (m == null)
+		m = new Money ();
 	DB.PropertyAdapter ad = { m->format () };
 	dest_value.set_boxed (&ad);
 }
