@@ -174,29 +174,28 @@ msgid "Reference - People"
 msgstr "Справочник - Люди"
 
 #: src/price-table.vala:10
-#, fuzzy
 msgid "service"
 msgstr "Услуга"
 
 #: src/price-table.vala:11
 msgid "first_day"
-msgstr ""
+msgstr "Первый день"
 
 #: src/price-table.vala:12
 msgid "last_day"
-msgstr ""
+msgstr "Последний день"
 
 #: src/price-table.vala:13
 msgid "method"
-msgstr ""
+msgstr "Метод"
 
 #: src/price-table.vala:14
 msgid "value1"
-msgstr ""
+msgstr "Стоимость 1"
 
 #: src/price-table.vala:15
 msgid "value2"
-msgstr ""
+msgstr "Стоимость 2"
 
 #: src/service-table.vala:7
 msgid "id"
@@ -428,9 +427,8 @@ msgid "References"
 msgstr "Справочники"
 
 #: ui/main-window.ui:301
-#, fuzzy
 msgid "_Reports"
-msgstr "Отчеты"
+msgstr "_Отчеты"
 
 #: libs/src/db-gtk/view-table.vala:103
 msgid "Add"
@@ -439,6 +437,3 @@ msgstr "Добавить"
 #: libs/src/db-gtk/view-table.vala:107
 msgid "Remove"
 msgstr "Удалить"
-
-#~ msgid "Year, month"
-#~ msgstr "Год, месяц"
