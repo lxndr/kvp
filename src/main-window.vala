@@ -105,8 +105,12 @@ public class MainWindow : Gtk.ApplicationWindow {
 			menu.append (new Gtk.SeparatorMenuItem ());
 
 			foreach (var building in buildings) {
+				string comment = "";
+				if (building.comment != null && building.comment.length > 0)
+					comment = " (%s)".printf (building.comment);
+
 				item = new Gtk.RadioMenuItem.with_label_from_widget (item,
-						"%s, %s".printf (building.street, building.number));
+						"%s, %s%s".printf (building.street, building.number, comment));
 				item.active = (current_building != null && current_building.id == building.id);
 				item.set_data<Building?> ("building", building);
 				item.toggled.connect (building_clicked);

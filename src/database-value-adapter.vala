@@ -12,18 +12,17 @@ public class DatabaseValueAdapter : DB.ValueAdapter {
 
 	/* Money */
 	private bool string_to_money (string? s, ref Value v) {
-		int64 val = 0;
-		if (s != null)
-			val = int64.parse (s);
-		var money = Money (val);
-		v.set_boxed (&money);
+		var m = new Money.parse_raw_integer (s);
+		v.set_instance (m);
 		return true;
 	}
 
 
 	private bool money_to_string (ref Value v, out string? s) {
-		var money = (Money*) v.get_boxed ();
-		s = money->val.to_string ();
+		var money = (Money*) v.peek_pointer ();
+		if (money == null)
+			money = new Money ();
+		s = money->integer.to_string ();
 		return true;
 	}
 

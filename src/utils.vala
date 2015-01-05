@@ -128,15 +128,17 @@ public void transform_property_adapter_to_double (Value src_value, ref Value des
  * Adapter <-> Money
  */
 public void transform_money_to_property_adapter (Value src_value, ref Value dest_value) {
-	Money* m = (Money*) src_value.get_boxed ();
+	var m = (Money*) src_value.peek_pointer ();
+	if (m == null)
+		m = new Money ();
 	DB.PropertyAdapter ad = { m->format () };
 	dest_value.set_boxed (&ad);
 }
 
 public void transform_property_adapter_to_money (Value src_value, ref Value dest_value) {
 	var ad = (DB.PropertyAdapter*) src_value.get_boxed ();
-	var m = Money.from_formatted (ad.val);
-	dest_value.set_boxed (&m);
+	var m = new Money.parse (ad.val);
+	dest_value.set_instance (m);
 }
 
 

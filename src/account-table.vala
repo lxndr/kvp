@@ -136,15 +136,15 @@ public class AccountTable : DB.ViewTable {
 
 	protected override void row_refreshed (Gtk.TreeIter tree_iter, DB.Entity entity) {
 		unowned AccountPeriod periodic = (AccountPeriod) entity;
-		var total = periodic.total.val;
-		var balance = periodic.balance.val;
+		unowned Money total = periodic.total;
+		unowned Money balance = periodic.balance;
 
 		unowned string? color = null;
-		if (balance < 0)
+		if (balance.is_negative ())
 			color = "green";
-		else if (balance == 0)
+		else if (balance.is_zero ())
 			color = "blue";
-		else if (total == 0 && balance > 0)
+		else if (total.is_zero () && balance.is_positive ())
 			color = "red";
 
 		list_store.set (tree_iter,

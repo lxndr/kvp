@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-11-22 21:29+0300\n"
+"POT-Creation-Date: 2014-12-31 09:42+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -79,7 +79,7 @@ msgstr "Уплачено"
 msgid "balance"
 msgstr "Остаток"
 
-#: src/account-table.vala:36
+#: src/account-table.vala:36 src/building-table.vala:13
 msgid "comment"
 msgstr "Примечание"
 
@@ -130,26 +130,26 @@ msgstr "Нет зданий"
 msgid "All buildings"
 msgstr "Все здания"
 
-#: src/main-window.vala:119
+#: src/main-window.vala:123
 msgid "Edit..."
 msgstr "Редактировать..."
 
-#: src/main-window.vala:295
+#: src/main-window.vala:299
 #, c-format
 msgid ""
 "Period '%s' for building '%s' has no data. Do you want to duplicate the last "
 "period to the new?"
 msgstr ""
 
-#: src/main-window.vala:297
+#: src/main-window.vala:301
 msgid "Yes"
 msgstr "Да"
 
-#: src/main-window.vala:298
+#: src/main-window.vala:302
 msgid "No"
 msgstr "Нет"
 
-#: src/main-window.vala:299
+#: src/main-window.vala:303
 msgid "Cancel"
 msgstr "Отмена"
 
@@ -201,44 +201,52 @@ msgstr "Стоимость 2"
 msgid "id"
 msgstr ""
 
-#: src/tax-calculation.vala:89
+#: src/tax-calculation.vala:90
 msgid "Pr"
 msgstr "Ст"
 
-#: src/tax-calculation.vala:94
+#: src/tax-calculation.vala:95
 msgid "total = price"
 msgstr ""
 
-#: src/tax-calculation.vala:116
+#: src/tax-calculation.vala:117
 msgid "Ar"
 msgstr "Пл"
 
-#: src/tax-calculation.vala:121
+#: src/tax-calculation.vala:122
 msgid "total = area * price * period_coef"
 msgstr ""
 
-#: src/tax-calculation.vala:145
+#: src/tax-calculation.vala:147
 msgid "Tn"
 msgstr "Жл"
 
-#: src/tax-calculation.vala:150
+#: src/tax-calculation.vala:152
 msgid "total = tenant_coef * price"
 msgstr ""
 
-#: src/tax-calculation.vala:167
+#: src/tax-calculation.vala:169
 msgid "Ne"
 msgstr ""
 
-#: src/tax-calculation.vala:172
+#: src/tax-calculation.vala:174
 msgid "total = norm * n_people * tenant_coef"
 msgstr ""
 
-#: src/tax-calculation.vala:251
+#: src/tax-calculation.vala:254
 msgid "Ts"
 msgstr "Жд"
 
-#: src/tax-calculation.vala:256
+#: src/tax-calculation.vala:259
 msgid "total = tenant_coef * ?(shower, price2, price1)"
+msgstr ""
+
+#: src/tax-calculation.vala:287
+msgid "Am"
+msgstr ""
+
+#: src/tax-calculation.vala:292
+msgid "total = amount * price1"
 msgstr ""
 
 #: src/tax-table.vala:30
@@ -269,51 +277,51 @@ msgstr "Прибыл"
 msgid "move-out"
 msgstr "Выбыл"
 
-#: src/utils.vala:192
+#: src/utils.vala:194
 msgid "January"
 msgstr "Январь"
 
-#: src/utils.vala:193
+#: src/utils.vala:195
 msgid "February"
 msgstr "Февраль"
 
-#: src/utils.vala:194
+#: src/utils.vala:196
 msgid "March"
 msgstr "Март"
 
-#: src/utils.vala:195
+#: src/utils.vala:197
 msgid "April"
 msgstr "Апрель"
 
-#: src/utils.vala:196
+#: src/utils.vala:198
 msgid "May"
 msgstr "Май"
 
-#: src/utils.vala:197
+#: src/utils.vala:199
 msgid "June"
 msgstr "Июнь"
 
-#: src/utils.vala:198
+#: src/utils.vala:200
 msgid "July"
 msgstr "Июль"
 
-#: src/utils.vala:199
+#: src/utils.vala:201
 msgid "August"
 msgstr "Август"
 
-#: src/utils.vala:200
+#: src/utils.vala:202
 msgid "September"
 msgstr "Сентябрь"
 
-#: src/utils.vala:201
+#: src/utils.vala:203
 msgid "October"
 msgstr "Октябрь"
 
-#: src/utils.vala:202
+#: src/utils.vala:204
 msgid "November"
 msgstr "Ноябрь"
 
-#: src/utils.vala:203
+#: src/utils.vala:205
 msgid "December"
 msgstr "Декабрь"
 

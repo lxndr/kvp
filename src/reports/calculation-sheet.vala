@@ -3,7 +3,7 @@ namespace Kv.Reports {
 
 public class CalculationSheet : Report {
 	const int service_ids[] = {
-		5, 6, 4, 1, 2, 3, 7, 9
+		5, 6, 4, 1, 2, 3, 7, 9, 10
 	};
 
 
@@ -42,30 +42,30 @@ public class CalculationSheet : Report {
 		foreach (var id in service_ids)
 			if (prices[id] == null) prices[id] = 0;
 
-		sheet.put_number ("D4", Money (prices[5]).to_real ());
-		sheet.put_number ("D5", Money (prices[6]).to_real ());
-		sheet.put_number ("D6", Money (prices[4]).to_real ());
-		sheet.put_number ("D7", Money (prices[1]).to_real ());
-		sheet.put_number ("J4", Money (prices[2]).to_real ());
-		sheet.put_number ("J5", Money (prices[3]).to_real ());
-		sheet.put_number ("J6", Money (prices[7]).to_real ());
-		sheet.put_number ("J7", Money (prices[9]).to_real ());
+		sheet.put_number ("D4", new Money.from_raw_integer (prices[5]).real);
+		sheet.put_number ("D5", new Money.from_raw_integer (prices[6]).real);
+		sheet.put_number ("D6", new Money.from_raw_integer (prices[4]).real);
+		sheet.put_number ("D7", new Money.from_raw_integer (prices[1]).real);
+		sheet.put_number ("J4", new Money.from_raw_integer (prices[2]).real);
+		sheet.put_number ("J5", new Money.from_raw_integer (prices[3]).real);
+		sheet.put_number ("J6", new Money.from_raw_integer (prices[7]).real);
+		sheet.put_number ("J7", new Money.from_raw_integer (prices[9]).real);
 
 		/*  */
 		var accounts = db.get_account_list (selected_account.account.building);
 		OOXML.Row row = sheet.get_row(1);
 		int row_number = 11;
 
-		int64 totals[18];
+		Money totals[18];
 		for (var i = 0; i < 18; i++)
-			totals[i] = 0;
+			totals[i] = new Money ();
 
 		foreach (var ac in accounts) {
 			var periodic = ac.fetch_period (selected_account.period);
 			if (periodic == null)
 				continue;
 
-			if (periodic.total.val == 0 && periodic.balance.val == 0)
+			if (periodic.total.is_zero () && periodic.balance.is_zero ())
 				continue;
 
 			row = sheet.get_row (row_number);
@@ -86,38 +86,36 @@ public class CalculationSheet : Report {
 			for (var i = 0; i < 8; i++) {
 				var id = service_ids[i];
 				var val = taxes[id];
+				if (id == 4 && taxes.has_key (10)) /* FIXME: this is a workaround */
+					val += taxes[10];
 
 				cell = row.get_cell (7 + i);
 				if (val != null && val > 0) {
-					totals[6 + i] += val;
-					cell.put_number (Money (val).to_real ());
+					totals[6 + i].integer += val;
+					cell.put_number (new Money.from_raw_integer (val).real);
 				}
 				cell.style = cstyles[6 + i];
 			}
 
-			int64 val;
-			val = periodic.total.val;
-			totals[14] += val;
+			totals[14].add (periodic.total);
 			cell = row.get_cell (15);
-			cell.put_number (Money (val).to_real ());
+			cell.put_number (periodic.total.real);
 			cell.style = cstyles[14];
 
-			val = periodic.payment.val;
-			totals[15] += val;
+			totals[15].add (periodic.payment);
 			cell = row.get_cell (16);
-			cell.put_number (Money (val).to_real ());
+			cell.put_number (periodic.payment.real);
 			cell.style = cstyles[15];
 
-			val = periodic.previuos_balance ().val;
-			totals[16] += val;
+			var prev_balance = periodic.previuos_balance ();
+			totals[16].add (prev_balance);
 			cell = row.get_cell (17);
-			cell.put_number (Money (val).to_real ());
+			cell.put_number (prev_balance.real);
 			cell.style = cstyles[16];
 
-			val = periodic.balance.val;
-			totals[17] += val;
+			totals[17].add (periodic.balance);
 			cell = row.get_cell (18);
-			cell.put_number (Money (val).to_real ());
+			cell.put_number (periodic.balance.real);
 			cell.style = cstyles[17];
 
 			row_number++;
@@ -130,11 +128,11 @@ public class CalculationSheet : Report {
 			cell.style = estyles[i];
 
 			if (i == 3)
-				cell.put_string (totals[i].to_string ());
+				cell.put_string (totals[i].integer.to_string ());
 			else if (i == 5)
 				cell.put_string ("-");
 			else if (i >= 6)
-				cell.put_number (Money (totals[i]).to_real ());
+				cell.put_number (totals[i].real);
 		}
 	}
 

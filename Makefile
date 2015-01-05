@@ -75,6 +75,7 @@ $(NAME)$(BINEXT): resources $(SOURCES)
 	$(CC) -o $(NAME)$(BINEXT) build/*.o libs/lib/db.$(LIBEXT) libs/lib/db-gtk.$(LIBEXT) libs/lib/ooxml.$(LIBEXT) libs/lib/archive.$(LIBEXT) $(LDFLAGS)
 
 
+# Resources
 resources: build/resources.c
 	
 
@@ -83,6 +84,7 @@ build/resources.c: kvp.gresource.xml ui/*.ui data/init.sql
 	glib-compile-resources --generate-source --target=src/resources.c kvp.gresource.xml
 
 
+# Translation
 po: kvp.pot
 	msgfmt --output=ru.mo ru.po
 
@@ -95,6 +97,26 @@ kvp.pot: $(SOURCES)
 	msgmerge --update --quiet ru.po kvp.pot
 
 
+# Packaging
+PAKOUT = $(NAME)-$(BUILD)
+
+ifeq ($(BUILD), win32)
+	BINDIR = /usr/i686-w64-mingw32/bin
+else ifeq ($(BUILD), win64)
+	BINDIR = /usr/x86_64-w64-mingw32/bin
+else
+	
+endif
+
+
+pack: $(NAME)$(BINEXT)
+	mkdir -p $(PAKOUT)/bin/out
+	cp -f $(BINDIR)/{gspawn-win32-helper.exe,gspawn-win32-helper-console.exe,libatk-1.0-0.dll,libbz2-1.dll,libcairo-2.dll,libcairo-gobject-2.dll,libexpat-1.dll,libffi-6.dll,libfontconfig-1.dll,libfreetype-6.dll,libgcc_s_sjlj-1.dll,libgdk-3-0.dll,libgdk_pixbuf-2.0-0.dll,libgee-0.8-2.dll,libgio-2.0-0.dll,libglib-2.0-0.dll,libgmodule-2.0-0.dll,libgobject-2.0-0.dll,libgtk-3-0.dll,libharfbuzz-0.dll,libiconv-2.dll,libintl-8.dll,libpango-1.0-0.dll,libpangocairo-1.0-0.dll,libpangoft2-1.0-0.dll,libpangowin32-1.0-0.dll,libpixman-1-0.dll,libpng16-16.dll,libsqlite3-0.dll,libwinpthread-1.dll,libxml2-2.dll,zlib1.dll} $(PAKOUT)/bin
+	cp -f {kvp.exe,kvartplata.db,style.css} $(PAKOUT)/bin
+	cp -fr templates $(PAKOUT)/bin
+
+
+# Clean
 clean:
 	$(MAKE) -C libs/src/archive clean
 	$(MAKE) -C libs/src/ooxml clean

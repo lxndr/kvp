@@ -7,7 +7,7 @@ public class Tax : DB.Entity, DB.Viewable {
 	public Service service { get; set; }
 	public bool apply { get; set; }
 	public double amount { get; set; }
-	public Money total {get; set; default = Money (0); }
+	public Money total {get; set; }
 
 
 	public string service_name {
@@ -36,9 +36,9 @@ public class Tax : DB.Entity, DB.Viewable {
 
 
 	public Money price_value {
-		get {
+		owned get {
 			if (price.calculation == null)
-				return Money (0);
+				return new Money ();
 			return price.calculation.price (this);
 		}
 	}
@@ -67,6 +67,11 @@ public class Tax : DB.Entity, DB.Viewable {
 			"total"
 		};
 		return fields;
+	}
+
+
+	construct {
+		_total = new Money ();
 	}
 
 

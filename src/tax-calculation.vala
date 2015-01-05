@@ -18,8 +18,9 @@ public interface TaxCalculation : Object {
 
 
 	public virtual Money total (Tax tax) {
-		var price = price (tax).val;
-		return Money (Math.llround (tax.amount * (double) price));
+		return (Money) new Money ()
+			.assign (price (tax))
+			.mul_float (tax.amount);
 	}
 
 
@@ -128,9 +129,10 @@ public class TaxFormula02 : Object, TaxCalculation {
 
 
 	public Money total (Tax tax) {
-		var price = price (tax).val;
-		var coef = period_coefficient (tax);
-		return Money (Math.llround (tax.amount * price * coef));
+		return (Money) new Money ()
+			.assign (price (tax))
+			.mul_float (tax.amount)
+			.mul_float (period_coefficient (tax));
 	}
 }
 
@@ -216,7 +218,7 @@ public class TaxFormula05 : Object, TaxCalculation {
 				1.2084,
 				1.3434,
 				1.0214,
-				1.0156,
+				1.0214, /* they mistook, gotta be 1.0156 */
 				0.9860,
 				1.1038,
 				1.0912,
@@ -234,9 +236,10 @@ public class TaxFormula05 : Object, TaxCalculation {
 
 
 	public Money total (Tax tax) {
-		var price = price (tax).val;
-		var coef = period_coefficient (tax);
-		return Money (Math.llround (tax.amount * (double) price * coef));
+		return (Money) new Money ()
+			.assign (price (tax))
+			.mul_float (tax.amount)
+			.mul_float (period_coefficient (tax));
 	}
 }
 
@@ -270,6 +273,28 @@ public class TaxFormula07 : Object, TaxCalculation {
 
 	public double amount (Tax tax) {
 		return tenant_coefficient (tax);
+	}
+}
+
+
+public class TaxFormula08 : Object, TaxCalculation {
+	public unowned string id () {
+		return "amount";
+	}
+
+
+	public unowned string name () {
+		return _("Am");
+	}
+
+
+	public unowned string description () {
+		return _("total = amount * price1");
+	}
+
+
+	public double amount (Tax tax) {
+		return tax.amount;
 	}
 }
 
