@@ -3,13 +3,9 @@ namespace Kv {
 
 public class Service : DB.SimpleEntity, DB.Viewable
 {
-	public string name { get; set; }
-
-
 	public static unowned string table_name = "service";
-	public override unowned string db_table () {
-		return table_name;
-	}
+
+	public string name { get; set; }
 
 
 	public override unowned string[] db_fields () {

@@ -33,13 +33,20 @@ public class Account : DB.SimpleEntity {
 
 
 	public override void remove () {
+		DB.Query q;
 		var where = "account = %d".printf (id);
 
 		db.begin_transaction ();
 		base.remove ();
-		db.delete_entity (AccountPeriod.table_name, where);
-		db.delete_entity (Tenant.table_name, where);
-		db.delete_entity (Tax.table_name, where);
+		q = new DB.Query.delete (AccountPeriod.table_name);
+		q.where (where);
+		db.exec (q);
+		q = new DB.Query.delete (Tenant.table_name);
+		q.where (where);
+		db.exec (q);
+		q = new DB.Query.delete (Tax.table_name);
+		q.where (where);
+		db.exec (q);
 		db.commit_transaction ();
 	}
 

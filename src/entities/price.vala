@@ -2,6 +2,8 @@ namespace Kv {
 
 
 public class Price : DB.SimpleEntity {
+	public static unowned string table_name = "price";
+
 	public Building building { get; set; }
 	public Service service { get; set; }
 	public Date? first_day { get; set; default = null; }
@@ -28,12 +30,6 @@ public class Price : DB.SimpleEntity {
 		Object (db: _db,
 				building: _building,
 				service: _service);
-	}
-
-
-	public static unowned string table_name = "price";
-	public override unowned string db_table () {
-		return table_name;
 	}
 
 

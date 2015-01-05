@@ -2,6 +2,8 @@ namespace Kv {
 
 
 public class Tax : DB.Entity, DB.Viewable {
+	public static unowned string table_name = "tax";
+
 	public Account account { get; set; }
 	public Month period { get; set; }
 	public Service service { get; set; }
@@ -41,12 +43,6 @@ public class Tax : DB.Entity, DB.Viewable {
 				return new Money ();
 			return price.calculation.price (this);
 		}
-	}
-
-
-	public static unowned string table_name = "tax";
-	public override unowned string db_table () {
-		return table_name;
 	}
 
 
