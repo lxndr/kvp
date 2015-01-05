@@ -14,8 +14,9 @@ public class Query {
 	}
 
 
-	public Query.delete () {
+	public Query.delete (string table) {
 		sb = new StringBuilder.sized (64);
+		sb.append_printf ("DELETE FROM %s", table);
 	}
 
 
@@ -66,6 +67,14 @@ public class Query {
 	public unowned Query limit (int limit) {
 		sb.append_printf (" LIMIT %d", limit);
 		return this;
+	}
+
+
+	public static Query entity_list (Database db, Type type) {
+		var table_name = db.find_entity_spec (type).table_name;
+		var q = new Query.select ();
+		q.from (table_name);
+		return q;
 	}
 }
 

@@ -132,7 +132,8 @@ public abstract class ViewTable : Gtk.TreeView {
 
 		if (prop_type.is_a (typeof (Entity))) {
 			var combo_store = new Gtk.ListStore (2, typeof (string), typeof (Entity));
-			var entity_list = db.fetch_entity_list_full (prop_type) as Gee.List<Viewable>;
+			var entity_list = db.fetch_entity_list_full (prop_type,
+					Query.entity_list (db, prop_type)) as Gee.List<Viewable>;
 
 			foreach (var entity in entity_list) {
 				Gtk.TreeIter iter;

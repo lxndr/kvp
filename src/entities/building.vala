@@ -15,12 +15,6 @@ public class Building : DB.SimpleEntity {
 	}
 
 
-	public static unowned string table_name = "building";
-	public override unowned string db_table () {
-		return table_name;
-	}
-
-
 	public override unowned string[] db_fields () {
 		const string[] fields = {
 			"location",

@@ -28,6 +28,10 @@ public abstract class Database : Object {
 	}
 
 
+	public void exec (Query query) {
+		exec_sql (query.sql ());
+	}
+
 
 	/*
 	 * Entity specs registry.
@@ -130,13 +134,18 @@ public abstract class Database : Object {
 		return fetch_simple_entity_full (typeof (T), id, table);
 	}
 
-/*
+
 	public T fetch_value<T> (Query query, T def) {
-		var v = Value (typeof (T));
+/*		var v = Value (typeof (T));
 		if (!fetch_value_full (ref v, query))
 			return def;
-	}
 */
+		var list = fetch_value_list<T> (query);
+		if (list.size > 0)
+			return list[0];
+		return def;
+	}
+
 /*
 	public bool fetch_value_full (ref Value val, Query query) {
 		var list = fetch_value_list_full (query);
@@ -144,7 +153,6 @@ public abstract class Database : Object {
 		if (!assemble_value (ref val, str))
 			warning ("");
 
-		
 		return
 	}
 */
@@ -163,7 +171,7 @@ public abstract class Database : Object {
 		return list;
 	}
 
-/*
+
 	public string? fetch_string (Query query, string? def) {
 		return fetch_value<string?> (query, def);
 	}
@@ -179,15 +187,13 @@ public abstract class Database : Object {
 	}
 
 
-	public int query_count (string table, string? where) {
-		return fetch_int (table, "COUNT(*)", where);
+	public int query_count (string from, string where) {
+		var q = new Query.select ("COUNT(*)");
+		q.from (from);
+		q.where (where);
+		return fetch_int (q, 0);
 	}
 
-
-	public int64 query_sum (string table, string column, string where) {
-		return fetch_int64 (table, "SUM(%s)".printf (column), where);
-	}
-*/
 
 	/**
 	 * One of most important functions in DB library.
@@ -371,8 +377,7 @@ public abstract class Database : Object {
 		Deleteion
 	*/
 	public void delete_entity (Entity entity) {
-		var query = new Query.delete ();
-		query.from (entity.db_table ());
+		var query = new Query.delete (entity.db_table ());
 
 		if (entity is SimpleEntity) {
 			query.where ("id = %d".printf (((SimpleEntity) entity).id));
@@ -380,7 +385,7 @@ public abstract class Database : Object {
 			/* TODO: composite key */
 		}
 
-		exec_sql (query.sql (), null);
+		exec (query);
 	}
 
 

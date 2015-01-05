@@ -1,8 +1,9 @@
 namespace Kv {
 
 
-public class Tenant : DB.SimpleEntity, DB.Viewable
-{
+public class Tenant : DB.SimpleEntity, DB.Viewable {
+	public static string table_name = "tenant";
+
 	public Account account { get; set; }
 	public Person person { get; set; }
 	public Date? move_in { get; set; default = new Date.now (); }
@@ -19,12 +20,6 @@ public class Tenant : DB.SimpleEntity, DB.Viewable
 	public Date? birthday {
 		get { return person.birthday; }
 		set { person.birthday = value; }
-	}
-
-
-	public static unowned string table_name = "tenant";
-	public override unowned string db_table () {
-		return table_name;
 	}
 
 

@@ -6,11 +6,6 @@ public class Relationship : DB.SimpleEntity, DB.Viewable
 	public string name { get; set; default = ""; }
 
 
-	public override unowned string db_table () {
-		return "relationships";
-	}
-
-
 	public override unowned string[] db_fields () {
 		const string[] fields = {
 			"name"

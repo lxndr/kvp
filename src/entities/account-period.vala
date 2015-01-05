@@ -1,8 +1,9 @@
 namespace Kv {
 
 
-public class AccountPeriod : DB.Entity, DB.Viewable
-{
+public class AccountPeriod : DB.Entity, DB.Viewable {
+	public static string table_name = "account_period";
+
 	public Account account { get; set; }
 	public Month period { get; set; }
 	public string apartment { get; set; default = ""; }
@@ -59,12 +60,6 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 	}
 
 
-	public static unowned string table_name = "account_period";
-	public override unowned string db_table () {
-		return table_name;
-	}
-
-
 	public override unowned string[] db_keys () {
 		const string[] keys = {
 			"account",
@@ -114,15 +109,18 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 
 	public Money previuos_balance () {
-		var n = db.fetch_int64 (AccountPeriod.table_name, "balance",
-				"account=%d AND period=%d".printf (account.id, period.get_prev ().raw_value));
-		return Money (n);
+		var q = new DB.Query.select ("balance");
+		q.from (AccountPeriod.table_name);
+		q.where ("account = %d AND period = %d".printf (account.id, period.get_prev ().raw_value));
+		return db.fetch_value<Money> (q, new Money ());
 	}
 
 
 	public void calc_total () {
-		total = Money (db.query_sum (Tax.table_name, "total",
-				"account=%d AND period=%d".printf (account.id, period.raw_value)));
+		var q = new DB.Query.select ("SUM(total)");
+		q.from (Tax.table_name);
+		q.where ("account = %d AND period = %d".printf (account.id, period.raw_value));
+		total = db.fetch_value<Money> (q, new Money ());
 	}
 
 
@@ -133,8 +131,10 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 
 	public string? main_tenant_name () {
-		return db.fetch_string ("person JOIN tenant ON tenant.person=person.id",
-				"name", "account=%d AND relation=1".printf (account.id));
+		var q = new DB.Query.select ("name");
+		q.from ("person JOIN tenant ON tenant.person=person.id");
+		q.where ("account = %d AND relation = 1".printf (account.id));
+		return db.fetch_string (q, null);
 	}
 
 
@@ -144,8 +144,10 @@ public class AccountPeriod : DB.Entity, DB.Viewable
 
 
 	public Gee.List<Tax> get_taxes () {
-		return db.fetch_entity_list<Tax> (Tax.table_name,
-				"account=%d AND period=%d".printf (account.id, period.raw_value));
+		var q = new DB.Query.select ();
+		q.from (Tax.table_name);
+		q.where ("account = %d AND period = %d".printf (account.id, period.raw_value));
+		return db.fetch_entity_list<Tax> (q);
 	}
 }
 

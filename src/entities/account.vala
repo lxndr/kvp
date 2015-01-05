@@ -9,12 +9,6 @@ public class Account : DB.SimpleEntity {
 	public string? comment { get; set; default = null; }
 
 
-	public static unowned string table_name = "account";
-	public override unowned string db_table () {
-		return table_name;
-	}
-
-
 	public override unowned string[] db_fields () {
 		const string[] fields = {
 			"building",

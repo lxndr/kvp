@@ -1,11 +1,25 @@
 namespace Kv {
 
 
-public class Database : DB.SQLiteDatabase {
+public class Database {
+	public Database db { get; private set; }
 	private Gee.Map<string, TaxCalculation> tax_calc_methods;
 
 
 	construct {
+		/* database */
+		_db = new DB.SQLiteDatabase (
+				File.new_for_path ("./kvartplata.db", new DatabaseValueAdapter ()));
+		_db.register_entity_type (typeof (Account), "account");
+		_db.register_entity_type (typeof (AccountPeriod), "account_period");
+		_db.register_entity_type (typeof (Building), "building");
+		_db.register_entity_type (typeof (Person), "person");
+		_db.register_entity_type (typeof (Price), "price");
+		_db.register_entity_type (typeof (Relationship), "relationships");
+		_db.register_entity_type (typeof (Service), "service");
+		_db.register_entity_type (typeof (Tax), "tax");
+		_db.register_entity_type (typeof (Tenant), "tenant");
+	
 		/* tax colculation methods */
 		tax_calc_methods = new Gee.HashMap<string, TaxCalculation> ();
 		register_tax_calculation (typeof (TaxFormula01));
@@ -16,18 +30,12 @@ public class Database : DB.SQLiteDatabase {
 
 		/* prepare the database */
 		try {
-			var bytes = resources_lookup_data ("/org/lxndr/kvp/data/init.sql", ResourceLookupFlags.NONE);
-			unowned uint8[] data = bytes.get_data ();
+//			var bytes = resources_lookup_data ("/org/lxndr/kvp/data/init.sql", ResourceLookupFlags.NONE);
+//			unowned uint8[] data = bytes.get_data ();
 //			exec_sql ((string) data);
 		} catch (Error e) {
 			error ("Error preparing database '%s': %s", file.get_path (), e.message);
 		}
-	}
-
-
-	public Database (File _file) {
-		Object (file: _file,
-				value_adapter: new DatabaseValueAdapter ());
 	}
 
 
