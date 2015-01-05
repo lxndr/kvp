@@ -149,14 +149,14 @@ public abstract class Database : Object {
 	}
 */
 
-	public Gee.List<Variant> fetch_value_list<T> (Query query) {
+	public Gee.List<T> fetch_value_list<T> (Query query) {
 		var list = new Gee.ArrayList<T> ();
 
 		exec_sql (query.sql (), (n_columns, values, column_names) => {
 			var val = Value (typeof(T));
 			if (!assemble_value (ref val, values[0]))
-				warning ("");
-			list.add (val);
+				warning ("-");
+			list.add (val.peek_pointer ());
 			return 0;
 		});
 
