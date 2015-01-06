@@ -89,7 +89,7 @@ public class MainWindow : Gtk.ApplicationWindow {
 			menu_item.destroy ();
 		});
 
-		var buildings = db.fetch_entity_list<Building> (Building.table_name);
+		var buildings = db.get_building_list ();
 
 		if (unlikely (buildings.size == 0)) {
 			var item = new Gtk.MenuItem.with_label (_("No buildings"));

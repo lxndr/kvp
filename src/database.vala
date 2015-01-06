@@ -9,7 +9,7 @@ public class Database {
 	construct {
 		/* database */
 		_db = new DB.SQLiteDatabase (
-				File.new_for_path ("./kvartplata.db", new DatabaseValueAdapter ()));
+				File.new_for_path ("./kvartplata.db"), new DatabaseValueAdapter ());
 		_db.register_entity_type (typeof (Account), Account.table_name);
 		_db.register_entity_type (typeof (AccountPeriod), AccountPeriod.table_name);
 		_db.register_entity_type (typeof (Building), Building.table_name);
@@ -30,13 +30,13 @@ public class Database {
 		register_tax_calculation (typeof (TaxFormula08));
 
 		/* prepare the database */
-		try {
+//		try {
 //			var bytes = resources_lookup_data ("/org/lxndr/kvp/data/init.sql", ResourceLookupFlags.NONE);
 //			unowned uint8[] data = bytes.get_data ();
 //			exec_sql ((string) data);
-		} catch (Error e) {
-			error ("Error preparing database '%s': %s", file.get_path (), e.message);
-		}
+//		} catch (Error e) {
+//			error ("Error preparing database '%s': %s", file.get_path (), e.message);
+//		}
 	}
 
 
@@ -76,33 +76,6 @@ public class Database {
 	/*
 	 * Helper functions.
 	 */
-	public Gee.Map<int, int64?> fetch_int_int64_map (string table, string key_field,
-			string value_field, string? where = null) {
-		var sb = new StringBuilder ();
-		sb.append_printf ("SELECT %s,%s FROM %s", key_field, value_field, table);
-
-		if (where != null)
-			sb.append_printf (" WHERE %s", where);
-
-		var map = new Gee.HashMap<int, int64?> ();
-		exec_sql (sb.str, (n_columns, values, column_names) => {
-			int @key = (int) int64.parse (values[0]);
-			int64 @value = int64.parse (values[1]);
-			map.set (@key, @value);
-			return 0;
-		});
-		return map;
-	}
-
-
-	private string form_table_name_for_building (Building? building, string table_name) {
-		if (building == null)
-			return AccountPeriod.table_name;
-		return "%s JOIN account ON account.id=%s.account AND account.building=%d"
-				.printf (table_name, table_name, building.id);
-	}
-
-
 	public bool is_period_empty (Building? building, Month period) {
 		var q = new DB.Query.select ("COUNT(*)");
 		q.from (AccountPeriod.table_name);

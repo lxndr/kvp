@@ -223,8 +223,10 @@ public class Account : Report {
 
 		int row_number = 5;
 		foreach (var periodic in periodic_list) {
-			var taxes = db.fetch_int_entity_map<Tax> (Tax.table_name, "service", null,
-					"account=%d AND period=%d".printf (periodic.account.id, periodic.period.raw_value));
+			var q = new DB.Query.select ();
+			q.from (Tax.table_name);
+			q.where (@"account = $(periodic.account.id) AND period = $(periodic.period.raw_value)");
+			var taxes = db.db.fetch_value_map<int, Tax> (q, "service");
 
 			var month = periodic.period.raw_value % 12;
 			var row = sheet.get_row (row_number);

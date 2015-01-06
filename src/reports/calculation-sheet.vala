@@ -36,20 +36,24 @@ public class CalculationSheet : Report {
 		sheet.put_string ("A3", "Address");
 
 		/* tax prices */
-		var prices = db.fetch_int_int64_map (Price.table_name, "service", "value1",
-				"building = %d AND (first_day IS NULL OR first_day <= %d) AND (last_day IS NULL OR last_day >= %d)"
-				.printf (selected_account.account.building.id, selected_account.period.last_day.get_days (), selected_account.period.first_day.get_days ()));
+		var q = new DB.Query.select ("value1, service");
+		q.from (Price.table_name);
+		q.where (@"building = $(selected_account.account.building.id)");
+		q.where (@"first_day IS NULL OR first_day <= $(selected_account.period.last_day.get_days ())");
+		q.where (@"last_day IS NULL OR last_day >= $(selected_account.period.first_day.get_days ())");
+		var prices = db.db.fetch_value_map<int, Money> (q, "service");
 		foreach (var id in service_ids)
-			if (prices[id] == null) prices[id] = 0;
+			if (prices[id] == null)
+				prices[id] = 0;
 
-		sheet.put_number ("D4", new Money.from_raw_integer (prices[5]).real);
-		sheet.put_number ("D5", new Money.from_raw_integer (prices[6]).real);
-		sheet.put_number ("D6", new Money.from_raw_integer (prices[4]).real);
-		sheet.put_number ("D7", new Money.from_raw_integer (prices[1]).real);
-		sheet.put_number ("J4", new Money.from_raw_integer (prices[2]).real);
-		sheet.put_number ("J5", new Money.from_raw_integer (prices[3]).real);
-		sheet.put_number ("J6", new Money.from_raw_integer (prices[7]).real);
-		sheet.put_number ("J7", new Money.from_raw_integer (prices[9]).real);
+		sheet.put_number ("D4", prices[5].real);
+		sheet.put_number ("D5", prices[6].real);
+		sheet.put_number ("D6", prices[4].real);
+		sheet.put_number ("D7", prices[1].real);
+		sheet.put_number ("J4", prices[2].real);
+		sheet.put_number ("J5", prices[3].real);
+		sheet.put_number ("J6", prices[7].real);
+		sheet.put_number ("J7", prices[9].real);
 
 		/*  */
 		var accounts = db.get_account_list (selected_account.account.building);
@@ -78,8 +82,10 @@ public class CalculationSheet : Report {
 			int64 n_people = periodic.number_of_people ();
 			row.get_cell (6).put_string (n_people.to_string ()).style = cstyles[5];
 
-			var taxes = db.fetch_int_int64_map (Tax.table_name, "service", "total",
-					"account = %d AND period = %d".printf (ac.id, selected_account.period.raw_value));
+			q = new DB.Query.select ("total, service");
+			q.from (Tax.table_name);
+			q.where (@"account = $(ac.id) AND period = $(selected_account.period.raw_value)");
+			var taxes = db.db.fetch_value_map<int, Money> (q, "service");
 
 			OOXML.Cell cell;
 
@@ -87,12 +93,12 @@ public class CalculationSheet : Report {
 				var id = service_ids[i];
 				var val = taxes[id];
 				if (id == 4 && taxes.has_key (10)) /* FIXME: this is a workaround */
-					val += taxes[10];
+					val.add (taxes[10]);
 
 				cell = row.get_cell (7 + i);
-				if (val != null && val > 0) {
-					totals[6 + i].integer += val;
-					cell.put_number (new Money.from_raw_integer (val).real);
+				if (val != null && val.is_positive ()) {
+					totals[6 + i].add (val);
+					cell.put_number (val.real);
 				}
 				cell.style = cstyles[6 + i];
 			}

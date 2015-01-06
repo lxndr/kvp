@@ -175,6 +175,31 @@ public abstract class Database : Object {
 	}
 
 
+	public Gee.Map<K, T> fetch_value_map<K, T> (Query query, string key_field) {
+		int key_column = -1;
+
+		var map = new Gee.HashMap<K, T> ();
+		exec_sql (query.sql (), (n_columns, values, column_names) => {
+			if (key_column == -1) {
+				for (var i = 0; i < n_columns; i++)
+					if (column_names[i] == key_field)
+						key_column = i;
+				if (key_column == -1)
+					error (@"Doesn't have column '$(key_field)'");
+			}
+
+			var key_value = Value (typeof (T));
+			assemble_value (ref key_value, values[key_column]);
+			var key = key_value.peek_pointer ();
+
+			var val = make_entity<T> (n_columns, column_names, values);
+			map[key] = val;
+			return 0;
+		});
+		return map;
+	}
+
+
 	public string? fetch_string (Query query, string? def) {
 		return fetch_value<string?> (query, def);
 	}
@@ -305,76 +330,6 @@ public abstract class Database : Object {
 		return make_entity_full (typeof (T), n_fields, fields, values);
 	}
 
-/*
-	public Gee.List<Entity> fetch_entity_list_ex (Type type, QueryBuilder q) {
-		var list = new Gee.ArrayList<Entity> ();
-		exec_sql (q.get_query (), (n_columns, values, column_names) => {
-			list.add (make_entity_full (type, n_columns, column_names, values, true));
-			return 0;
-		});
-		return list;
-	}
-
-
-	public Gee.List<Entity> fetch_entity_list_full (Type type, string? table = null,
-			string? where = null, string? order_by = null, int limit = -1,
-			bool recursive = true) {
-		if (table == null) {
-			var tmp = Object.new (type) as Entity;
-			table = tmp.db_table ();
-		}
-
-		var list = new Gee.ArrayList<Entity> ();
-		var query = build_select_query (table, null, where, order_by, limit);
-		exec_sql (query, (n_columns, values, column_names) => {
-			list.add (make_entity_full (type, n_columns, column_names, values, recursive));
-			return 0;
-		});
-		return list;
-	}
-*/
-/*
-	public Gee.Map<int, T> fetch_int_entity_map<T> (string table, string key_field,
-			string? columns = null, string? where = null) {
-		int key_column = -1;
-
-		var qb = build ();
-		qb.select (columns).from (table);
-		if (where != null)
-			qb.where (where);
-
-		var map = new Gee.HashMap<int, T> ();
-		exec_sql (qb.get_query (), (n_columns, values, column_names) => {
-			if (key_column == -1) {
-				for (var i = 0; i < n_columns; i++)
-					if (column_names[i] == key_field)
-						key_column = i;
-				if (key_column == -1)
-					error ("Table '%s' doesn't have column '%s'", table, key_field);
-			}
-
-			var key = int.parse (values[key_column]);
-			map[key] = make_entity<T> (n_columns, column_names, values);
-			return 0;
-		});
-		return map;
-	}
-
-
-	public Gee.List<int> fetch_int_list (string table, string column, string? where = null) {
-		var qb = build ();
-		qb.select (column).from (table);
-		if (where != null)
-			qb.where (where);
-
-		var list = new Gee.ArrayList<int> ();
-		exec_sql (qb.get_query (), (n_columns, values, column_names) => {
-			list.add (int.parse (values[0] ?? "0"));
-			return 0;
-		});
-		return list;
-	}
-*/
 
 	/*
 		Deleteion
