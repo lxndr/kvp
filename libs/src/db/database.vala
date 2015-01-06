@@ -12,7 +12,7 @@ public abstract class Database : Object {
 
 
 	construct {
-		value_adapter = new ValueAdapter ();
+		_value_adapter = new ValueAdapter ();
 		cache = new Gee.HashMap<Type, Gee.HashMap<int, Entity>> ();
 	}
 

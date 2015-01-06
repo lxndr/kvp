@@ -9,7 +9,8 @@ public class Database {
 	construct {
 		/* database */
 		_db = new DB.SQLiteDatabase (
-				File.new_for_path ("./kvartplata.db"), new DatabaseValueAdapter ());
+				File.new_for_path ("./kvartplata.db"));
+		_db.value_adapter = new DatabaseValueAdapter ();
 		_db.register_entity_type (typeof (Account), Account.table_name);
 		_db.register_entity_type (typeof (AccountPeriod), AccountPeriod.table_name);
 		_db.register_entity_type (typeof (Building), Building.table_name);
@@ -89,21 +90,30 @@ public class Database {
 
 	public void prepare_period (Building? building, Month period) {
 		var prev_period = period.get_prev ();
-		string from;
 
 		db.begin_transaction ();
 
 		/* periodic */
-		from = form_table_name_for_building (building, AccountPeriod.table_name);
-		exec_sql ("INSERT INTO %s SELECT account,%u,apartment,n_rooms,area,total,0,0,0,param1,param2,param3 FROM %s WHERE period=%u"
-				.printf (AccountPeriod.table_name, period.raw_value, from, prev_period.raw_value), null);
+		var sel = new DB.Query.select (@"account, $(period.raw_value), apartment, n_rooms, area, total, 0, 0, 0, param1, param2, param3");
+		sel.from (AccountPeriod.table_name);
+		if (building != null)
+			sel.join (Account.table_name)
+				.on (@"$(Account.table_name).id = $(AccountPeriod.table_name).account")
+				.on (@"$(Account.table_name).building = $(building.id)");
+		sel.where (@"period = $(prev_period.raw_value)");
+		db.exec_sql (@"INSERT INTO $(AccountPeriod.table_name) $(sel.sql ())", null);
 
 		/* a little bit more tricky */
 		var service_list = get_period_services (building, period);
 		foreach (var service_id in service_list) {
-			from = form_table_name_for_building (building, Tax.table_name);
-			exec_sql ("INSERT INTO %s SELECT account,%u,service,apply,amount,total FROM %s WHERE period=%u AND service=%d"
-					.printf (Tax.table_name, period.raw_value, from, prev_period.raw_value, service_id), null);
+			sel = new DB.Query.select (@"account, $(period.raw_value), service, apply, amount, total");
+			sel.from (Tax.table_name);
+			if (building != null)
+				sel.join (Account.table_name)
+					.on (@"$(Account.table_name).id = $(Tax.table_name).account")
+					.on (@"$(Account.table_name).building = $(building.id)");
+			sel.where (@"period = $(prev_period.raw_value) AND service = $(service_id)");
+			db.exec_sql (@"INSERT INTO $(Tax.table_name) $(sel.sql ())", null);
 		}
 
 		db.commit_transaction ();

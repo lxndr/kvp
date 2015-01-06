@@ -44,7 +44,7 @@ public class CalculationSheet : Report {
 		var prices = db.db.fetch_value_map<int, Money> (q, "service");
 		foreach (var id in service_ids)
 			if (prices[id] == null)
-				prices[id] = 0;
+				prices[id] = new Money ();
 
 		sheet.put_number ("D4", prices[5].real);
 		sheet.put_number ("D5", prices[6].real);
