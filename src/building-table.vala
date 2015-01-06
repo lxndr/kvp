@@ -23,7 +23,9 @@ public class BuildingTable : DB.ViewTable {
 
 
 	protected override Gee.List<DB.Entity> get_entity_list () {
-		return db.fetch_entity_list<Building> (Building.table_name);
+		var q = new DB.Query.select ();
+		q.from (Building.table_name);
+		return db.fetch_entity_list<Building> (q);
 	}
 }
 

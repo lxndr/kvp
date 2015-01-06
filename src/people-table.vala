@@ -47,7 +47,9 @@ public class PeopleTable : DB.ViewTable {
 
 
 	protected override Gee.List<DB.Entity> get_entity_list () {
-		return db.fetch_entity_list<Person> (Person.table_name);
+		var q = new DB.Query.select ();
+		q.from (Person.table_name);
+		return db.fetch_entity_list<Person> (q);
 	}
 
 

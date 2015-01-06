@@ -2,6 +2,8 @@ namespace Kv {
 
 
 public class Account : DB.SimpleEntity {
+	public static string table_name = "account";
+
 	public Building building { get; construct set; }
 	public string number { get; set; default = ""; }
 	public Date? opened { get; set; default = new Date.now (); }
@@ -57,8 +59,10 @@ public class Account : DB.SimpleEntity {
 
 
 	public AccountPeriod? fetch_period (Month period) {
-		return db.fetch_entity<AccountPeriod> (AccountPeriod.table_name,
-				"account=%d AND period=%d".printf (id, period.raw_value));
+		var q = new DB.Query.select ();
+		q.from (AccountPeriod.table_name);
+		q.where ("account = %d AND period = %d".printf (id, period.raw_value));
+		return db.fetch_entity<AccountPeriod> (q);
 	}
 }
 

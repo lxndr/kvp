@@ -26,7 +26,7 @@ public class PriceTable : DB.ViewTable {
 
 	protected override DB.Entity? new_entity () {
 		assert (building != null);
-		var service = db.fetch_entity_by_id<Service> (1);
+		var service = db.fetch_simple_entity<Service> (1);
 		return new Price (db, building, service);
 	}
 

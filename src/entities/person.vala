@@ -1,8 +1,9 @@
 namespace Kv {
 
 
-public class Person : DB.SimpleEntity, DB.Viewable
-{
+public class Person : DB.SimpleEntity, DB.Viewable {
+	public static string table_name = "person";
+
 	public string name { get; set; default = _("A person"); }
 	public Date? birthday { get; set; default = null; }
 	public bool gender { get; set; default = false; }

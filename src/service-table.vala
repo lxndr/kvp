@@ -23,7 +23,9 @@ public class ServiceTable : DB.ViewTable {
 
 
 	protected override Gee.List<DB.Entity> get_entity_list () {
-		return db.fetch_entity_list<Service> (Service.table_name);
+		var q = new DB.Query.select ();
+		q.from (Service.table_name);
+		return db.fetch_entity_list<Service> (q);
 	}
 }
 

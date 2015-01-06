@@ -2,7 +2,7 @@ namespace Kv {
 
 
 public class Database {
-	public Database db { get; private set; }
+	public DB.Database db { get; private set; }
 	private Gee.Map<string, TaxCalculation> tax_calc_methods;
 
 
@@ -10,15 +10,15 @@ public class Database {
 		/* database */
 		_db = new DB.SQLiteDatabase (
 				File.new_for_path ("./kvartplata.db", new DatabaseValueAdapter ()));
-		_db.register_entity_type (typeof (Account), "account");
-		_db.register_entity_type (typeof (AccountPeriod), "account_period");
-		_db.register_entity_type (typeof (Building), "building");
-		_db.register_entity_type (typeof (Person), "person");
-		_db.register_entity_type (typeof (Price), "price");
-		_db.register_entity_type (typeof (Relationship), "relationships");
-		_db.register_entity_type (typeof (Service), "service");
-		_db.register_entity_type (typeof (Tax), "tax");
-		_db.register_entity_type (typeof (Tenant), "tenant");
+		_db.register_entity_type (typeof (Account), Account.table_name);
+		_db.register_entity_type (typeof (AccountPeriod), AccountPeriod.table_name);
+		_db.register_entity_type (typeof (Building), Building.table_name);
+		_db.register_entity_type (typeof (Person), Person.table_name);
+		_db.register_entity_type (typeof (Price), Price.table_name);
+		_db.register_entity_type (typeof (Relationship), Relationship.table_name);
+		_db.register_entity_type (typeof (Service), Service.table_name);
+		_db.register_entity_type (typeof (Tax), Tax.table_name);
+		_db.register_entity_type (typeof (Tenant), Tenant.table_name);
 	
 		/* tax colculation methods */
 		tax_calc_methods = new Gee.HashMap<string, TaxCalculation> ();
@@ -60,13 +60,16 @@ public class Database {
 	 * Settings.
 	 */
 	public string? get_setting (string key) {
-		return fetch_string ("settings", "value", "key = '%s'".printf (key));
+		var q = new DB.Query.select ("value");
+		q.from ("settings");
+		q.where ("key = '%s'".printf (key));
+		return db.fetch_string (q, null);
 	}
 
 
 	public void set_setting (string key, string val) {
 		var query = "REPLACE INTO settings VALUES ('%s', '%s')".printf (key, val);
-		exec_sql (query);
+		db.exec_sql (query);
 	}
 
 
@@ -101,10 +104,13 @@ public class Database {
 
 
 	public bool is_period_empty (Building? building, Month period) {
-		string from = form_table_name_for_building (building, AccountPeriod.table_name);
-		if (query_count (from, "period=%u".printf (period.raw_value)) > 0)
-			return false;
-		return true;
+		var q = new DB.Query.select ("COUNT(*)");
+		q.from (AccountPeriod.table_name);
+		q.join ("account")
+			.on (@"account.id = $(AccountPeriod.table_name).account")
+			.on (@"account.building = $(building.id)");
+		q.where (@"period = $(period.raw_value)");
+		return db.fetch_value<int> (q, 0) == 0;
 	}
 
 
@@ -112,7 +118,7 @@ public class Database {
 		var prev_period = period.get_prev ();
 		string from;
 
-		begin_transaction ();
+		db.begin_transaction ();
 
 		/* periodic */
 		from = form_table_name_for_building (building, AccountPeriod.table_name);
@@ -127,34 +133,34 @@ public class Database {
 					.printf (Tax.table_name, period.raw_value, from, prev_period.raw_value, service_id), null);
 		}
 
-		commit_transaction ();
+		db.commit_transaction ();
 	}
 
 
 	public Gee.List<Building> get_building_list (Month? active_period = null) {
-		string? where = null;
-
+		var q = new DB.Query.select ();
+		q.from (Building.table_name);
 		if (active_period != null) {
-			var val = active_period.raw_value;
-			where = "(first_period=NULL OR first_period<=%u) AND (last_period=NULL OR last_period>=%u)"
-					.printf (val, val);
+			q.where (@"first_period IS NULL OR first_period <= $(active_period.raw_value)");
+			q.where (@"last_period IS NULL OR last_period >= $(active_period.raw_value)");
 		}
-
-		return fetch_entity_list<Building> (Building.table_name, where);
+		return db.fetch_entity_list<Building> (q);
 	}
 
 
 	public Gee.List<Service> get_service_list () {
-		return fetch_entity_list<Service> (Service.table_name);
+		var q = new DB.Query.select ();
+		q.from (Service.table_name);
+		return db.fetch_entity_list<Service> (q);
 	}
 
 
 	public Gee.List<Account> get_account_list (Building? building) {
-		string? where = null;
+		var q = new DB.Query.select ();
+		q.from (Account.table_name);
 		if (building != null)
-			where = "building=%d".printf (building.id);
-
-		return fetch_entity_list<Account> (Account.table_name, where);
+			q.where (@"building = $(building.id)");
+		return db.fetch_entity_list<Account> (q);
 	}
 
 
@@ -166,39 +172,40 @@ public class Database {
 		 * WHERE account.building=? AND opened<=?;
 		 */
 
-		var query = new DB.QueryBuilder ();
-		query.select ("account_period.*, account.id AS account, %d AS period".printf (period.raw_value))
-				.from ("account LEFT JOIN account_period")
-				.on ("account.id = account_period.account AND period = %d".printf (period.raw_value));
+		var q = new DB.Query.select (@"account_period.*, account.id AS account, $(period.raw_value) AS period");
+		q.from ("account LEFT JOIN account_period");
+		q.on (@"account.id = account_period.account AND period = $(period.raw_value)");
 
-		var period_last_day = period.last_day;
-		string where = "(opened IS NULL OR opened <= %d)".printf (period_last_day.get_days ());
+		var last_day = period.last_day.get_days ();
+		q.where (@"opened IS NULL OR opened <= $(last_day)");
 		if (building != null)
-			where += " AND account.building = %d".printf (building.id);
+			q.where (@"account.building = $(building.id)");
 
 /*		if (include_closed == false) {
 			var period_first_day = period.first_day;
 			where += " AND (closed=NULL OR closed>=%d)".printf (period_first_day.get_days ());
 		}*/
-		query.where (where);
 
-		return fetch_entity_list_ex (typeof (AccountPeriod), query) as Gee.List<AccountPeriod>;
+		return db.fetch_entity_list<AccountPeriod> (q);
 	}
 
 
 	public Gee.List<Person> get_people_list (Account account, Month period) {
-		return fetch_entity_list<Person> (Person.table_name,
-				"account = %d AND period = %d".printf (account.id, period.raw_value));
+		var q = new DB.Query.select ();
+		q.from (Person.table_name);
+		q.where (@"account = $(account.id) AND period = $(period.raw_value)");
+		return db.fetch_entity_list<Person> (q);
 	}
 
 
 	/**
-	 * Fetches a list of tenants fron the database.
+	 * Fetches a list of tenants from the database.
 	 * @period: if null then only tenants that are actual for the @period are returned.
 	 */
 	public Gee.List<Tenant> get_tenant_list (Account account, Month? period) {
-		var sb = new StringBuilder.sized (64);
-		sb.append_printf ("account = %d", account.id);
+		var q = new DB.Query.select ();
+		q.from (Tenant.table_name);
+		q.where (@"account = $(account.id)");
 
 		if (period != null) {
 			var first_day = period.first_day;
@@ -208,11 +215,11 @@ public class Database {
 			if (last_day == null)	/* account is closed */
 				return new Gee.ArrayList<Tenant> ();
 
-			sb.append_printf (" AND (move_in IS NULL OR move_in <= %d) AND (move_out IS NULL OR move_out >= %d)",
-					last_day.get_days (), last_day.get_days ());
+			q.where (@"move_in IS NULL OR move_in <= $(last_day.get_days ())");
+			q.where (@"move_out IS NULL OR move_out >= $(last_day.get_days ())");
 		}
 
-		return fetch_entity_list<Tenant> (Tenant.table_name, sb.str);
+		return db.fetch_entity_list<Tenant> (q);
 	}
 
 
@@ -220,24 +227,32 @@ public class Database {
 	 * Determine active services for a particular period.
 	 */
 	public Gee.List<int> get_period_services (Building building, Month period) {
-		return fetch_int_list (Price.table_name, "DISTINCT service",
-				"building = %d AND (first_day IS NULL OR first_day <= %d) AND (last_day IS NULL OR last_day >= %d)"
-				.printf (building.id, period.last_day.get_days (), period.first_day.get_days ()));
+		var q = new DB.Query.select ("DISTINCT service");
+		q.from (Price.table_name);
+		q.where (@"building = $(building.id)");
+		q.where ("first_day IS NULL OR first_day <= %d".printf (period.last_day.get_days ()));
+		q.where ("last_day IS NULL OR last_day >= %d".printf (period.first_day.get_days ()));
+		return db.fetch_value_list<int> (q);
 	}
 
 
 	public Gee.List<Price> get_price_list (Building? building, Month? period, Service? service) {
-		string[] where = {};
+		var q = new DB.Query.select ();
+		q.from (Price.table_name);
 
 		if (building != null)
-			where += "building = %d".printf (building.id);
-		if (service != null)
-			where += "service = %d".printf (service.id);
-		if (period != null)
-			where += "(first_day IS NULL OR first_day <= %d) AND (last_day IS NULL OR last_day >= %d)"
-			.printf (period.last_day.get_days (), period.last_day.get_days ());
+			q.where (@"building = $(building.id)");
 
-		return fetch_entity_list<Price> (Price.table_name, string.joinv (" AND ", where));
+		if (service != null)
+			q.where (@"service = $(service.id)");
+
+		if (period != null) {
+			var last_day = period.last_day.get_days ();
+			q.where (@"first_day IS NULL OR first_day <= $(last_day)");
+			q.where (@"last_day IS NULL OR last_day >= $(last_day)");
+		}
+
+		return db.fetch_entity_list<Price> (q);
 	}
 
 
@@ -249,9 +264,10 @@ public class Database {
 		var prices = get_price_list (building, period, null);
 		var list = new Gee.ArrayList<Tax> ();
 		foreach (var price in prices) {
-			var tax = fetch_entity<Tax> (Tax.table_name,
-					("account = %d AND period = %d AND service = %d")
-					.printf (account.id, period.raw_value, price.service.id));
+			var q = new DB.Query.select ();
+			q.from (Tax.table_name);
+			q.where (@"account = $(account.id) AND period = $(period.raw_value) AND service = $(price.service.id)");
+			var tax = db.fetch_entity<Tax> (q);
 			if (tax == null)
 				tax = new Tax (this, account, period, price.service);
 			list.add (tax);
@@ -261,9 +277,10 @@ public class Database {
 
 
 	public Gee.List<AccountPeriod> get_account_periods (Account account, int start_period, int end_period) {
-		return fetch_entity_list<AccountPeriod> (AccountPeriod.table_name,
-				("account = %d AND period >= %d AND period <= %d")
-				.printf (account.id, start_period, end_period));
+		var q = new DB.Query.select ();
+		q.from (AccountPeriod.table_name);
+		q.where (@"account = $(account.id) AND period >= $(start_period) AND period <= $(end_period)");
+		return db.fetch_entity_list<AccountPeriod> (q);
 	}
 }
 

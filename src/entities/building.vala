@@ -2,6 +2,8 @@ namespace Kv {
 
 
 public class Building : DB.SimpleEntity {
+	public static unowned string table_name = "building";
+
 	public string location { get; set; }
 	public string street { get; set; }
 	public string number { get; set; }

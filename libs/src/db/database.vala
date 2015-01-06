@@ -123,9 +123,12 @@ public abstract class Database : Object {
 		if (entity != null)
 			return entity;
 
+		if (table == null)
+			table = find_entity_spec (type).table_name;
+
 		var query = new Query.select ();
 		query.from (table)
-			.where ("id = %d".printf (id));
+			.where (@"id = $(id)");
 		return fetch_entity_full (type, query);
 	}
 
