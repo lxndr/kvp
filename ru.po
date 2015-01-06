@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2014-12-31 09:42+0300\n"
+"POT-Creation-Date: 2015-01-07 00:48+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -385,7 +385,7 @@ msgstr "Текущий месяц"
 msgid "Next month"
 msgstr "Следующий месяц"
 
-#: src/entities/person.vala:6
+#: src/entities/person.vala:7
 msgid "A person"
 msgstr "Человек"
 

@@ -1,35 +1,33 @@
 namespace DB {
 
 
-public abstract class Database : Object {
+public class Database : Object {
+	public Engine engine { private get; construct set; }
 	public ValueAdapter value_adapter { get; set; }
 	private Gee.HashMap<Type, EntitySpec> entity_types;
 	private Gee.HashMap<Type, Gee.HashMap<int, Entity>> cache;
 
 
-	public abstract void exec_sql (string sql, Sqlite.Callback? callback = null);
-	public abstract int last_insert_rowid ();
-
-
 	construct {
-		_value_adapter = new ValueAdapter ();
 		cache = new Gee.HashMap<Type, Gee.HashMap<int, Entity>> ();
 	}
 
+
+	public Database (Engine _engine) {
+		Object (engine: _engine);
+	}
 
 
 	/*
 	 * Helpers.
 	 */
-	private string? escape_string (string? s) {
-		if (s == null)
-			return null;
-		return s.replace ("'", "''");
+	public void exec_sql (string sql, Sqlite.Callback? callback = null) {
+		engine.exec_sql (sql, callback);
 	}
 
 
 	public void exec (Query query) {
-		exec_sql (query.sql ());
+		engine.exec_sql (query.sql ());
 	}
 
 
@@ -91,7 +89,7 @@ public abstract class Database : Object {
 	public Gee.List<Entity> fetch_entity_list_full (Type type, Query query) {
 		var list = new Gee.ArrayList<Entity> ();
 
-		exec_sql (query.sql (), (n_columns, values, column_names) => {
+		engine.exec_sql (query.sql (), (n_columns, values, column_names) => {
 			list.add (make_entity_full (type, n_columns, column_names, values));
 			return 0;
 		});
@@ -163,7 +161,7 @@ public abstract class Database : Object {
 	public Gee.List<T> fetch_value_list<T> (Query query) {
 		var list = new Gee.ArrayList<T> ();
 
-		exec_sql (query.sql (), (n_columns, values, column_names) => {
+		engine.exec_sql (query.sql (), (n_columns, values, column_names) => {
 			var val = Value (typeof(T));
 			if (!assemble_value (ref val, values[0]))
 				warning ("-");
@@ -179,7 +177,7 @@ public abstract class Database : Object {
 		int key_column = -1;
 
 		var map = new Gee.HashMap<K, T> ();
-		exec_sql (query.sql (), (n_columns, values, column_names) => {
+		engine.exec_sql (query.sql (), (n_columns, values, column_names) => {
 			if (key_column == -1) {
 				for (var i = 0; i < n_columns; i++)
 					if (column_names[i] == key_field)
@@ -378,7 +376,7 @@ public abstract class Database : Object {
 			if (s == null)
 				return "NULL";
 			else
-				return "'%s'".printf (escape_string (s));
+				return "'%s'".printf (engine.escape_string (s));
 		}
 
 		string? s = null;
@@ -440,14 +438,14 @@ public abstract class Database : Object {
 			prepare_value_list (sb, entity, fields, obj_class);
 			sb.truncate (sb.len - 2);
 
-			exec_sql ("INSERT INTO %s VALUES (NULL, %s)".printf (entity.db_table (), sb.str));
-			entity.set_property ("id", last_insert_rowid ());
+			engine.exec_sql ("INSERT INTO %s VALUES (NULL, %s)".printf (entity.db_table (), sb.str));
+			entity.set_property ("id", (int) engine.last_insert_rowid ());
 		} else {
 			var sb = new StringBuilder.sized (64);
 			prepare_column_value_list (sb, entity, fields, obj_class);
 			sb.truncate (sb.len - 2);
 
-			exec_sql ("UPDATE %s SET %s WHERE id=%d"
+			engine.exec_sql ("UPDATE %s SET %s WHERE id=%d"
 					.printf (entity.db_table (), sb.str, entity_id));
 		}
 	}
@@ -459,7 +457,7 @@ public abstract class Database : Object {
 		prepare_value_list (sb, entity, fields, obj_class);
 		sb.truncate (sb.len - 2);
 
-		exec_sql ("REPLACE INTO %s VALUES (%s)".printf (entity.db_table (), sb.str));
+		engine.exec_sql ("REPLACE INTO %s VALUES (%s)".printf (entity.db_table (), sb.str));
 	}
 
 
@@ -480,17 +478,17 @@ public abstract class Database : Object {
 	 *	Transaction control.
 	 */
 	public void begin_transaction () {
-		exec_sql ("BEGIN TRANSACTION");
+		engine.exec_sql ("BEGIN TRANSACTION");
 	}
 
 
 	public void commit_transaction () {
-		exec_sql ("COMMIT TRANSACTION");
+		engine.exec_sql ("COMMIT TRANSACTION");
 	}
 
 
 	public void rollback_transaction () {
-		exec_sql ("ROLLBACK TRANSACTION");
+		engine.exec_sql ("ROLLBACK TRANSACTION");
 	}
 }
 

@@ -226,7 +226,7 @@ public class Account : Report {
 			var q = new DB.Query.select ();
 			q.from (Tax.table_name);
 			q.where (@"account = $(periodic.account.id) AND period = $(periodic.period.raw_value)");
-			var taxes = db.db.fetch_value_map<int, Tax> (q, "service");
+			var taxes = db.fetch_value_map<int, Tax> (q, "service");
 
 			var month = periodic.period.raw_value % 12;
 			var row = sheet.get_row (row_number);

@@ -1,7 +1,7 @@
 namespace DB {
 
 
-public class SQLiteDatabase : Database {
+public class SQLiteEngine : Object, Engine {
 	public File file { get; construct set; }
 	private Sqlite.Database db;
 
@@ -14,21 +14,28 @@ public class SQLiteDatabase : Database {
 	}
 
 
-	public SQLiteDatabase (File _file) {
+	public SQLiteEngine (File _file) {
 		Object (file: _file);
 	}
 
 
-	public override void exec_sql (string sql, Sqlite.Callback? callback = null) {
-		string errmsg;
+	public void exec_sql (string sql, Sqlite.Callback? callback = null) {
 		debug (sql);
+		string errmsg;
 		if (db.exec (sql, callback, out errmsg) != Sqlite.OK)
 			error ("Error executing SQL statement: %s\n", errmsg);
 	}
 
 
-	public override int last_insert_rowid () {
-		return (int) db.last_insert_rowid ();
+	public int64 last_insert_rowid () {
+		return db.last_insert_rowid ();
+	}
+
+
+	public string? escape_string (string? s) {
+		if (s == null)
+			return null;
+		return s.replace ("'", "''");		
 	}
 }
 

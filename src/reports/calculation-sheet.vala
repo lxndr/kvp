@@ -41,7 +41,7 @@ public class CalculationSheet : Report {
 		q.where (@"building = $(selected_account.account.building.id)");
 		q.where (@"first_day IS NULL OR first_day <= $(selected_account.period.last_day.get_days ())");
 		q.where (@"last_day IS NULL OR last_day >= $(selected_account.period.first_day.get_days ())");
-		var prices = db.db.fetch_value_map<int, Money> (q, "service");
+		var prices = db.fetch_value_map<int, Money> (q, "service");
 		foreach (var id in service_ids)
 			if (prices[id] == null)
 				prices[id] = new Money ();
@@ -85,7 +85,7 @@ public class CalculationSheet : Report {
 			q = new DB.Query.select ("total, service");
 			q.from (Tax.table_name);
 			q.where (@"account = $(ac.id) AND period = $(selected_account.period.raw_value)");
-			var taxes = db.db.fetch_value_map<int, Money> (q, "service");
+			var taxes = db.fetch_value_map<int, Money> (q, "service");
 
 			OOXML.Cell cell;
 

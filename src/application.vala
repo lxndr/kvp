@@ -57,7 +57,7 @@ public class Application : Gtk.Application {
 		reports[_("Account")] = typeof (Reports.Account);
 
 		/* database */
-		var db = new Database ();
+		var db = new Database ("./kvartplata.db");
 		var win = new MainWindow (this, db);
 		win.show ();
 	}

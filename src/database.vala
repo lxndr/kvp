@@ -1,25 +1,21 @@
 namespace Kv {
 
 
-public class Database {
-	public DB.Database db { get; private set; }
+public class Database : DB.Database {
 	private Gee.Map<string, TaxCalculation> tax_calc_methods;
 
 
 	construct {
 		/* database */
-		_db = new DB.SQLiteDatabase (
-				File.new_for_path ("./kvartplata.db"));
-		_db.value_adapter = new DatabaseValueAdapter ();
-		_db.register_entity_type (typeof (Account), Account.table_name);
-		_db.register_entity_type (typeof (AccountPeriod), AccountPeriod.table_name);
-		_db.register_entity_type (typeof (Building), Building.table_name);
-		_db.register_entity_type (typeof (Person), Person.table_name);
-		_db.register_entity_type (typeof (Price), Price.table_name);
-		_db.register_entity_type (typeof (Relationship), Relationship.table_name);
-		_db.register_entity_type (typeof (Service), Service.table_name);
-		_db.register_entity_type (typeof (Tax), Tax.table_name);
-		_db.register_entity_type (typeof (Tenant), Tenant.table_name);
+		register_entity_type (typeof (Account), Account.table_name);
+		register_entity_type (typeof (AccountPeriod), AccountPeriod.table_name);
+		register_entity_type (typeof (Building), Building.table_name);
+		register_entity_type (typeof (Person), Person.table_name);
+		register_entity_type (typeof (Price), Price.table_name);
+		register_entity_type (typeof (Relationship), Relationship.table_name);
+		register_entity_type (typeof (Service), Service.table_name);
+		register_entity_type (typeof (Tax), Tax.table_name);
+		register_entity_type (typeof (Tenant), Tenant.table_name);
 	
 		/* tax colculation methods */
 		tax_calc_methods = new Gee.HashMap<string, TaxCalculation> ();
@@ -38,6 +34,12 @@ public class Database {
 //		} catch (Error e) {
 //			error ("Error preparing database '%s': %s", file.get_path (), e.message);
 //		}
+	}
+
+
+	public Database (string db_path) {
+		Object (engine: new DB.SQLiteEngine (File.new_for_path (db_path)),
+				value_adapter: new DatabaseValueAdapter ());
 	}
 
 
@@ -64,13 +66,13 @@ public class Database {
 		var q = new DB.Query.select ("value");
 		q.from ("settings");
 		q.where ("key = '%s'".printf (key));
-		return db.fetch_string (q, null);
+		return fetch_string (q, null);
 	}
 
 
 	public void set_setting (string key, string val) {
 		var query = "REPLACE INTO settings VALUES ('%s', '%s')".printf (key, val);
-		db.exec_sql (query);
+		exec_sql (query);
 	}
 
 
@@ -84,14 +86,14 @@ public class Database {
 			.on (@"account.id = $(AccountPeriod.table_name).account")
 			.on (@"account.building = $(building.id)");
 		q.where (@"period = $(period.raw_value)");
-		return db.fetch_value<int> (q, 0) == 0;
+		return fetch_value<int> (q, 0) == 0;
 	}
 
 
 	public void prepare_period (Building? building, Month period) {
 		var prev_period = period.get_prev ();
 
-		db.begin_transaction ();
+		begin_transaction ();
 
 		/* periodic */
 		var sel = new DB.Query.select (@"account, $(period.raw_value), apartment, n_rooms, area, total, 0, 0, 0, param1, param2, param3");
@@ -101,7 +103,7 @@ public class Database {
 				.on (@"$(Account.table_name).id = $(AccountPeriod.table_name).account")
 				.on (@"$(Account.table_name).building = $(building.id)");
 		sel.where (@"period = $(prev_period.raw_value)");
-		db.exec_sql (@"INSERT INTO $(AccountPeriod.table_name) $(sel.sql ())", null);
+		exec_sql (@"INSERT INTO $(AccountPeriod.table_name) $(sel.sql ())", null);
 
 		/* a little bit more tricky */
 		var service_list = get_period_services (building, period);
@@ -113,10 +115,10 @@ public class Database {
 					.on (@"$(Account.table_name).id = $(Tax.table_name).account")
 					.on (@"$(Account.table_name).building = $(building.id)");
 			sel.where (@"period = $(prev_period.raw_value) AND service = $(service_id)");
-			db.exec_sql (@"INSERT INTO $(Tax.table_name) $(sel.sql ())", null);
+			exec_sql (@"INSERT INTO $(Tax.table_name) $(sel.sql ())", null);
 		}
 
-		db.commit_transaction ();
+		commit_transaction ();
 	}
 
 
@@ -127,14 +129,14 @@ public class Database {
 			q.where (@"first_period IS NULL OR first_period <= $(active_period.raw_value)");
 			q.where (@"last_period IS NULL OR last_period >= $(active_period.raw_value)");
 		}
-		return db.fetch_entity_list<Building> (q);
+		return fetch_entity_list<Building> (q);
 	}
 
 
 	public Gee.List<Service> get_service_list () {
 		var q = new DB.Query.select ();
 		q.from (Service.table_name);
-		return db.fetch_entity_list<Service> (q);
+		return fetch_entity_list<Service> (q);
 	}
 
 
@@ -143,7 +145,7 @@ public class Database {
 		q.from (Account.table_name);
 		if (building != null)
 			q.where (@"building = $(building.id)");
-		return db.fetch_entity_list<Account> (q);
+		return fetch_entity_list<Account> (q);
 	}
 
 
@@ -169,7 +171,7 @@ public class Database {
 			where += " AND (closed=NULL OR closed>=%d)".printf (period_first_day.get_days ());
 		}*/
 
-		return db.fetch_entity_list<AccountPeriod> (q);
+		return fetch_entity_list<AccountPeriod> (q);
 	}
 
 
@@ -177,7 +179,7 @@ public class Database {
 		var q = new DB.Query.select ();
 		q.from (Person.table_name);
 		q.where (@"account = $(account.id) AND period = $(period.raw_value)");
-		return db.fetch_entity_list<Person> (q);
+		return fetch_entity_list<Person> (q);
 	}
 
 
@@ -202,7 +204,7 @@ public class Database {
 			q.where (@"move_out IS NULL OR move_out >= $(last_day.get_days ())");
 		}
 
-		return db.fetch_entity_list<Tenant> (q);
+		return fetch_entity_list<Tenant> (q);
 	}
 
 
@@ -215,7 +217,7 @@ public class Database {
 		q.where (@"building = $(building.id)");
 		q.where ("first_day IS NULL OR first_day <= %d".printf (period.last_day.get_days ()));
 		q.where ("last_day IS NULL OR last_day >= %d".printf (period.first_day.get_days ()));
-		return db.fetch_value_list<int> (q);
+		return fetch_value_list<int> (q);
 	}
 
 
@@ -235,7 +237,7 @@ public class Database {
 			q.where (@"last_day IS NULL OR last_day >= $(last_day)");
 		}
 
-		return db.fetch_entity_list<Price> (q);
+		return fetch_entity_list<Price> (q);
 	}
 
 
@@ -250,7 +252,7 @@ public class Database {
 			var q = new DB.Query.select ();
 			q.from (Tax.table_name);
 			q.where (@"account = $(account.id) AND period = $(period.raw_value) AND service = $(price.service.id)");
-			var tax = db.fetch_entity<Tax> (q);
+			var tax = fetch_entity<Tax> (q);
 			if (tax == null)
 				tax = new Tax (this, account, period, price.service);
 			list.add (tax);
@@ -263,7 +265,7 @@ public class Database {
 		var q = new DB.Query.select ();
 		q.from (AccountPeriod.table_name);
 		q.where (@"account = $(account.id) AND period >= $(start_period) AND period <= $(end_period)");
-		return db.fetch_entity_list<AccountPeriod> (q);
+		return fetch_entity_list<AccountPeriod> (q);
 	}
 }
 
