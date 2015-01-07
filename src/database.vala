@@ -261,10 +261,10 @@ public class Database : DB.Database {
 	}
 
 
-	public Gee.List<AccountPeriod> get_account_periods (Account account, int start_period, int end_period) {
+	public Gee.List<AccountPeriod> get_account_periods (Account account, Month start_period, Month end_period) {
 		var q = new DB.Query.select ();
 		q.from (AccountPeriod.table_name);
-		q.where (@"account = $(account.id) AND period >= $(start_period) AND period <= $(end_period)");
+		q.where (@"account = $(account.id) AND period >= $(start_period.raw_value) AND period <= $(end_period.raw_value)");
 		return fetch_entity_list<AccountPeriod> (q);
 	}
 }

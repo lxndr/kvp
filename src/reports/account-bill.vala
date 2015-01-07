@@ -60,12 +60,12 @@ private class AccountReportParameters : Gtk.Dialog {
 	}
 
 
-	public int start_month () {
-		return from_year_month.month.raw_value;
+	public Month start_month () {
+		return from_year_month.month;
 	}
 
-	public int end_month () {
-		return to_year_month.month.raw_value;
+	public Month end_month () {
+		return to_year_month.month;
 	}
 }
 
@@ -75,8 +75,8 @@ public class Account : Report {
 	private const int service_ids[] = { 5, 6, 1, 2, 7, 8, 3, 4, 9 };
 
 	private OOXML.Spreadsheet book;
-	private int start_period;
-	private int end_period;
+	private Month start_period;
+	private Month end_period;
 
 	private Gee.List<AccountPeriod> periodic_list;
 	private AccountPeriod general_periodic;
@@ -147,8 +147,15 @@ public class Account : Report {
 		book.load (GLib.File.new_for_path ("./templates/account.xlsx"));
 
 		periodic_list = db.get_account_periods (selected_account.account, start_period, end_period);
-		if (periodic_list.size == 0)
-			error ("There's no periods!");
+		if (periodic_list.size == 0) {
+			var msg = new Gtk.MessageDialog (toplevel_window, Gtk.DialogFlags.MODAL,
+					Gtk.MessageType.WARNING, Gtk.ButtonsType.OK,
+					_("Account %s (%s) does not have any calculations within specified periods."),
+					selected_account.account.number, selected_account.main_tenant_name ());
+			msg.run ();
+			msg.destroy ();
+			return;
+		}
 
 		general_periodic = periodic_list.last ();
 		tenants = general_periodic.get_tenant_list ();
@@ -226,7 +233,7 @@ public class Account : Report {
 			var q = new DB.Query.select ();
 			q.from (Tax.table_name);
 			q.where (@"account = $(periodic.account.id) AND period = $(periodic.period.raw_value)");
-			var taxes = db.fetch_value_map<int, Tax> (q, "service");
+			var taxes = db.fetch_entity_map<int, Tax> (q, "service");
 
 			var month = periodic.period.raw_value % 12;
 			var row = sheet.get_row (row_number);

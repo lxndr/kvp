@@ -30,18 +30,20 @@ public class CalculationSheet : Report {
 
 		/* month */
 		sheet.put_string ("A2", _("for %s %d year")
-				.printf (Utils.month_to_string (selected_account.period.raw_value % 12).down (), selected_account.period.raw_value / 12));
+			.printf (
+				Utils.month_to_string (selected_account.period.raw_value % 12).down (),
+				selected_account.period.raw_value / 12));
 
 		/* address */
 		sheet.put_string ("A3", "Address");
 
 		/* tax prices */
-		var q = new DB.Query.select ("value1, service");
+		var q = new DB.Query.select ("service, value1");
 		q.from (Price.table_name);
 		q.where (@"building = $(selected_account.account.building.id)");
 		q.where (@"first_day IS NULL OR first_day <= $(selected_account.period.last_day.get_days ())");
 		q.where (@"last_day IS NULL OR last_day >= $(selected_account.period.first_day.get_days ())");
-		var prices = db.fetch_value_map<int, Money> (q, "service");
+		var prices = db.fetch_value_map<int, Money> (q);
 		foreach (var id in service_ids)
 			if (prices[id] == null)
 				prices[id] = new Money ();
@@ -82,10 +84,10 @@ public class CalculationSheet : Report {
 			int64 n_people = periodic.number_of_people ();
 			row.get_cell (6).put_string (n_people.to_string ()).style = cstyles[5];
 
-			q = new DB.Query.select ("total, service");
+			q = new DB.Query.select ("service, total");
 			q.from (Tax.table_name);
 			q.where (@"account = $(ac.id) AND period = $(selected_account.period.raw_value)");
-			var taxes = db.fetch_value_map<int, Money> (q, "service");
+			var taxes = db.fetch_value_map<int, Money> (q);
 
 			OOXML.Cell cell;
 

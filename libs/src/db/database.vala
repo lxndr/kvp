@@ -32,6 +32,15 @@ public class Database : Object {
 	}
 
 
+	private T wrap_value<T> (ref Value val) {
+		if (typeof (T) == typeof (int))
+			return val.get_int ();
+		if (typeof (T) == typeof (int64))
+			return val.get_int64 ();
+		return val.peek_pointer ();
+	}
+
+
 	/*
 	 * Entity specs registry.
 	 */
@@ -138,27 +147,17 @@ public class Database : Object {
 
 
 	public T fetch_value<T> (Query query, T def) {
-/*		var v = Value (typeof (T));
-		if (!fetch_value_full (ref v, query))
-			return def;
-*/
 		var list = fetch_value_list<T> (query);
 		if (list.size > 0)
 			return list[0];
 		return def;
 	}
 
-/*
-	public bool fetch_value_full (ref Value val, Query query) {
-		var list = fetch_value_list_full (query);
 
-		if (!assemble_value (ref val, str))
-			warning ("");
-
-		return
-	}
-*/
-
+	/**
+	 * @brief Fetch a list of values of type @T.
+	 * @query The query.
+	 */
 	public Gee.List<T> fetch_value_list<T> (Query query) {
 		var list = new Gee.ArrayList<T> ();
 
@@ -177,7 +176,7 @@ public class Database : Object {
 	}
 
 
-	public Gee.Map<K, T> fetch_value_map<K, T> (Query query, string key_field) {
+	public Gee.Map<K, T> fetch_entity_map<K, T> (Query query, string key_field) {
 		int key_column = -1;
 
 		var map = new Gee.HashMap<K, T> ();
@@ -190,11 +189,29 @@ public class Database : Object {
 					error (@"Doesn't have column '$(key_field)'");
 			}
 
-			var key_value = Value (typeof (T));
+			var key_value = Value (typeof (K));
 			assemble_value (ref key_value, values[key_column]);
-			var key = key_value.peek_pointer ();
+			var key = wrap_value<K> (ref key_value);
 
 			var val = make_entity<T> (n_columns, column_names, values);
+			map[key] = val;
+			return 0;
+		});
+		return map;
+	}
+
+
+	public Gee.Map<K, V> fetch_value_map<K, V> (Query query) {
+		var map = new Gee.HashMap<K, V> ();
+		engine.exec_sql (query.sql (), (n_columns, values, column_names) => {
+			var key_value = Value (typeof (K));
+			assemble_value (ref key_value, values[0]);
+			var key = wrap_value<K> (ref key_value);
+
+			var val_value = Value (typeof (V));
+			assemble_value (ref val_value, values[1]);
+			var val = wrap_value<V> (ref val_value);
+
 			map[key] = val;
 			return 0;
 		});
@@ -207,21 +224,11 @@ public class Database : Object {
 	}
 
 
-	public int fetch_int (Query query, int def) {
-		return fetch_value<int> (query, def);
-	}
-
-
-	public int64 fetch_int64 (Query query, int64 def) {
-		return fetch_value<int64> (query, def);
-	}
-
-
 	public int query_count (string from, string where) {
 		var q = new Query.select ("COUNT(*)");
 		q.from (from);
 		q.where (where);
-		return fetch_int (q, 0);
+		return fetch_value<int> (q, 0);
 	}
 
 
