@@ -2,7 +2,7 @@ namespace Kv {
 
 
 public class Person : DB.SimpleEntity, DB.Viewable {
-	public static string table_name = "person";
+	public static unowned string table_name = "person";
 
 	public string name { get; set; default = _("A person"); }
 	public Date? birthday { get; set; default = null; }

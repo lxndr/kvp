@@ -2,7 +2,7 @@ namespace Kv {
 
 
 public class Relationship : DB.SimpleEntity, DB.Viewable {
-	public static string table_name = "relationships";
+	public static unowned string table_name = "relationships";
 
 	public string name { get; set; default = ""; }
 

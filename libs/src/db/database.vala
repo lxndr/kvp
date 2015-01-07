@@ -4,11 +4,12 @@ namespace DB {
 public class Database : Object {
 	public Engine engine { private get; construct set; }
 	public ValueAdapter value_adapter { get; set; }
-	private Gee.HashMap<Type, EntitySpec> entity_types;
+	private Gee.HashMap<Type, unowned EntitySpec> entity_types;
 	private Gee.HashMap<Type, Gee.HashMap<int, Entity>> cache;
 
 
 	construct {
+		entity_types = new Gee.HashMap<Type, EntitySpec> ();
 		cache = new Gee.HashMap<Type, Gee.HashMap<int, Entity>> ();
 	}
 
@@ -34,7 +35,7 @@ public class Database : Object {
 	/*
 	 * Entity specs registry.
 	 */
-	public EntitySpec register_entity_type (Type type, string table_name) {
+	public unowned EntitySpec register_entity_type (Type type, string table_name) {
 		entity_types[type] = new EntitySpec (type, table_name);
 		return entity_types[type];
 	}
@@ -45,7 +46,7 @@ public class Database : Object {
 	}
 
 
-	public EntitySpec find_entity_spec (Type type) {
+	public unowned EntitySpec find_entity_spec (Type type) {
 		return entity_types[type];
 	}
 
@@ -165,7 +166,10 @@ public class Database : Object {
 			var val = Value (typeof(T));
 			if (!assemble_value (ref val, values[0]))
 				warning ("-");
-			list.add (val.peek_pointer ());
+			if (typeof (T) == typeof (int))
+				list.add (val.get_int ());
+			else
+				list.add (val.peek_pointer ());
 			return 0;
 		});
 
@@ -265,6 +269,12 @@ public class Database : Object {
 					entity = fetch_simple_entity_full (type, entity_id);
 			}
 			val.set_object (entity);
+			return true;
+		}
+
+		/* String */
+		if (type == typeof (string)) {
+			val.set_string (str);
 			return true;
 		}
 

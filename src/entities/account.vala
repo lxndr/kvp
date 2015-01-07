@@ -2,7 +2,7 @@ namespace Kv {
 
 
 public class Account : DB.SimpleEntity {
-	public static string table_name = "account";
+	public static unowned string table_name = "account";
 
 	public Building building { get; construct set; }
 	public string number { get; set; default = ""; }

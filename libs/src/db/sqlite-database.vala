@@ -1,7 +1,7 @@
 namespace DB {
 
 
-public class SQLiteEngine : Object, Engine {
+public class SqliteEngine : Object, Engine {
 	public File file { get; construct set; }
 	private Sqlite.Database db;
 
@@ -14,7 +14,7 @@ public class SQLiteEngine : Object, Engine {
 	}
 
 
-	public SQLiteEngine (File _file) {
+	public SqliteEngine (File _file) {
 		Object (file: _file);
 	}
 

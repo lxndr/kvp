@@ -16,7 +16,7 @@ public class Database : DB.Database {
 		register_entity_type (typeof (Service), Service.table_name);
 		register_entity_type (typeof (Tax), Tax.table_name);
 		register_entity_type (typeof (Tenant), Tenant.table_name);
-	
+
 		/* tax colculation methods */
 		tax_calc_methods = new Gee.HashMap<string, TaxCalculation> ();
 		register_tax_calculation (typeof (TaxFormula01));
@@ -38,7 +38,7 @@ public class Database : DB.Database {
 
 
 	public Database (string db_path) {
-		Object (engine: new DB.SQLiteEngine (File.new_for_path (db_path)),
+		Object (engine: new DB.SqliteEngine (File.new_for_path (db_path)),
 				value_adapter: new DatabaseValueAdapter ());
 	}
 

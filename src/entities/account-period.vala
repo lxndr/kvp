@@ -2,7 +2,7 @@ namespace Kv {
 
 
 public class AccountPeriod : DB.Entity, DB.Viewable {
-	public static string table_name = "account_period";
+	public static unowned string table_name = "account_period";
 
 	public Account account { get; set; }
 	public Month period { get; set; }

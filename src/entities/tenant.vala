@@ -2,7 +2,7 @@ namespace Kv {
 
 
 public class Tenant : DB.SimpleEntity, DB.Viewable {
-	public static string table_name = "tenant";
+	public static unowned string table_name = "tenant";
 
 	public Account account { get; set; }
 	public Person person { get; set; }

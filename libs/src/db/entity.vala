@@ -22,7 +22,6 @@ public abstract class Entity : Object {
 }
 
 
-[Compact]
 public class EntitySpec {
 	public Type type;
 	public string table_name;
