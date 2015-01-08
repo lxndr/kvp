@@ -33,10 +33,28 @@ public class Database : Object {
 
 
 	private T wrap_value<T> (ref Value val) {
-		if (typeof (T) == typeof (int))
+		var t = typeof (T);
+		if (t == typeof (bool))
+			return val.get_boolean ();
+		if (t == typeof (char))
+			return val.get_char ();
+		if (t == typeof (int8))
+			return val.get_schar ();
+		if (t == typeof (uchar))
+			return val.get_uchar ();
+		if (t == typeof (int))
 			return val.get_int ();
-		if (typeof (T) == typeof (int64))
+		if (t == typeof (uint))
+			return val.get_uint ();
+		if (t == typeof (long))
+			return val.get_long ();
+		if (t == typeof (ulong))
+			return val.get_ulong ();
+		if (t == typeof (int64))
 			return val.get_int64 ();
+		if (t == typeof (uint64))
+			return val.get_uint64 ();
+		/* TODO: float, double, string, boxed, object */
 		return val.peek_pointer ();
 	}
 
