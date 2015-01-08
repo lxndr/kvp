@@ -26,8 +26,10 @@ public class Service : DB.SimpleEntity, DB.Viewable {
 	public Price get_price (Building building, Month period) {
 		var q = new DB.Query.select ();
 		q.from (Price.table_name);
-		q.where ("building = %d AND service = %d AND (first_day IS NULL OR first_day <= %d) AND (last_day IS NULL OR last_day >= %d)"
-				.printf (building.id, id, period.last_day.get_days (), period.first_day.get_days ()));
+		q.where (@"building = $(building.id)");
+		q.where (@"service = $(id)");
+		q.where (@"first_day IS NULL OR first_day <= $(period.last_day.get_days ())");
+		q.where (@"last_day IS NULL OR last_day >= $(period.first_day.get_days ())");
 		return db.fetch_entity<Price> (q);
 	}
 }
