@@ -16,8 +16,8 @@ public class Person : DB.SimpleEntity, DB.Viewable {
 
 
 	public override void remove () {
-		var q = new DB.Query.delete (db.find_entity_spec (typeof (Tenant)).table_name);
-		q.where ("person = %d".printf (id));
+		var q = new DB.Query.delete (Tenant.table_name);
+		q.where (@"person = $(id)");
 
 		db.begin_transaction ();
 		base.remove ();

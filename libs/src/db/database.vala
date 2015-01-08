@@ -183,10 +183,7 @@ public class Database : Object {
 			var val = Value (typeof(T));
 			if (!assemble_value (ref val, values[0]))
 				warning ("-");
-			if (typeof (T) == typeof (int))
-				list.add (val.get_int ());
-			else
-				list.add (val.peek_pointer ());
+			list.add (wrap_value<T> (ref val));
 			return 0;
 		});
 
