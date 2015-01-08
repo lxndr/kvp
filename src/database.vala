@@ -25,15 +25,6 @@ public class Database : DB.Database {
 		register_tax_calculation (typeof (TaxFormula05));
 		register_tax_calculation (typeof (TaxFormula07));
 		register_tax_calculation (typeof (TaxFormula08));
-
-		/* prepare the database */
-//		try {
-//			var bytes = resources_lookup_data ("/org/lxndr/kvp/data/init.sql", ResourceLookupFlags.NONE);
-//			unowned uint8[] data = bytes.get_data ();
-//			exec_sql ((string) data);
-//		} catch (Error e) {
-//			error ("Error preparing database '%s': %s", file.get_path (), e.message);
-//		}
 	}
 
 
