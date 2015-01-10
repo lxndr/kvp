@@ -41,6 +41,15 @@ public class Building : DB.SimpleEntity {
 	public string full_name () {
 		return "%s, %s".printf (street, number);
 	}
+
+
+	public override void remove () {
+		db.begin_transaction ();
+		base.remove ();
+		/* TODO */
+		/* remove prices */
+		db.commit_transaction ();
+	}
 }
 
 
