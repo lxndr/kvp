@@ -147,12 +147,20 @@ public class AccountPeriod : DB.Entity, DB.Viewable {
 #endif
 
 	public string? main_tenants_names () {
+		var first_day = period.first_day;
+		var last_day = period.last_day;
+		Date.clamp_range (ref first_day, ref last_day, account.opened, account.closed);
+
 		var q = new DB.Query.select ("name");
 		q.from (Tenant.table_name);
 		q.join (Person.table_name)
 			.on (@"$(Person.table_name).id = $(Tenant.table_name).person");
 		q.where (@"relation = 1");
 		q.where (@"account = $(account.id)");
+		if (last_day != null)
+			q.where (@"move_in IS NULL OR move_in <= $(last_day.get_days ())");
+		if (first_day != null)
+			q.where (@"move_out IS NULL OR move_out >= $(first_day.get_days ())");
 		var names = db.fetch_value_list<string> (q);
 
 		var sb = new StringBuilder.sized (64);
