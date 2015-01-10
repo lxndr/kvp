@@ -142,34 +142,27 @@ public void transform_property_adapter_to_money (Value src_value, ref Value dest
 }
 
 
+private string shorten_person_name (string? name, bool dots) {
+	var sb = new StringBuilder ();
 
-private string shorten_name (string? name) {
-	if (name == null)
-		return "";
+	var parts = name.split (" ");
+	foreach (unowned string part in parts) {
+		/* skip empty */
+		if (part.length == 0)
+			continue;
 
-	var sb = new StringBuilder.sized (16);
-	var index = name.index_of_char (' ');
-	if (index == -1)
-		return name;
-	sb.append_len (name, index);
-	index++;
+		/* last name */
+		if (sb.len == 0 || part[0] == '(') {
+			var tmp = part.replace ("_", " ");
+			sb.append (tmp);
+			sb.append_c (' ');
+		} else {
+			sb.append_unichar (part.get_char (0));
+			if (dots)
+				sb.append_unichar ('.');
+		}
+	}
 
-	unichar ch;
-	if (name.get_next_char (ref index, out ch) == false)
-		return sb.str;
-	sb.append_unichar (' ');
-	sb.append_unichar (ch);
-	sb.append_unichar ('.');
-
-	index = name.index_of_char (' ', index);
-	if (index == -1)
-		return sb.str;
-	index++;
-
-	if (name.get_next_char (ref index, out ch) == false)
-		return sb.str;
-	sb.append_unichar (ch);
-	sb.append_unichar ('.');
 	return sb.str;
 }
 

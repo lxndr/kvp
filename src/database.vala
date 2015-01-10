@@ -53,11 +53,11 @@ public class Database : DB.Database {
 	/*
 	 * Settings.
 	 */
-	public string? get_setting (string key) {
+	public string? get_setting (string key, string? def = null) {
 		var q = new DB.Query.select ("value");
 		q.from ("settings");
-		q.where ("key = '%s'".printf (key));
-		return fetch_string (q, null);
+		q.where (@"key = '$key'");
+		return fetch_string (q, def);
 	}
 
 

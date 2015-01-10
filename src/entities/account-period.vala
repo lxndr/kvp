@@ -32,7 +32,7 @@ public class AccountPeriod : DB.Entity, DB.Viewable {
 
 	private string _tenant;
 	public string tenant {
-		get { _tenant = main_tenant_name (); return _tenant; }
+		get { _tenant = main_tenants_names (); return _tenant; }
 	}
 
 
@@ -102,7 +102,7 @@ public class AccountPeriod : DB.Entity, DB.Viewable {
 	public override void remove () {}
 
 
-	public int64 number_of_people () {
+	public int number_of_people () {
 		var first_day = period.first_day;
 		var last_day = period.last_day;
 		Date.clamp_range (ref first_day, ref last_day, account.opened, account.closed);
@@ -137,12 +137,32 @@ public class AccountPeriod : DB.Entity, DB.Viewable {
 			.add (total).add (extra).sub (payment);
 	}
 
-
+#if 0
 	public string? main_tenant_name () {
 		var q = new DB.Query.select ("name");
 		q.from ("person JOIN tenant ON tenant.person=person.id");
 		q.where ("account = %d AND relation = 1".printf (account.id));
 		return db.fetch_string (q, null);
+	}
+#endif
+
+	public string? main_tenants_names () {
+		var q = new DB.Query.select ("name");
+		q.from (Tenant.table_name);
+		q.join (Person.table_name)
+			.on (@"$(Person.table_name).id = $(Tenant.table_name).person");
+		q.where (@"relation = 1");
+		q.where (@"account = $(account.id)");
+		var names = db.fetch_value_list<string> (q);
+
+		var sb = new StringBuilder.sized (64);
+		foreach (var name in names) {
+			if (sb.len > 0)
+				sb.append (", ");
+			sb.append (Utils.shorten_person_name (name, false));
+		}
+
+		return sb.str;
 	}
 
 

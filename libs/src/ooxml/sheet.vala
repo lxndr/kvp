@@ -256,6 +256,20 @@ public class Sheet : Object {
 	public void put_number (string cell_name, double number) {
 		get_cell (cell_name).val = new NumberValue (number);
 	}
+
+
+	public Cell? find_text (string? text) {
+		if (text == null)
+			return null;
+
+		foreach (var row in rows)
+			foreach (var cell in row.cells)
+				if (cell.val != null && cell.val is SimpleTextValue)
+					if (((SimpleTextValue) cell.val).text == text)
+						return cell;
+
+		return null;
+	}
 }
 
 

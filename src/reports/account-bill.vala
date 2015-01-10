@@ -151,7 +151,7 @@ public class Account : Report {
 			var msg = new Gtk.MessageDialog (toplevel_window, Gtk.DialogFlags.MODAL,
 					Gtk.MessageType.WARNING, Gtk.ButtonsType.OK,
 					_("Account %s (%s) does not have any calculations within specified periods."),
-					selected_account.account.number, selected_account.main_tenant_name ());
+					selected_account.account.number, selected_account.main_tenants_names ());
 			msg.run ();
 			msg.destroy ();
 			return;

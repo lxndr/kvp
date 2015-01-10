@@ -41,8 +41,11 @@ public class Cell : Object {
 	}
 
 
-	public unowned Cell put_string (string text) {
-		val = new SimpleTextValue (text);
+	public unowned Cell put_string (string? text) {
+		if (text == null)
+			val = null;
+		else
+			val = new SimpleTextValue (text);
 		return this;
 	}
 

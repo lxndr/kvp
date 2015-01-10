@@ -2,11 +2,7 @@ namespace Kv.Reports {
 
 
 public class CalculationSheet : Report {
-	const int service_ids[] = {
-		5, 6, 4, 1, 2, 3, 7, 9, 10
-	};
-
-
+	const int max_services = 8;
 	private OOXML.Spreadsheet book;
 
 
@@ -16,9 +12,9 @@ public class CalculationSheet : Report {
 
 
 	public override void make () throws Error {
-		book.load (GLib.File.new_for_path ("./templates/calculation-sheet.xlsx"));
-
+		book.load (application.template_path ().get_child ("calculation-sheet.xlsx"));
 		var sheet = book.sheet (0);
+		var period = selected_account.period;
 
 		/* save sheet styles */
 		uint cstyles[18];
@@ -28,119 +24,161 @@ public class CalculationSheet : Report {
 		for (var i = 0; i < 18; i++)
 			estyles[i] = sheet.get_row (13).get_cell (i + 1).style;
 
-		/* month */
-		sheet.put_string ("A2", _("for %s %d year")
-			.printf (
-				Utils.month_to_string (selected_account.period.raw_value % 12).down (),
-				selected_account.period.raw_value / 12));
-
-		/* address */
-		sheet.put_string ("A3", "Address");
+		template_sheet_text (sheet);
 
 		/* tax prices */
-		var q = new DB.Query.select ("service, value1");
+		var q = new DB.Query.select ();
 		q.from (Price.table_name);
 		q.where (@"building = $(selected_account.account.building.id)");
-		q.where (@"first_day IS NULL OR first_day <= $(selected_account.period.last_day.get_days ())");
-		q.where (@"last_day IS NULL OR last_day >= $(selected_account.period.first_day.get_days ())");
-		var prices = db.fetch_value_map<int, Money> (q);
-		foreach (var id in service_ids)
-			if (prices[id] == null)
-				prices[id] = new Money ();
+		q.where (@"first_day IS NULL OR first_day <= $(period.last_day.get_days ())");
+		q.where (@"last_day IS NULL OR last_day >= $(period.first_day.get_days ())");
+		var prices = db.fetch_entity_list<Price> (q);
+		/* TODO: warning that number of services is more than the template can handle */
 
-		sheet.put_number ("D4", prices[5].real);
-		sheet.put_number ("D5", prices[6].real);
-		sheet.put_number ("D6", prices[4].real);
-		sheet.put_number ("D7", prices[1].real);
-		sheet.put_number ("J4", prices[2].real);
-		sheet.put_number ("J5", prices[3].real);
-		sheet.put_number ("J6", prices[7].real);
-		sheet.put_number ("J7", prices[9].real);
+		for (var i = 0; i < max_services; i++) {
+			var slot = i + 1;
+			var name_cell = sheet.find_text ("{SERVICE_%02d_NAME}".printf (slot));
+			var val_cell = sheet.find_text ("{SERVICE_%02d_PRICE}".printf (slot));
+			if (i < prices.size) {
+				var price = prices[i];
+				name_cell.put_string (price.service.name);
+				val_cell.put_number (price.value1.real);
+			} else {
+				name_cell.val = null;
+				val_cell.val = null;
+			}
+		}
+
+		/* FIXME: doing one thing twice, basically */
+		for (var i = 0; i < max_services; i++) {
+			var slot = i + 1;
+			var name_cell = sheet.find_text ("{SERVICE_%02d_NAME}".printf (slot));
+			if (i < prices.size) {
+				var price = prices[i];
+				name_cell.put_string (price.service.name);
+			} else {
+				name_cell.val = null;
+			}
+		}
 
 		/*  */
-		var accounts = db.get_account_list (selected_account.account.building);
-		OOXML.Row row = sheet.get_row(1);
-		int row_number = 11;
-
-		Money totals[18];
-		for (var i = 0; i < 18; i++)
+		int total_rooms = 0;
+		double total_area = 0.0;
+		int total_people = 0;
+		Money totals[12];
+		for (var i = 0; i < 12; i++)
 			totals[i] = new Money ();
 
-		foreach (var ac in accounts) {
-			var periodic = ac.fetch_period (selected_account.period);
-			if (periodic == null)
-				continue;
+		var accounts = db.get_account_period_list (selected_account.account.building, period, true);
+		OOXML.Row row = sheet.get_row(13);
+		OOXML.Cell cell;
+		int row_number = 11;
 
-			if (periodic.total.is_zero () && periodic.balance.is_zero ())
-				continue;
-
+		foreach (var account in accounts) {
 			row = sheet.get_row (row_number);
-			row.get_cell (1).put_string (ac.number).style = cstyles[0];
-			row.get_cell (2).put_string (Utils.shorten_name (periodic.main_tenant_name ())).style = cstyles[1];
-			row.get_cell (3).put_string (periodic.apartment).style = cstyles[2];
-			row.get_cell (4).put_string (periodic.n_rooms.to_string ()).style = cstyles[3];
-			row.get_cell (5).put_string (Utils.format_double (periodic.area, 2)).style = cstyles[4];
 
-			int64 n_people = periodic.number_of_people ();
-			row.get_cell (6).put_string (n_people.to_string ()).style = cstyles[5];
+			/* account number */
+			cell = row.get_cell (1);
+			cell.put_string (account.account.number);
 
-			q = new DB.Query.select ("service, total");
-			q.from (Tax.table_name);
-			q.where (@"account = $(ac.id) AND period = $(selected_account.period.raw_value)");
-			var taxes = db.fetch_value_map<int, Money> (q);
+			/* tenant name */
+			cell = row.get_cell (2);
+			cell.put_string (account.main_tenants_names ());
 
-			OOXML.Cell cell;
+			/* apartments */
+			cell = row.get_cell (3);
+			cell.put_string (account.apartment);
 
-			for (var i = 0; i < 8; i++) {
-				var id = service_ids[i];
-				var val = taxes[id];
-				if (id == 4 && taxes.has_key (10)) /* FIXME: this is a workaround */
-					val.add (taxes[10]);
+			/* number of rooms */
+			cell = row.get_cell (4);
+			cell.put_number ((double) account.n_rooms);
 
-				cell = row.get_cell (7 + i);
-				if (val != null && val.is_positive ()) {
-					totals[6 + i].add (val);
-					cell.put_number (val.real);
-				}
-				cell.style = cstyles[6 + i];
+			/* area */
+			cell = row.get_cell (5);
+			cell.put_number (account.area);
+
+			/* number of people */
+			int n_people = account.number_of_people ();
+			cell = row.get_cell (6);
+			cell.put_number ((double) n_people);
+
+			if (true) {
+				/* FIXME */
+				total_rooms += account.n_rooms;
+				total_area += account.area;
+				total_people += n_people;
 			}
 
-			totals[14].add (periodic.total);
+			/* tax totals */
+			q = new DB.Query.select ("service, total");
+			q.from (Tax.table_name);
+			q.where (@"account = $(account.account.id) AND period = $(period.raw_value)");
+			var taxes = db.fetch_value_map<int, Money> (q);
+
+			for (var i = 0; i < max_services; i++) {
+				if (i >= prices.size)
+					break;
+
+				var service_id = prices[i].service.id;
+				var val = taxes[service_id];
+#if 0
+				if (service_id == 4 && taxes.has_key (10)) /* FIXME: this is a workaround */
+					val.add (taxes[10]);
+#endif
+
+				cell = row.get_cell (7 + i);
+				if (val != null) {
+					totals[i].add (val);
+					cell.put_number (val.real);
+				}
+			}
+
+			/* totals */
+			totals[8].add (account.total);
 			cell = row.get_cell (15);
-			cell.put_number (periodic.total.real);
-			cell.style = cstyles[14];
+			cell.put_number (account.total.real);
 
-			totals[15].add (periodic.payment);
+			totals[9].add (account.payment);
 			cell = row.get_cell (16);
-			cell.put_number (periodic.payment.real);
-			cell.style = cstyles[15];
+			cell.put_number (account.payment.real);
 
-			var prev_balance = periodic.previuos_balance ();
-			totals[16].add (prev_balance);
+			var prev_balance = account.previuos_balance ();
+			totals[10].add (prev_balance);
 			cell = row.get_cell (17);
 			cell.put_number (prev_balance.real);
-			cell.style = cstyles[16];
 
-			totals[17].add (periodic.balance);
+			totals[11].add (account.balance);
 			cell = row.get_cell (18);
-			cell.put_number (periodic.balance.real);
-			cell.style = cstyles[17];
+			cell.put_number (account.balance.real);
+
+			for (var i = 0; i < 18; i++)
+				row.get_cell (i + 1).style = cstyles[i];
 
 			row_number++;
 		}
 
-		/* totals and ending style */
-		for (var i = 0; i < 18; i++) {
-			row = sheet.get_row (row_number);
-			var cell = row.get_cell (i+1);
-			cell.style = estyles[i];
+		/* totals */
+		row = sheet.get_row (row_number);
+		row.get_cell (4).put_number ((double) total_rooms);
+		row.get_cell (5).put_number (total_area);
+		row.get_cell (6).put_number ((double) total_people);
 
-			if (i == 3)
-				cell.put_string (totals[i].integer.to_string ());
-			else if (i == 5)
-				cell.put_string ("-");
-			else if (i >= 6)
-				cell.put_number (totals[i].real);
+		for (var i = 0; i < max_services; i++) {
+			if (i >= prices.size)
+				break;
+			cell = row.get_cell (7 + i);
+			cell.put_number (totals[i].real);
+		}
+
+		row.get_cell (15).put_number (totals[ 8].real);
+		row.get_cell (16).put_number (totals[ 9].real);
+		row.get_cell (17).put_number (totals[10].real);
+		row.get_cell (18).put_number (totals[11].real);
+
+		/* and ending style */
+		for (var i = 0; i < 18; i++) {
+			cell = row.get_cell (i+1);
+			cell.style = estyles[i];
 		}
 	}
 

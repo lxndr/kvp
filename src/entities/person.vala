@@ -40,6 +40,7 @@ public class Person : DB.SimpleEntity, DB.Viewable {
 	public string display_name {
 		get { return name; }
 	}
+
 }
 
 

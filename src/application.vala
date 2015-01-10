@@ -65,6 +65,11 @@ public class Application : Gtk.Application {
 
 	public override void activate () {
 	}
+
+
+	public File template_path () {
+		return File.new_for_path ("./templates");
+	}
 }
 
 

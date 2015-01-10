@@ -1,10 +1,17 @@
 namespace Kv {
 
 
+public struct OrganizationInformation {
+	string name;
+	string short_name;
+}
+
+
 [GtkTemplate (ui = "/org/lxndr/kvp/ui/main-window.ui")]
 public class MainWindow : Gtk.ApplicationWindow {
 	public Database db { get; construct set; }
 	private Gee.Map<Type, Gtk.Window?> singleton_windows;
+	public OrganizationInformation org_info;
 
 	/* building */
 	private Building? current_building;
@@ -33,6 +40,10 @@ public class MainWindow : Gtk.ApplicationWindow {
 
 		current_period = new Month ();
 		singleton_windows = new Gee.HashMap<Type, Gtk.Window?> ();
+
+		/* organization information */
+		org_info.name = db.get_setting ("organization_name", "");
+		org_info.short_name = db.get_setting ("organization_short_name", "");
 
 		/* UI: period */
 		current_period_popover = new CentralMonthPopover (current_period_button);

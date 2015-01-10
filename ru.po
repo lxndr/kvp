@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2015-01-07 00:48+0300\n"
+"POT-Creation-Date: 2015-01-10 08:41+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -122,34 +122,34 @@ msgstr "Улица"
 msgid "Reference - Buildings"
 msgstr "Справочник - Здания"
 
-#: src/main-window.vala:95
+#: src/main-window.vala:106
 msgid "No buildings"
 msgstr "Нет зданий"
 
-#: src/main-window.vala:99
+#: src/main-window.vala:110
 msgid "All buildings"
 msgstr "Все здания"
 
-#: src/main-window.vala:123
+#: src/main-window.vala:134
 msgid "Edit..."
 msgstr "Редактировать..."
 
-#: src/main-window.vala:299
+#: src/main-window.vala:310
 #, c-format
 msgid ""
 "Period '%s' for building '%s' has no data. Do you want to duplicate the last "
 "period to the new?"
 msgstr ""
 
-#: src/main-window.vala:301
+#: src/main-window.vala:312
 msgid "Yes"
 msgstr "Да"
 
-#: src/main-window.vala:302
+#: src/main-window.vala:313
 msgid "No"
 msgstr "Нет"
 
-#: src/main-window.vala:303
+#: src/main-window.vala:314
 msgid "Cancel"
 msgstr "Отмена"
 
@@ -277,51 +277,51 @@ msgstr "Прибыл"
 msgid "move-out"
 msgstr "Выбыл"
 
-#: src/utils.vala:194
+#: src/utils.vala:187
 msgid "January"
 msgstr "Январь"
 
-#: src/utils.vala:195
+#: src/utils.vala:188
 msgid "February"
 msgstr "Февраль"
 
-#: src/utils.vala:196
+#: src/utils.vala:189
 msgid "March"
 msgstr "Март"
 
-#: src/utils.vala:197
+#: src/utils.vala:190
 msgid "April"
 msgstr "Апрель"
 
-#: src/utils.vala:198
+#: src/utils.vala:191
 msgid "May"
 msgstr "Май"
 
-#: src/utils.vala:199
+#: src/utils.vala:192
 msgid "June"
 msgstr "Июнь"
 
-#: src/utils.vala:200
+#: src/utils.vala:193
 msgid "July"
 msgstr "Июль"
 
-#: src/utils.vala:201
+#: src/utils.vala:194
 msgid "August"
 msgstr "Август"
 
-#: src/utils.vala:202
+#: src/utils.vala:195
 msgid "September"
 msgstr "Сентябрь"
 
-#: src/utils.vala:203
+#: src/utils.vala:196
 msgid "October"
 msgstr "Октябрь"
 
-#: src/utils.vala:204
+#: src/utils.vala:197
 msgid "November"
 msgstr "Ноябрь"
 
-#: src/utils.vala:205
+#: src/utils.vala:198
 msgid "December"
 msgstr "Декабрь"
 
@@ -389,10 +389,11 @@ msgstr "Следующий месяц"
 msgid "A person"
 msgstr "Человек"
 
-#: src/reports/calculation-sheet.vala:32
+#: src/reports/account-bill.vala:153
 #, c-format
-msgid "for %s %d year"
-msgstr "за %s %d г."
+msgid ""
+"Account %s (%s) does not have any calculations within specified periods."
+msgstr "Лицевой счет %s (%s) не содержит расчетов для указанного периода."
 
 #: ui/main-window.ui:17
 msgid "Show future accounts"
