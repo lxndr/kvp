@@ -127,20 +127,24 @@ public class CalculationSheet : Report {
 #endif
 
 				cell = row.get_cell (7 + i);
-				if (val != null) {
+				if (val != null && val.is_positive ()) {
 					totals[i].add (val);
 					cell.put_number (val.real);
 				}
 			}
 
 			/* totals */
-			totals[8].add (account.total);
-			cell = row.get_cell (15);
-			cell.put_number (account.total.real);
+			if (!account.total.is_zero ()) {
+				totals[8].add (account.total);
+				cell = row.get_cell (15);
+				cell.put_number (account.total.real);
+			}
 
-			totals[9].add (account.payment);
-			cell = row.get_cell (16);
-			cell.put_number (account.payment.real);
+			if (!account.payment.is_zero ()) {
+				totals[9].add (account.payment);
+				cell = row.get_cell (16);
+				cell.put_number (account.payment.real);
+			}
 
 			var prev_balance = account.previuos_balance ();
 			totals[10].add (prev_balance);
