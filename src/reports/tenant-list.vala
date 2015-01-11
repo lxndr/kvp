@@ -11,7 +11,7 @@ public class TenantList : Report {
 
 
 	public override void make () throws Error {
-		book.load (GLib.File.new_for_path ("./templates/tenant-list.xlsx"));
+		book.load (application.template_path ().get_child ("tenant-list.xlsx"));
 		var sheet = book.sheet (0);
 		OOXML.Row row;
 
