@@ -259,7 +259,7 @@ msgstr "Услуга"
 
 #: src/tax-table.vala:32
 msgid "amount"
-msgstr "Кол-во"
+msgstr "Объем"
 
 #: src/tax-table.vala:33
 msgid "price-value"
