@@ -80,7 +80,7 @@ resources: build/resources.c
 	
 
 
-build/resources.c: kvp.gresource.xml ui/*.ui data/init.sql
+build/resources.c: kvp.gresource.xml ui/*.ui
 	glib-compile-resources --generate-source --target=src/resources.c kvp.gresource.xml
 
 

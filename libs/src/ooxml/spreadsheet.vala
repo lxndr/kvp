@@ -16,8 +16,11 @@ public class Spreadsheet : Object {
 		archive.open (file);
 
 		var reader = new Reader ();
-		reader.shared_strings (load_xml ("xl/sharedStrings.xml"));
+		var xml_doc = load_xml ("xl/sharedStrings.xml");
+		reader.shared_strings (xml_doc);
+		delete xml_doc;
 		load_workbook (reader);
+		Xml.Parser.cleanup ();
 	}
 
 
@@ -39,14 +42,17 @@ public class Spreadsheet : Object {
 				}
 			}
 		}
+
+		delete xml_doc;
 	}
 
 
 	private void load_worksheet (uint sheet_id, Reader reader) throws GLib.Error {
 		var path = "xl/worksheets/sheet%u.xml".printf (sheet_id);
-		var doc = load_xml (path);
-		var sheet = reader.worksheet (doc);
+		var xml_doc = load_xml (path);
+		var sheet = reader.worksheet (xml_doc);
 		sheets.add (sheet);
+		delete xml_doc;
 	}
 
 
@@ -80,6 +86,7 @@ public class Spreadsheet : Object {
 		string xml;
 		doc->dump_memory_enc (out xml, null, "UTF-8");
 		xml = Utils.fix_line_ending (xml);
+		delete doc;
 
 		var path = "xl/worksheets/sheet%u.xml".printf (sheet_id);
 		var io = archive.add_from_stream (path);
