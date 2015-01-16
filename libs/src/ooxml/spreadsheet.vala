@@ -52,7 +52,7 @@ public class Spreadsheet : Object {
 		var xml_doc = load_xml (path);
 		var sheet = reader.worksheet (xml_doc);
 		sheets.add (sheet);
-		delete xml_doc;
+//		delete xml_doc;
 	}
 
 
@@ -71,9 +71,12 @@ public class Spreadsheet : Object {
 			store_worksheet (sheets[i], i + 1, writer);
 
 		string xml;
-		writer.shared_strings ()->dump_memory_enc (out xml, null, "UTF-8");
-		xml = Utils.fix_line_ending (xml);
+		var xml_doc = writer.shared_strings ();
+		xml_doc->dump_memory_enc (out xml, null, "UTF-8");
+//		delete xml_doc;
+
 		var io = archive.add_from_stream ("xl/sharedStrings.xml");
+		xml = Utils.fix_line_ending (xml);
 		io.output_stream.write (xml.data);
 
 		archive.write (file);
@@ -86,7 +89,7 @@ public class Spreadsheet : Object {
 		string xml;
 		doc->dump_memory_enc (out xml, null, "UTF-8");
 		xml = Utils.fix_line_ending (xml);
-		delete doc;
+//		delete doc;
 
 		var path = "xl/worksheets/sheet%u.xml".printf (sheet_id);
 		var io = archive.add_from_stream (path);
