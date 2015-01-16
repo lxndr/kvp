@@ -71,7 +71,7 @@ private class AccountReportParameters : Gtk.Dialog {
 
 
 
-public class Account : Report {
+public class AccountBill : Report {
 	private const int service_ids[] = { 5, 6, 1, 2, 7, 8, 3, 4, 9 };
 
 	private OOXML.Spreadsheet book;

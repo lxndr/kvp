@@ -54,7 +54,7 @@ public class Application : Gtk.Application {
 		/* reports */
 		reports[_("Tenant list")] = typeof (Reports.TenantList);
 		reports[_("Calculation sheet")] = typeof (Reports.CalculationSheet);
-		reports[_("Account")] = typeof (Reports.Account);
+		reports[_("Account")] = typeof (Reports.AccountBill);
 
 		/* database */
 		var db = new Database ("./kvartplata.db");
