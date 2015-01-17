@@ -1,19 +1,18 @@
 namespace Kv.Reports {
 
 
-public class TenantList : Report {
-	private OOXML.Spreadsheet book;
-
-
+public class TenantList : Spreadsheet {
 	construct {
-		book = new OOXML.Spreadsheet ();
+		template_name = "tenant-list.xlsx";
 	}
 
 
 	public override void make () throws Error {
-		book.load (application.template_path ().get_child ("tenant-list.xlsx"));
 		var sheet = book.sheet (0);
 		OOXML.Row row;
+
+		var cstyles = copy_styles_horz (sheet.get_cell ("A4"), 5);
+		var estyles = copy_styles_horz (sheet.get_cell ("A5"), 5);
 
 		var q = new DB.Query.select (@"$(AccountPeriod.table_name).*");
 		q.from (AccountPeriod.table_name);
@@ -21,6 +20,7 @@ public class TenantList : Report {
 		q.on (@"$(Account.table_name).id = $(AccountPeriod.table_name).account");
 		if (building != null)
 			q.on (@"$(Account.table_name).building = $(building.id)");
+		q.where (@"period = $(selected_account.period.raw_value)");
 //		q.where (@"period = $(selected_account.period.last_day.get_days ())");
 		var accounts = db.fetch_entity_list<AccountPeriod> (q);
 
@@ -53,25 +53,15 @@ public class TenantList : Report {
 			row.get_cell (1).put_string (account.apartment);
 			row.get_cell (2).put_string (people_string);
 			row.get_cell (3).put_string (birthday_string);
-			row.get_cell (4).put_string (tenants.size.to_string ());
-			row.get_cell (5).put_string (account.area.to_string ());
+			row.get_cell (4).put_number ((double) tenants.size);
+			row.get_cell (5).put_number (account.area);
+
+			paste_styles_horz (cstyles, row.get_cell (1));
 
 			row_number++;
 		}
 
-/*
-		row = sheet.get_row (row_number + 1);
-		row.get_cell (1).style = 20;
-		row.get_cell (2).style = 19;
-		row.get_cell (3).style = 18;
-		row.get_cell (4).style = 16;
-		row.get_cell (5).style = 17;
-*/
-	}
-
-
-	public override void write (File f) throws Error {
-		book.save_as (f);
+		paste_styles_horz (estyles, sheet.get_row (row_number).get_cell (1));
 	}
 }
 

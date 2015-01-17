@@ -3,9 +3,14 @@ namespace Kv {
 
 public abstract class Report : Object {
 	public MainWindow toplevel_window { get; construct set; }
-	public Database db { get; construct set; }
 	public Building? building { get; construct set; }
 	public AccountPeriod selected_account { get; construct set; }
+
+	public Database db {
+		get {
+			return (Database) selected_account.db;
+		}
+	}
 
 	public Application application {
 		get {
@@ -14,16 +19,12 @@ public abstract class Report : Object {
 	}
 
 
-	public virtual bool prepare () {
-		return true;
-	}
-
-
+	public abstract bool prepare () throws Error;
 	public abstract void make () throws Error;
-	public abstract void write (File f) throws Error;
+	public abstract void show () throws Error;
 
 
-	public string? template_text (string? tmpl) {
+	protected string? template_text (string? tmpl) {
 		if (tmpl == null)
 			return null;
 
@@ -92,18 +93,6 @@ public abstract class Report : Object {
 			});
 		} catch (Error e) {
 			error ("Failed to create a regular expression: %s", e.message);
-		}
-	}
-
-
-	public void template_sheet_text (OOXML.Sheet sheet) {
-		foreach (var row in sheet.rows) {
-			foreach (var cell in row.cells) {
-				if (cell.val != null && cell.val is OOXML.SimpleTextValue) {
-					var v = (OOXML.SimpleTextValue) cell.val;
-					v.text = template_text (v.text);
-				}
-			}
 		}
 	}
 }

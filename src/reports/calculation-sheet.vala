@@ -1,28 +1,22 @@
 namespace Kv.Reports {
 
 
-public class CalculationSheet : Report {
+public class CalculationSheet : Spreadsheet {
 	const int max_services = 8;
-	private OOXML.Spreadsheet book;
 
 
 	construct {
-		book = new OOXML.Spreadsheet ();
+		template_name = "calculation-sheet.xlsx";
 	}
 
 
 	public override void make () throws Error {
-		book.load (application.template_path ().get_child ("calculation-sheet.xlsx"));
 		var sheet = book.sheet (0);
 		var period = selected_account.period;
 
 		/* save sheet styles */
-		uint cstyles[18];
-		for (var i = 0; i < 18; i++)
-			cstyles[i] = sheet.get_row (12).get_cell (i + 1).style;
-		uint estyles[18];
-		for (var i = 0; i < 18; i++)
-			estyles[i] = sheet.get_row (13).get_cell (i + 1).style;
+		var cstyles = copy_styles_horz (sheet.get_cell ("A12"), 18);
+		var estyles = copy_styles_horz (sheet.get_cell ("A13"), 18);
 
 		template_sheet_text (sheet);
 
@@ -155,8 +149,7 @@ public class CalculationSheet : Report {
 			cell = row.get_cell (18);
 			cell.put_number (account.balance.real);
 
-			for (var i = 0; i < 18; i++)
-				row.get_cell (i + 1).style = cstyles[i];
+			paste_styles_horz (cstyles, row.get_cell (1));
 
 			row_number++;
 		}
@@ -180,15 +173,7 @@ public class CalculationSheet : Report {
 		row.get_cell (18).put_number (totals[11].real);
 
 		/* and ending style */
-		for (var i = 0; i < 18; i++) {
-			cell = row.get_cell (i+1);
-			cell.style = estyles[i];
-		}
-	}
-
-
-	public override void write (File f) throws Error {
-		book.save_as (f);
+		paste_styles_horz (estyles, row.get_cell (1));
 	}
 }
 
