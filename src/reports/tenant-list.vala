@@ -8,6 +8,8 @@ public class TenantList : Spreadsheet {
 
 
 	public override void make () throws Error {
+		var period = selected_account.period;
+		var period_last_day = period.last_day.get_days ();
 		var sheet = book.sheet (0);
 		OOXML.Row row;
 
@@ -20,8 +22,8 @@ public class TenantList : Spreadsheet {
 		q.on (@"$(Account.table_name).id = $(AccountPeriod.table_name).account");
 		if (building != null)
 			q.on (@"$(Account.table_name).building = $(building.id)");
-		q.where (@"period = $(selected_account.period.raw_value)");
-//		q.where (@"period = $(selected_account.period.last_day.get_days ())");
+		q.where (@"period = $(period.raw_value)");
+		q.where (@"closed IS NULL OR closed > $(period_last_day)");
 		var accounts = db.fetch_entity_list<AccountPeriod> (q);
 
 		var row_number = 3;
