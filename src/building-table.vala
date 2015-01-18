@@ -12,7 +12,7 @@ public class BuildingTable : DB.ViewTable {
 			N_("lock_period")*/
 			N_("comment")
 		};
-		return props;
+		return (string[]) props;
 	}
 
 

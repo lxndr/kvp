@@ -314,11 +314,6 @@ public class MainWindow : Gtk.ApplicationWindow {
 	}
 
 
-	private void on_tenant_list_changed () {
-		
-	}
-
-
 	private void on_tax_total_changed (Tax tax) {
 		
 	}

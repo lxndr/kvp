@@ -11,7 +11,7 @@ public class Relationship : DB.SimpleEntity, DB.Viewable {
 		const string[] fields = {
 			"name"
 		};
-		return fields;
+		return (string[]) fields;
 	}
 
 

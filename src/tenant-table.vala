@@ -35,7 +35,7 @@ public class TenantTable : DB.ViewTable {
 			N_("move-in"),
 			N_("move-out")
 		};
-		return props;
+		return (string[]) props;
 	}
 
 

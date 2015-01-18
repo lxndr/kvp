@@ -19,7 +19,7 @@ public class Account : DB.SimpleEntity {
 			"number",
 			"comment"
 		};
-		return fields;
+		return (string[]) fields;
 	}
 
 

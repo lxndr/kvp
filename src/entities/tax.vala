@@ -52,7 +52,7 @@ public class Tax : DB.Entity, DB.Viewable {
 			"period",
 			"service"
 		};
-		return keys;
+		return (string[]) keys;
 	}
 
 
@@ -62,7 +62,7 @@ public class Tax : DB.Entity, DB.Viewable {
 			"amount",
 			"total"
 		};
-		return fields;
+		return (string[]) fields;
 	}
 
 

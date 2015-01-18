@@ -7,7 +7,7 @@ public class ServiceTable : DB.ViewTable {
 			N_("id"),
 			N_("name")
 		};
-		return props;
+		return (string[]) props;
 	}
 
 

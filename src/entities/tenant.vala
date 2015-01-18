@@ -31,7 +31,7 @@ public class Tenant : DB.SimpleEntity, DB.Viewable {
 			"move_out",
 			"relation"
 		};
-		return fields;
+		return (string[]) fields;
 	}
 
 

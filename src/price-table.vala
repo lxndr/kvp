@@ -14,7 +14,7 @@ public class PriceTable : DB.ViewTable {
 			N_("value1"),
 			N_("value2")
 		};
-		return props;
+		return (string[]) props;
 	}
 
 

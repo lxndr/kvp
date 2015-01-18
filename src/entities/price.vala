@@ -43,7 +43,7 @@ public class Price : DB.SimpleEntity {
 			"value1",
 			"value2"
 		};
-		return fields;
+		return (string[]) fields;
 	}
 
 
