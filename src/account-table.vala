@@ -35,7 +35,7 @@ public class AccountTable : DB.ViewTable {
 			N_("balance"),
 			N_("comment")
 		};
-		return props;
+		return (string[]) props;
 	}
 
 

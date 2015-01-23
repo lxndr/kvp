@@ -193,42 +193,17 @@ public class MainWindow : Gtk.ApplicationWindow {
 		if (type == Type.INVALID)
 			return;
 
-		
-		var report = Object.new (type,
-				"toplevel_window", this,
-				"db", db,
-				"building", current_building,
-				"selected_account", account_table.get_selected ()) as Report;
-
-		if (report.prepare () == false)
-			return;
-
 		try {
-			report.make ();
+			var report = Object.new (type,
+					"toplevel_window", this,
+					"building", current_building,
+					"selected_account", account_table.get_selected ()) as Report;
+			if (report.prepare ()) {
+				report.make ();
+				report.show ();
+			}
 		} catch (Error e) {
 			error ("Error making a report: %s", e.message);
-		}
-
-		GLib.File tmp_file;
-
-		try {
-			tmp_file = File.new_for_path ("./out/report.xlsx");
-			report.write (tmp_file);
-		} catch (Error e) {
-			error ("Error writing the report: %s", e.message);
-		}
-
-		try {
-#if WINDOWS
-			var ai = AppInfo.get_default_for_type (".xlsx", false);
-			var l = new List<File> ();
-			l.append (tmp_file);
-			ai.launch (l, null);
-#else
-			AppInfo.launch_default_for_uri (tmp_file.get_uri (), null);
-#endif
-		} catch (Error e) {
-			error ("Error opening the report: %s", e.message);
 		}
 	}
 
@@ -336,11 +311,6 @@ public class MainWindow : Gtk.ApplicationWindow {
 		unowned AccountPeriod periodic = account_table.get_selected ();
 		tenant_table.setup (periodic);
 		tax_table.setup (periodic);
-	}
-
-
-	private void on_tenant_list_changed () {
-		
 	}
 
 

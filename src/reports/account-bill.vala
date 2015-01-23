@@ -71,10 +71,9 @@ private class AccountReportParameters : Gtk.Dialog {
 
 
 
-public class AccountBill : Report {
+public class AccountBill : Spreadsheet {
 	private const int service_ids[] = { 5, 6, 1, 2, 7, 8, 3, 4, 9 };
 
-	private OOXML.Spreadsheet book;
 	private Month start_period;
 	private Month end_period;
 
@@ -85,11 +84,13 @@ public class AccountBill : Report {
 
 
 	construct {
-		book = new OOXML.Spreadsheet ();
+		template_name = "account.xlsx";
 	}
 
 
-	public override bool prepare () {
+	public override bool prepare () throws Error {
+		base.prepare ();
+
 		var dlg = new AccountReportParameters (toplevel_window);
 		var ret = dlg.run ();
 		if (ret == Gtk.ResponseType.ACCEPT) {
@@ -144,8 +145,6 @@ public class AccountBill : Report {
 
 
 	public override void make () throws Error {
-		book.load (GLib.File.new_for_path ("./templates/account.xlsx"));
-
 		periodic_list = db.get_account_periods (selected_account.account, start_period, end_period);
 		if (periodic_list.size == 0) {
 			var msg = new Gtk.MessageDialog (toplevel_window, Gtk.DialogFlags.MODAL,
@@ -271,11 +270,6 @@ public class AccountBill : Report {
 		row.get_cell (13).put_number (totals[9].real);
 		row.get_cell (14).put_number (totals[10].real);
 		row.get_cell (15).put_number (totals[11].real);
-	}
-
-
-	public override void write (File f) throws Error {
-		book.save_as (f);
 	}
 }
 

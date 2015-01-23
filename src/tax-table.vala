@@ -33,7 +33,7 @@ public class TaxTable : DB.ViewTable {
 			N_("price-value"),
 			N_("total")
 		};
-		return props;
+		return (string[]) props;
 	}
 
 

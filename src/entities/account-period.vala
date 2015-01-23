@@ -73,7 +73,7 @@ public class AccountPeriod : DB.Entity, DB.Viewable {
 			"account",
 			"period"
 		};
-		return keys;
+		return (string[]) keys;
 	}
 
 
@@ -90,7 +90,7 @@ public class AccountPeriod : DB.Entity, DB.Viewable {
 			"param2",
 			"param3"
 		};
-		return fields;
+		return (string[]) fields;
 	}
 
 

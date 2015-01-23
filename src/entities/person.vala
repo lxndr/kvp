@@ -33,7 +33,7 @@ public class Person : DB.SimpleEntity, DB.Viewable {
 			"gender",
 			"real_life_id"
 		};
-		return fields;
+		return (string[]) fields;
 	}
 
 

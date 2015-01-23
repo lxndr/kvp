@@ -34,7 +34,7 @@ public class Building : DB.SimpleEntity {
 			"lock_period",
 			"comment"
 		};
-		return fields;
+		return (string[]) fields;
 	}
 
 

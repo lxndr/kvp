@@ -11,7 +11,7 @@ public class PeopleTable : DB.ViewTable {
 			N_("birthday"),
 			N_("gender")
 		};
-		return props;
+		return (string[]) props;
 	}
 
 
