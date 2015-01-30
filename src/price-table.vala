@@ -8,8 +8,8 @@ public class PriceTable : DB.ViewTable {
 	protected override unowned string[] viewable_props () {
 		const string props[] = {
 			N_("service"),
-			N_("first_day"),
-			N_("last_day"),
+			N_("first-day"),
+			N_("last-day"),
 			N_("method"),
 			N_("value1"),
 			N_("value2")

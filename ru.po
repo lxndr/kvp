@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2015-01-10 08:41+0300\n"
+"POT-Creation-Date: 2015-01-30 10:48+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -134,22 +134,22 @@ msgstr "Все здания"
 msgid "Edit..."
 msgstr "Редактировать..."
 
-#: src/main-window.vala:310
+#: src/main-window.vala:285
 #, c-format
 msgid ""
 "Period '%s' for building '%s' has no data. Do you want to duplicate the last "
 "period to the new?"
 msgstr ""
 
-#: src/main-window.vala:312
+#: src/main-window.vala:287
 msgid "Yes"
 msgstr "Да"
 
-#: src/main-window.vala:313
+#: src/main-window.vala:288
 msgid "No"
 msgstr "Нет"
 
-#: src/main-window.vala:314
+#: src/main-window.vala:289
 msgid "Cancel"
 msgstr "Отмена"
 
@@ -178,11 +178,11 @@ msgid "service"
 msgstr "Услуга"
 
 #: src/price-table.vala:11
-msgid "first_day"
+msgid "first-day"
 msgstr "Первый день"
 
 #: src/price-table.vala:12
-msgid "last_day"
+msgid "last-day"
 msgstr "Последний день"
 
 #: src/price-table.vala:13
@@ -389,7 +389,7 @@ msgstr "Следующий месяц"
 msgid "A person"
 msgstr "Человек"
 
-#: src/reports/account-bill.vala:153
+#: src/reports/account-bill.vala:152
 #, c-format
 msgid ""
 "Account %s (%s) does not have any calculations within specified periods."

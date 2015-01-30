@@ -1,7 +1,7 @@
 namespace Kv {
 
 
-public class Price : DB.SimpleEntity {
+public class Price : DB.SimpleEntity, DB.Viewable {
 	public static unowned string table_name = "price";
 
 	public Building building { get; set; }
