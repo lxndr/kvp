@@ -210,6 +210,7 @@ public class TaxFormula05 : Object, TaxCalculation {
 		int norm_people = (int) ac.n_people.clamp (0, 5);
 		int n = norm[norm_idx, norm_rooms, norm_people];
 
+#if 0
 		double amount_coef = 1.0;
 		if (ac.account.building.id == 3) {
 			double[] coef = {
@@ -232,6 +233,9 @@ public class TaxFormula05 : Object, TaxCalculation {
 		}
 
 		return Math.round ((double) (n * ac.n_people) * amount_coef);
+#endif
+
+		return Math.round ((double) (n * ac.n_people));
 	}
 
 
