@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2015-02-12 19:24+0300\n"
+"POT-Creation-Date: 2015-02-13 10:30+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -247,6 +247,14 @@ msgstr ""
 
 #: src/tax-calculation.vala:296
 msgid "total = amount * price1"
+msgstr ""
+
+#: src/tax-calculation.vala:313
+msgid "AmCoef"
+msgstr ""
+
+#: src/tax-calculation.vala:318
+msgid "total = amount * price1 * coef"
 msgstr ""
 
 #: src/tax-table.vala:30

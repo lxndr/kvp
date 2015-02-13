@@ -303,4 +303,34 @@ public class TaxFormula08 : Object, TaxCalculation {
 }
 
 
+public class TaxFormula09 : Object, TaxCalculation {
+	public unowned string id () {
+		return "amount-coef";
+	}
+
+
+	public unowned string name () {
+		return _("AmCoef");
+	}
+
+
+	public unowned string description () {
+		return _("total = amount * price1 * coef");
+	}
+
+
+	public double amount (Tax tax) {
+		return tax.amount;
+	}
+
+
+	public Money total (Tax tax) {
+		return (Money) new Money ()
+			.assign (price (tax))
+			.mul_float (tax.amount)
+			.mul_float (period_coefficient (tax));
+	}
+}
+
+
 }

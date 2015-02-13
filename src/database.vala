@@ -25,6 +25,7 @@ public class Database : DB.Database {
 		register_tax_calculation (typeof (TaxFormula05));
 		register_tax_calculation (typeof (TaxFormula07));
 		register_tax_calculation (typeof (TaxFormula08));
+		register_tax_calculation (typeof (TaxFormula09));
 	}
 
 
