@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2015-02-13 10:30+0300\n"
+"POT-Creation-Date: 2015-03-15 12:45+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -109,6 +109,10 @@ msgstr "Ведомость расчетов"
 #: src/application.vala:57
 msgid "Account"
 msgstr "Лицевой счёт"
+
+#: src/application.vala:58
+msgid "Bank bill"
+msgstr "Квитанция"
 
 #: src/building-table.vala:7
 msgid "location"
