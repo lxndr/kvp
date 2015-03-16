@@ -366,6 +366,9 @@ public class Writer {
 
 
 	private void ct_merge_cells (Xml.Node* parent, Sheet sheet) {
+		if (sheet.merge_cells.size == 0)
+			return;
+
 		Xml.Node* node = parent->new_child (ns, "mergeCells");
 
 		st_uint (node, ns, "count", sheet.merge_cells.size);

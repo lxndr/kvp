@@ -12,11 +12,21 @@ public class BankBill : Spreadsheet {
 
 		template_sheet_text (sheet);
 
-		sheet.put_string ("D9",  selected_account.main_tenants_names ());
+		sheet.put_string ("D8",  selected_account.main_tenants_names ());
 		sheet.put_string ("D17", selected_account.main_tenants_names ());
 
-		sheet.put_number ("D11",  selected_account.total.real);
-		sheet.put_number ("G28",  selected_account.total.real);
+		var total = selected_account.total;
+		sheet.put_number ("D10",  total.real);
+		sheet.put_number ("G28",  total.real);
+
+		var prev = selected_account.previuos_balance ();
+		sheet.put_number ("D11",  prev.real);
+		sheet.put_number ("G29",  prev.real);
+
+		var balance = selected_account.balance;
+		sheet.put_number ("D12",  balance.real);
+		sheet.put_number ("G30",  balance.real);
+
 
 		var q = new DB.Query.select ();
 		q.from (Tax.table_name);
