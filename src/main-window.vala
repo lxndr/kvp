@@ -120,12 +120,12 @@ public class MainWindow : Gtk.ApplicationWindow {
 				if (building.comment != null && building.comment.length > 0)
 					comment = " (%s)".printf (building.comment);
 
-				item = new Gtk.RadioMenuItem.with_label_from_widget (item,
+				var _item = new Gtk.RadioMenuItem.with_label_from_widget (item,
 						"%s, %s%s".printf (building.street, building.number, comment));
-				item.active = (current_building != null && current_building.id == building.id);
-				item.set_data<Building?> ("building", building);
-				item.toggled.connect (building_clicked);
-				menu.append (item);
+				_item.active = (current_building != null && current_building.id == building.id);
+				_item.set_data<Building?> ("building", building);
+				_item.toggled.connect (building_clicked);
+				menu.append (_item);
 			}
 		}
 

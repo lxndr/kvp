@@ -94,7 +94,8 @@ public class TaxTable : DB.ViewTable {
 				strikethrough_model_column, !apply,
 				visible_model_column, tax.price.method != null);
 
-		list_store.set (tree_iter, editable_model_column, tax.price.method == "amount");
+		list_store.set (tree_iter, editable_model_column,
+				tax.price.method == "amount" || tax.price.method == "amount-coef");
 	}
 
 
