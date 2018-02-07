@@ -121,7 +121,7 @@ public class CalculationSheet : Spreadsheet {
 #endif
 
 				cell = row.get_cell (7 + i);
-				if (val != null && val.is_positive ()) {
+				if (val != null && !val.is_zero ()) {
 					totals[i].add (val);
 					cell.put_number (val.real);
 				}

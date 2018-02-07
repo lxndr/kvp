@@ -333,4 +333,33 @@ public class TaxFormula09 : Object, TaxCalculation {
 }
 
 
+public class TaxFormula10 : Object, TaxCalculation {
+	public unowned string id () {
+		return "amount-tenants-coef";
+	}
+
+
+	public unowned string name () {
+		return _("AmTnCoef");
+	}
+
+
+	public unowned string description () {
+		return _("total = amount * price1 * tenants * coef");
+	}
+
+
+	public double amount (Tax tax) {
+		return tax.amount;
+	}
+
+
+	public Money total (Tax tax) {
+		return (Money) new Money ()
+			.assign (price (tax))
+			.mul_float (tax.amount)
+			.mul_float (tenant_coefficient (tax));
+	}
+}
+
 }
