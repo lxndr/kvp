@@ -349,7 +349,7 @@ public abstract class ViewTable : Gtk.TreeView {
 		msg.response.connect ((response_id) => {
 			if (response_id == Gtk.ResponseType.YES) {
 				remove_entity (obj);
-				list_store.remove (iter);
+				list_store.remove (ref iter);
 			}
 
 			msg.destroy ();
