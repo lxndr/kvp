@@ -1,6 +1,6 @@
 namespace Kv.Reports {
 
-public class Invoice : Spreadsheet {
+public class InvoiceAll : Spreadsheet {
 	construct {
 		template_name = "invoice.xlsx";
 	}

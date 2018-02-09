@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2017-02-21 10:24+0300\n"
+"POT-Creation-Date: 2018-02-09 17:52+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -113,6 +113,14 @@ msgstr "Лицевой счёт"
 #: src/application.vala:58
 msgid "Bank bill"
 msgstr "Квитанция"
+
+#: src/application.vala:59
+msgid "Invoice (one)"
+msgstr ""
+
+#: src/application.vala:60
+msgid "Invoice (all)"
+msgstr ""
 
 #: src/building-table.vala:7
 msgid "location"
@@ -439,23 +447,19 @@ msgstr "Люди"
 msgid "Kvartplata"
 msgstr "Квартплата"
 
-#: ui/main-window.ui:123
+#: ui/main-window.ui:175
 msgid "Building"
 msgstr "Здания"
 
-#: ui/main-window.ui:142
+#: ui/main-window.ui:194
 msgid "Current period"
 msgstr "Текущий период"
 
-#: ui/main-window.ui:183
-msgid "Filter"
-msgstr "Фильтр"
-
-#: ui/main-window.ui:256
+#: ui/main-window.ui:242
 msgid "References"
 msgstr "Справочники"
 
-#: ui/main-window.ui:301
+#: ui/main-window.ui:287
 msgid "_Reports"
 msgstr "_Отчеты"
 
@@ -466,3 +470,6 @@ msgstr "Добавить"
 #: libs/src/db-gtk/view-table.vala:107
 msgid "Remove"
 msgstr "Удалить"
+
+#~ msgid "Filter"
+#~ msgstr "Фильтр"

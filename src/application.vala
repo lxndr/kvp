@@ -56,7 +56,8 @@ public class Application : Gtk.Application {
 		reports[_("Calculation sheet")] = typeof (Reports.CalculationSheet);
 		reports[_("Account")] = typeof (Reports.AccountBill);
 		reports[_("Bank bill")] = typeof (Reports.BankBill);
-		reports[_("Invoice")] = typeof (Reports.Invoice);
+		reports[_("Invoice (one)")] = typeof (Reports.Invoice);
+		reports[_("Invoice (all)")] = typeof (Reports.InvoiceAll);
 
 		/* database */
 		var db = new Database ("./kvartplata.db");

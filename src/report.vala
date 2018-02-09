@@ -74,9 +74,9 @@ public abstract class Report : Object {
 				case "ACCOUNT_COMMENT":
 					result.append (account.comment);
 					break;
-	/*			case "ACCOUNT_MAIN_TENANTS":
-					result.append (main_tenant.name);
-					break;*/
+				case "ACCOUNT_MAIN_TENANTS":
+					result.append (selected_account.main_tenants_names());
+					break;
 				/* organization */
 				case "ORGANIZATION_NAME":
 					result.append (toplevel_window.org_info.name);
