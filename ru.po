@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: lxndr87@users.sourceforge.net\n"
-"POT-Creation-Date: 2018-02-09 17:52+0300\n"
+"POT-Creation-Date: 2018-02-11 21:52+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian <LL@li.org>\n"
@@ -116,11 +116,7 @@ msgstr "Квитанция"
 
 #: src/application.vala:59
 msgid "Invoice (one)"
-msgstr ""
-
-#: src/application.vala:60
-msgid "Invoice (all)"
-msgstr ""
+msgstr "Счет-фактура"
 
 #: src/building-table.vala:7
 msgid "location"
@@ -470,6 +466,9 @@ msgstr "Добавить"
 #: libs/src/db-gtk/view-table.vala:107
 msgid "Remove"
 msgstr "Удалить"
+
+#~ msgid "Invoice (all)"
+#~ msgstr "Счет-фактура (все)"
 
 #~ msgid "Filter"
 #~ msgstr "Фильтр"
